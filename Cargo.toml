@@ -6,7 +6,7 @@ edition = "2018"
 
 [lib]
 name = "boxer"
-path = "lib.rs"
+path = "src/lib.rs"
 
 [profile.dev]
 opt-level = 0
