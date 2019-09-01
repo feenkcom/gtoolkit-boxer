@@ -6,7 +6,7 @@ edition = "2018"
 
 [lib]
 name = "boxer"
-crate-type = ["cdylib"]
+path = "lib.rs"
 
 [profile.dev]
 opt-level = 0
