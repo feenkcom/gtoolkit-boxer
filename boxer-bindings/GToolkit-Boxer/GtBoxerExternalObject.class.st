@@ -16,8 +16,13 @@ GtBoxerExternalObject class >> finalizeResourceData: aHandle [
 ]
 
 { #category : #'instance creation' }
+GtBoxerExternalObject class >> fromHandle: aHandle [
+	^ self basicNew setHandle: aHandle
+]
+
+{ #category : #'instance creation' }
 GtBoxerExternalObject class >> new [
-	^ self class fromHandle: (self primCreate getHandle) autoRelease
+	^ self fromHandle: (self primCreate getHandle) autoRelease
 ]
 
 { #category : #'private - ffi' }
