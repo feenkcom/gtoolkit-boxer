@@ -1,5 +1,5 @@
 Class {
 	#name : #GtBoxerSizeU64,
-	#superclass : #FFIExternalObject,
+	#superclass : #GtBoxerSize,
 	#category : #'GToolkit-Boxer'
 }
