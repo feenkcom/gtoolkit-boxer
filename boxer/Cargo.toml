@@ -1,0 +1,15 @@
+[package]
+name = "boxer"
+version = "0.1.0"
+authors = ["Aliaksei Syrel <alex.syrel@gmail.com>"]
+edition = "2018"
+
+[lib]
+name = "boxer"
+path = "lib.rs"
+
+[profile.dev]
+opt-level = 0
+
+[profile.release]
+opt-level = 3
