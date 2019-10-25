@@ -1,5 +1,9 @@
-use std::os::raw::c_char;
 use std::ffi::CStr;
+use std::os::raw::c_char;
+use std::ffi::CString;
+
+pub mod point;
+pub mod size;
 
 pub struct CBox {}
 
@@ -25,6 +29,15 @@ impl CBox {
             CStr::from_ptr(_ptr_chars).to_string_lossy().into_owned()
         };
         title_string
+    }
+
+    pub fn to_chars<T: Into<Vec<u8>>>(_data: T) -> *mut c_char {
+        let c_to_print = CString::new(_data).expect("CString::new failed");
+        c_to_print.into_raw()
+    }
+
+    pub fn free_chars(_ptr_contents: *mut c_char) {
+        unsafe { CString::from_raw(_ptr_contents) };
     }
 
     pub fn with_raw<F, R, T>(pointer: *mut T, block: F) -> R where F : FnOnce(&mut Box<T>) -> R {
