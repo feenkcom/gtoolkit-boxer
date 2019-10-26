@@ -30,3 +30,13 @@ pub fn boxer_number_uint128_set_high(_number_ptr: *mut BoxerUint128, high: u64) 
 pub fn glutin_number_uint128_drop(_ptr: *mut BoxerUint128) {
     CBox::drop(_ptr)
 }
+
+#[no_mangle]
+pub fn boxer_number_uint128_set_max(_number_ptr: *mut BoxerUint128) {
+    CBox::with_raw(_number_ptr, |number| number.set(std::u128::MAX))
+}
+
+#[no_mangle]
+pub fn boxer_number_uint128_set_min(_number_ptr: *mut BoxerUint128) {
+    CBox::with_raw(_number_ptr, |number| number.set(std::u128::MIN))
+}
