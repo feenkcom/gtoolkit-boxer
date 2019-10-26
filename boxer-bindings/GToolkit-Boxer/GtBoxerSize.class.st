@@ -34,6 +34,22 @@ GtBoxerSize >> primSetWidth: aNumber [
 	self subclassResponsibility
 ]
 
+{ #category : #printing }
+GtBoxerSize >> printOn: aStream [
+	"Append a sequence of characters to aStream that identify the receiver."
+
+	aStream nextPut: ${; space.
+
+	aStream
+		nextPutAll: 'width: ';
+		print: self width.
+	aStream
+		nextPutAll: ' height: ';
+		print: self height.
+		
+	aStream space; nextPut: $}.
+]
+
 { #category : #accessing }
 GtBoxerSize >> width [
 	^ self primGetWidth
