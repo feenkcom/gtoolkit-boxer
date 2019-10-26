@@ -22,7 +22,7 @@ GtBoxerExternalObject class >> fromHandle: aHandle [
 
 { #category : #'instance creation' }
 GtBoxerExternalObject class >> new [
-	^ self fromHandle: (self primCreate getHandle) autoRelease
+	^ (self fromHandle: (self primCreate getHandle)) autoRelease
 ]
 
 { #category : #'private - ffi' }
@@ -39,9 +39,8 @@ GtBoxerExternalObject class >> primRelease: aHandle [
 
 { #category : #finalization }
 GtBoxerExternalObject class >> release: aHandle [
-
 	aHandle isNull
-		"A handle may already be null, if garbage collector did his job before us :) "
+		"A handle may already be null, if garbage collector did his job before us :)"
 		ifTrue: [ ^ self ].
 
 	self warning: [ '(release) Ptr: ', aHandle value asString ].

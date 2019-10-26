@@ -19,6 +19,31 @@ GtBoxerPointF64Examples >> default [
 ]
 
 { #category : #accessing }
+GtBoxerPointF64Examples >> release [
+	<gtExample>
+	| aPoint |
+	
+	aPoint := self default.
+	aPoint release.
+	
+	self assert: aPoint isNull.
+	
+	^ aPoint
+]
+
+{ #category : #accessing }
+GtBoxerPointF64Examples >> releaseTwice [
+	<gtExample>
+	| aPoint |
+	
+	aPoint := self release.
+	aPoint release.
+	self assert: aPoint isNull.
+
+	^ aPoint
+]
+
+{ #category : #accessing }
 GtBoxerPointF64Examples >> withX200 [
 	<gtExample>
 	| aSize |
