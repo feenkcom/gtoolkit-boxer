@@ -1,3 +1,5 @@
+#![allow(non_snake_case)]
+
 use std::ffi::CStr;
 use std::os::raw::c_char;
 use std::ffi::CString;
