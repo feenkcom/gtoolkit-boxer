@@ -4,6 +4,11 @@ Class {
 	#category : #'GToolkit-Boxer'
 }
 
+{ #category : #converting }
+GtBoxerSize >> asPoint [
+	^ self width @ self height
+]
+
 { #category : #accessing }
 GtBoxerSize >> height [
 	^ self primGetHeight
