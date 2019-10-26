@@ -2,7 +2,7 @@ use boxer::CBox;
 use boxer::size::{BoxerSizeF64 };
 
 #[no_mangle]
-pub fn glutin_size_f64() -> *mut BoxerSizeF64 {
+pub fn boxer_size_f64_create() -> *mut BoxerSizeF64 {
     CBox::into_raw(BoxerSizeF64::default())
 }
 

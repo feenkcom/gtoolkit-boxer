@@ -1,5 +1,3 @@
-use super::*;
-
 #[derive(Debug, Copy, Clone, Default)]
 #[repr(C)]
 pub struct BoxerSizeU64 {

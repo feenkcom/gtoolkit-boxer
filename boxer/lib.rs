@@ -4,6 +4,7 @@ use std::ffi::CString;
 
 pub mod point;
 pub mod size;
+pub mod number;
 
 pub struct CBox {}
 
