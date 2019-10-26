@@ -27,6 +27,6 @@ pub fn boxer_size_f64_set_height(_size_ptr: *mut BoxerSizeF64, height: f64) {
 }
 
 #[no_mangle]
-pub fn glutin_size_f64_drop(_ptr: *mut BoxerSizeF64) {
+pub fn boxer_size_f64_drop(_ptr: *mut BoxerSizeF64) {
     CBox::drop(_ptr)
 }
