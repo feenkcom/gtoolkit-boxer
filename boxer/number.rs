@@ -10,6 +10,10 @@ impl BoxerUint128 {
         number.into()
     }
 
+    pub fn be_zero(&mut self) {
+        self.set(0);
+    }
+
     pub fn set(&mut self, number: u128) {
         let boxed_number: BoxerUint128 = number.into();
         self.clone_from(&boxed_number);
