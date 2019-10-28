@@ -1,12 +1,9 @@
 #![allow(non_snake_case)]
 
-use std::ffi::CStr;
-use std::os::raw::c_char;
-use std::ffi::CString;
-
 pub mod point;
 pub mod size;
 pub mod number;
+pub mod string;
 
 pub struct CBox {}
 
@@ -40,8 +37,6 @@ impl CBox {
         Box::into_raw(Box::new(object))
     }
 
-
-
     pub fn from_raw<T>(pointer: *mut T) -> Box<T> {
         assert_eq!(pointer.is_null(), false, "CBox::from_raw(): Pointer must not be null!");
         unsafe { Box::from_raw(pointer) }
@@ -52,22 +47,6 @@ impl CBox {
             return;
         }
         CBox::from_raw(pointer);
-    }
-
-    pub fn to_string(_ptr_chars: *const c_char) -> String {
-        let title_string = unsafe {
-            CStr::from_ptr(_ptr_chars).to_string_lossy().into_owned()
-        };
-        title_string
-    }
-
-    pub fn to_chars<T: Into<Vec<u8>>>(_data: T) -> *mut c_char {
-        let c_to_print = CString::new(_data).expect("CString::new failed");
-        c_to_print.into_raw()
-    }
-
-    pub fn free_chars(_ptr_contents: *mut c_char) {
-        unsafe { CString::from_raw(_ptr_contents) };
     }
 
     pub fn with_raw<F, R, T>(pointer: *mut T, block: F) -> R where F : FnOnce(&mut Box<T>) -> R {
