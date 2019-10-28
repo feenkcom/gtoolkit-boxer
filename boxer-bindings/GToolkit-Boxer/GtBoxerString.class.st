@@ -4,6 +4,11 @@ Class {
 	#category : #'GToolkit-Boxer-Core'
 }
 
+{ #category : #'instance creation' }
+GtBoxerString class >> fromString: aString [
+	^ self new string: aString
+]
+
 { #category : #'private - ffi' }
 GtBoxerString class >> primCreate [
 	^ self ffiCall: #(void* boxer_string_create())
@@ -62,6 +67,10 @@ GtBoxerString >> string [
 { #category : #accessing }
 GtBoxerString >> string: aString [
 	| anEncodedString aBuffer |
+
+	self
+		assert: [ aString isNotNil ]
+		description: [ 'String must not be nil' ].
 
 	"null-terminated utf-8 encoded string"
 	anEncodedString := ByteArray streamContents: [ :aStream |
