@@ -4,6 +4,22 @@ Class {
 	#category : #'GToolkit-Boxer-Library'
 }
 
+{ #category : #installation }
+GtBoxerLibrary class >> install [
+	<script: 'self install'>
+	| installer |
+
+	installer := GtLibraryInstaller new.
+	installer library: 'Boxer'.
+	installer version: 'development'.
+	installer icon: (Form extent: 1@1 depth: 32).
+	installer binary: 'libBoxer'.
+	installer url: 'https://dl.feenk.com/{library}/{platform}/{version}/{arch}/{binary}.{extension}'.
+	installer works: [ GtBoxerLibrary uniqueInstance hasModule ].
+
+	installer run
+]
+
 { #category : #'accessing platform' }
 GtBoxerLibrary >> detectLibrary: aFileName [
 	^ ({ Smalltalk imageDirectory . Smalltalk vmDirectory . FileSystem workingDirectory }
