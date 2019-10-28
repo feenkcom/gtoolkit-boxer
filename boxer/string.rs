@@ -39,6 +39,12 @@ impl BoxerString {
     pub fn to_string(&self) -> String {
         Self::chars_to_string(self.data)
     }
+
+    /// Mutate me to hold a copy of a given string in C format
+    pub fn set_string(&mut self, string: String) {
+        self.data = Self::vec_to_chars(string.as_str());
+        self.length = string.len()
+    }
 }
 
 impl BoxerString {
