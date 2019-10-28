@@ -1,7 +1,7 @@
 Class {
 	#name : #GtBoxerPoint,
 	#superclass : #GtBoxerExternalObject,
-	#category : #'GToolkit-Boxer'
+	#category : #'GToolkit-Boxer-Core'
 }
 
 { #category : #converting }

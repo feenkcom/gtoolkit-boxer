@@ -1,7 +1,7 @@
 Class {
 	#name : #GtBoxerLibrary,
 	#superclass : #FFILibrary,
-	#category : #'GToolkit-Boxer'
+	#category : #'GToolkit-Boxer-Library'
 }
 
 { #category : #'accessing platform' }

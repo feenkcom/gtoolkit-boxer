@@ -1,7 +1,7 @@
 Class {
 	#name : #GtBoxerPointF64,
 	#superclass : #GtBoxerPoint,
-	#category : #'GToolkit-Boxer'
+	#category : #'GToolkit-Boxer-Core'
 }
 
 { #category : #'private - ffi' }

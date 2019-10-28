@@ -1,5 +1,5 @@
 Class {
 	#name : #GtBoxerExternalStructure,
 	#superclass : #FFIExternalStructure,
-	#category : #'GToolkit-Boxer'
+	#category : #'GToolkit-Boxer-Core'
 }

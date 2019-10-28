@@ -1,7 +1,7 @@
 Class {
 	#name : #GtBoxerExternalObject,
 	#superclass : #FFIExternalObject,
-	#category : #'GToolkit-Boxer'
+	#category : #'GToolkit-Boxer-Core'
 }
 
 { #category : #'library path' }

@@ -5,7 +5,7 @@ Class {
 		'MAX',
 		'MIN'
 	],
-	#category : #'GToolkit-Boxer'
+	#category : #'GToolkit-Boxer-Core'
 }
 
 { #category : #'class initialization' }

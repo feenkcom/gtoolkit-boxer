@@ -8,7 +8,7 @@ Class {
 		'OFFSET_HIGH',
 		'OFFSET_LOW'
 	],
-	#category : #'GToolkit-Boxer'
+	#category : #'GToolkit-Boxer-Core'
 }
 
 { #category : #'field definition' }
