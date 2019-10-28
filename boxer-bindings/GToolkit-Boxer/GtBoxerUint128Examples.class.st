@@ -17,6 +17,28 @@ GtBoxerUint128Examples >> default [
 	^ aNumber
 ]
 
+{ #category : #'examples - null ptr' }
+GtBoxerUint128Examples >> getHighFromReleased [
+	<gtExample>
+	| aUint128 |
+	
+	aUint128 := self release.
+	self assert: aUint128 high equals: 0.
+	
+	^ aUint128
+]
+
+{ #category : #'examples - null ptr' }
+GtBoxerUint128Examples >> getLowFromReleased [
+	<gtExample>
+	| aUint128 |
+	
+	aUint128 := self release.
+	self assert: aUint128 low equals: 0.
+	
+	^ aUint128
+]
+
 { #category : #accessing }
 GtBoxerUint128Examples >> max [
 	<gtExample>
@@ -37,6 +59,55 @@ GtBoxerUint128Examples >> min [
 	self assert: aNumber asInteger equals: GtBoxerUint128 minValue.
 
 	^ aNumber
+]
+
+{ #category : #'examples - null ptr' }
+GtBoxerUint128Examples >> release [
+	<gtExample>
+	| aUint128 |
+	
+	aUint128 := self default.
+	aUint128 release.
+	
+	self assert: aUint128 isNull.
+	
+	^ aUint128
+]
+
+{ #category : #'examples - null ptr' }
+GtBoxerUint128Examples >> releaseTwice [
+	<gtExample>
+	| aUint128 |
+	
+	aUint128 := self release.
+	aUint128 release.
+	self assert: aUint128 isNull.
+
+	^ aUint128
+]
+
+{ #category : #'examples - null ptr' }
+GtBoxerUint128Examples >> setHighFromReleased [
+	<gtExample>
+	| aUint128 |
+	
+	aUint128 := self release.
+	aUint128 high: 200.
+	self assert: aUint128 high equals: 0.
+	
+	^ aUint128
+]
+
+{ #category : #'examples - null ptr' }
+GtBoxerUint128Examples >> setLowFromReleased [
+	<gtExample>
+	| aUint128 |
+	
+	aUint128 := self release.
+	aUint128 low: 200.
+	self assert: aUint128 low equals: 0.
+	
+	^ aUint128
 ]
 
 { #category : #accessing }
