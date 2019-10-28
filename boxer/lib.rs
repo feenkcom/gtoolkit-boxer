@@ -10,10 +10,37 @@ pub mod number;
 
 pub struct CBox {}
 
+// Implement support of Option
+impl CBox {
+    pub fn as_option<T> (pointer: *mut T) -> Option<*mut T> {
+        if pointer.is_null() {
+            None
+        } else {
+            Some(pointer)
+        }
+    }
+
+    pub fn from_optional_raw<T>(pointer: *mut T) -> Option<Box<T>> {
+        match Self::as_option(pointer) {
+            None => None,
+            Some(_not_null_pointer) => unsafe { Some(Box::from_raw(_not_null_pointer)) },
+        }
+    }
+
+    pub fn with_optional_raw<F, R, T>(pointer: *mut T, block: F) -> R where F : FnOnce(Option<&mut Box<T>>) -> R {
+        let mut boxed_object: Option<Box<T>> = Self::from_optional_raw(pointer);
+        let result: R = block(boxed_object.as_mut());
+        Self::into_raw(boxed_object);
+        result
+    }
+}
+
 impl CBox {
     pub fn into_raw<T> (object: T) -> *mut T {
         Box::into_raw(Box::new(object))
     }
+
+
 
     pub fn from_raw<T>(pointer: *mut T) -> Box<T> {
         assert_eq!(pointer.is_null(), false, "CBox::from_raw(): Pointer must not be null!");
