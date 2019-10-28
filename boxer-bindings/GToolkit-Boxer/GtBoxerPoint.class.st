@@ -29,6 +29,22 @@ GtBoxerPoint >> primSetY: aNumber [
 	self subclassResponsibility
 ]
 
+{ #category : #printing }
+GtBoxerPoint >> printOn: aStream [
+	"Append a sequence of characters to aStream that identify the receiver."
+
+	aStream nextPut: ${; space.
+
+	aStream
+		nextPutAll: 'x: ';
+		print: self x.
+	aStream
+		nextPutAll: ' y: ';
+		print: self y.
+		
+	aStream space; nextPut: $}.
+]
+
 { #category : #'accessing structure variables' }
 GtBoxerPoint >> x [
 	^ self primGetX

@@ -18,7 +18,29 @@ GtBoxerPointF64Examples >> default [
 	^ aPoint
 ]
 
-{ #category : #accessing }
+{ #category : #'examples - null ptr' }
+GtBoxerPointF64Examples >> getXFromReleased [
+	<gtExample>
+	| aPoint |
+	
+	aPoint := self release.
+	self assert: aPoint x isZero.
+	
+	^ aPoint
+]
+
+{ #category : #'examples - null ptr' }
+GtBoxerPointF64Examples >> getYFromReleased [
+	<gtExample>
+	| aPoint |
+	
+	aPoint := self release.
+	self assert: aPoint y isZero.
+	
+	^ aPoint
+]
+
+{ #category : #'examples - null ptr' }
 GtBoxerPointF64Examples >> release [
 	<gtExample>
 	| aPoint |
@@ -31,7 +53,7 @@ GtBoxerPointF64Examples >> release [
 	^ aPoint
 ]
 
-{ #category : #accessing }
+{ #category : #'examples - null ptr' }
 GtBoxerPointF64Examples >> releaseTwice [
 	<gtExample>
 	| aPoint |
@@ -40,6 +62,30 @@ GtBoxerPointF64Examples >> releaseTwice [
 	aPoint release.
 	self assert: aPoint isNull.
 
+	^ aPoint
+]
+
+{ #category : #'examples - null ptr' }
+GtBoxerPointF64Examples >> setXFromReleased [
+	<gtExample>
+	| aPoint |
+	
+	aPoint := self release.
+	aPoint x: 200.0.
+	self assert: aPoint x isZero.
+	
+	^ aPoint
+]
+
+{ #category : #'examples - null ptr' }
+GtBoxerPointF64Examples >> setYFromReleased [
+	<gtExample>
+	| aPoint |
+	
+	aPoint := self release.
+	aPoint y: 200.0.
+	self assert: aPoint y isZero.
+	
 	^ aPoint
 ]
 
