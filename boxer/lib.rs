@@ -37,7 +37,8 @@ impl CBox {
         Box::into_raw(Box::new(object))
     }
 
-    pub fn from_raw<T>(pointer: *mut T) -> Box<T> {
+    /// This is dangerous! Rust takes the control over the memory back 
+    fn from_raw<T>(pointer: *mut T) -> Box<T> {
         assert_eq!(pointer.is_null(), false, "CBox::from_raw(): Pointer must not be null!");
         unsafe { Box::from_raw(pointer) }
     }
