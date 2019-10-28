@@ -40,9 +40,10 @@ impl BoxerString {
         Self::chars_to_string(self.data)
     }
 
-    /// I create an owned String by copying my data into it
-    pub fn to_slice(&self) -> &str {
-        self.to_string().as_str()
+    /// Mutate me to hold a copy of a given string in C format
+    pub fn set_string(&mut self, string: String) {
+        self.data = Self::vec_to_chars(string.as_str());
+        self.length = string.len()
     }
 }
 
@@ -65,7 +66,7 @@ impl BoxerString {
     }
 
     /// Convert a given char buffer into a String by copying data
-    fn chars_to_string(_data: *mut c_char) -> String {
+    pub fn chars_to_string(_data: *mut c_char) -> String {
         unsafe {
             // we are not using CString::from_raw because it retakes the ownership
             // and will drop the data. Instead we create a borrowed CStr which

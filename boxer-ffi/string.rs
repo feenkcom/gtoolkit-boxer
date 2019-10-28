@@ -28,3 +28,21 @@ pub fn boxer_string_get_data(_size_ptr: *mut BoxerString) -> *mut c_char {
         Some(string) => { string.data },
     } )
 }
+
+/// I mutate the string to be backed by the copy of a given char buffer in utf-8
+#[no_mangle]
+pub fn boxer_string_set_data(_string_ptr: *mut BoxerString, _data_utf8: *mut c_char, _length: usize) {
+    CBox::with_optional_raw(_string_ptr, |option| match option {
+        None => {},
+        Some(string) => {
+            if !_length == 0 {
+                return
+            }
+            let contents = BoxerString::chars_to_string(_data_utf8);
+            if contents.len() != _length {
+                eprintln!("[boxer_string_set] The actual size of the buffer ({:?}) differs from the given ({:?}) ", contents.len(), _length);
+            }
+            string.set_string(contents);
+        },
+    })
+}
