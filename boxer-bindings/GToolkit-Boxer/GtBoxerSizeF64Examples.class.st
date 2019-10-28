@@ -1,7 +1,7 @@
 Class {
 	#name : #GtBoxerSizeF64Examples,
 	#superclass : #Object,
-	#category : #'GToolkit-Boxer'
+	#category : #'GToolkit-Boxer-Examples'
 }
 
 { #category : #accessing }
