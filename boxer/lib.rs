@@ -44,6 +44,12 @@ impl CBox {
         unsafe { Box::from_raw(pointer) }
     }
 
+    /// Tell Rust to take back the control over memory
+    /// This is dangerous!
+    pub unsafe fn take_back<T>(pointer: *mut T) -> Box<T> {
+        Self::from_raw(pointer)
+    }
+
     pub fn drop<T>(pointer: *mut T) {
         if pointer.is_null() {
             return;
