@@ -38,3 +38,33 @@ GtBoxerUint128Examples >> min [
 
 	^ aNumber
 ]
+
+{ #category : #accessing }
+GtBoxerUint128Examples >> withHigh200 [
+	<gtExample>
+	| aUint128 |
+	
+	aUint128 := self default.
+	aUint128 high: 200.
+	
+	self assert: aUint128 low isZero.
+	self assert: aUint128 high equals: 200.
+	self assert: aUint128 asInteger equals: 3689348814741910323200.
+	
+	^ aUint128
+]
+
+{ #category : #accessing }
+GtBoxerUint128Examples >> withLow200 [
+	<gtExample>
+	| aUint128 |
+	
+	aUint128 := self default.
+	aUint128 low: 200.
+	
+	self assert: aUint128 high isZero.
+	self assert: aUint128 low equals: 200.
+	self assert: aUint128 asInteger equals: 200.
+	
+	^ aUint128
+]
