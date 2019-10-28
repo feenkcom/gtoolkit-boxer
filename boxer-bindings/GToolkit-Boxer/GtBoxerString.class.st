@@ -68,6 +68,10 @@ GtBoxerString >> string [
 GtBoxerString >> string: aString [
 	| anEncodedString aBuffer |
 
+	self
+		assert: [ aString isNotNil ]
+		description: [ 'String must not be nil' ].
+
 	"null-terminated utf-8 encoded string"
 	anEncodedString := ByteArray streamContents: [ :aStream |
 		ZnUTF8Encoder new 
