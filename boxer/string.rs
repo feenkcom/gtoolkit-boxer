@@ -39,6 +39,11 @@ impl BoxerString {
     pub fn to_string(&self) -> String {
         Self::chars_to_string(self.data)
     }
+
+    /// I create an owned String by copying my data into it
+    pub fn to_slice(&self) -> &str {
+        self.to_string().as_str()
+    }
 }
 
 impl BoxerString {
