@@ -1,5 +1,5 @@
 use boxer::CBox;
-use boxer::size::{BoxerSizeU64 };
+use boxer::size::{BoxerSizeU64};
 
 #[no_mangle]
 pub fn boxer_size_u64_create() -> *mut BoxerSizeU64 {
