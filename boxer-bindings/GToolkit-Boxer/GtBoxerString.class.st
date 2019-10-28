@@ -4,6 +4,11 @@ Class {
 	#category : #'GToolkit-Boxer-Core'
 }
 
+{ #category : #'instance creation' }
+GtBoxerString class >> fromString: aString [
+	^ self new string: aString
+]
+
 { #category : #'private - ffi' }
 GtBoxerString class >> primCreate [
 	^ self ffiCall: #(void* boxer_string_create())
