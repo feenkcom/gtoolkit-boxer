@@ -17,7 +17,8 @@ impl CBox {
         }
     }
 
-    pub fn from_optional_raw<T>(pointer: *mut T) -> Option<Box<T>> {
+    /// This is dangerous! Rust takes the control over the memory back
+    fn from_optional_raw<T>(pointer: *mut T) -> Option<Box<T>> {
         match Self::as_option(pointer) {
             None => None,
             Some(_not_null_pointer) => unsafe { Some(Box::from_raw(_not_null_pointer)) },
@@ -37,7 +38,7 @@ impl CBox {
         Box::into_raw(Box::new(object))
     }
 
-    /// This is dangerous! Rust takes the control over the memory back 
+    /// This is dangerous! Rust takes the control over the memory back
     fn from_raw<T>(pointer: *mut T) -> Box<T> {
         assert_eq!(pointer.is_null(), false, "CBox::from_raw(): Pointer must not be null!");
         unsafe { Box::from_raw(pointer) }
