@@ -66,7 +66,7 @@ impl BoxerString {
     }
 
     /// Convert a given char buffer into a String by copying data
-    fn chars_to_string(_data: *mut c_char) -> String {
+    pub fn chars_to_string(_data: *mut c_char) -> String {
         unsafe {
             // we are not using CString::from_raw because it retakes the ownership
             // and will drop the data. Instead we create a borrowed CStr which
