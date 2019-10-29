@@ -1,44 +1,31 @@
-use boxer::CBox;
 use boxer::size::{BoxerSizeU64};
 
 #[no_mangle]
 pub fn boxer_size_u64_create() -> *mut BoxerSizeU64 {
-    CBox::into_raw(BoxerSizeU64::default())
+    BoxerSizeU64::boxer_size_create()
 }
 
 #[no_mangle]
 pub fn boxer_size_u64_drop(_ptr: *mut BoxerSizeU64) {
-    CBox::drop(_ptr)
+    BoxerSizeU64::boxer_size_drop(_ptr);
 }
 
 #[no_mangle]
-pub fn boxer_size_u64_get_width(_size_ptr: *mut BoxerSizeU64) -> u64 {
-    CBox::with_optional_raw(_size_ptr, |option| match option {
-        None => 0,
-        Some(size) => { size.width },
-    } )
+pub fn boxer_size_u64_get_x(_ptr: *mut BoxerSizeU64) -> u64 {
+    BoxerSizeU64::boxer_size_get_width(_ptr)
 }
 
 #[no_mangle]
-pub fn boxer_size_u64_set_width(_size_ptr: *mut BoxerSizeU64, width: u64) {
-    CBox::with_optional_raw(_size_ptr, |option| match option {
-        None => {},
-        Some(size) => { size.width = width },
-    } )
+pub fn boxer_size_u64_set_x(_ptr: *mut BoxerSizeU64, width: u64) {
+    BoxerSizeU64::boxer_size_set_width(_ptr, width);
 }
 
 #[no_mangle]
-pub fn boxer_size_u64_get_height(_size_ptr: *mut BoxerSizeU64) -> u64 {
-    CBox::with_optional_raw(_size_ptr, |option| match option {
-        None => 0,
-        Some(size) => { size.height },
-    } )
+pub fn boxer_size_u64_get_y(_ptr: *mut BoxerSizeU64) -> u64 {
+    BoxerSizeU64::boxer_size_get_height(_ptr)
 }
 
 #[no_mangle]
-pub fn boxer_size_u64_set_height(_size_ptr: *mut BoxerSizeU64, height: u64) {
-    CBox::with_optional_raw(_size_ptr, |option| match option {
-        None => {},
-        Some(size) => { size.height = height },
-    } )
+pub fn boxer_size_u64_set_y(_ptr: *mut BoxerSizeU64, height: u64) {
+    BoxerSizeU64::boxer_size_set_height(_ptr, height);
 }
