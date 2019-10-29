@@ -11,21 +11,21 @@ pub fn boxer_size_u64_drop(_ptr: *mut BoxerSizeU64) {
 }
 
 #[no_mangle]
-pub fn boxer_size_u64_get_x(_ptr: *mut BoxerSizeU64) -> u64 {
+pub fn boxer_size_u64_get_width(_ptr: *mut BoxerSizeU64) -> u64 {
     BoxerSizeU64::boxer_size_get_width(_ptr)
 }
 
 #[no_mangle]
-pub fn boxer_size_u64_set_x(_ptr: *mut BoxerSizeU64, width: u64) {
+pub fn boxer_size_u64_set_width(_ptr: *mut BoxerSizeU64, width: u64) {
     BoxerSizeU64::boxer_size_set_width(_ptr, width);
 }
 
 #[no_mangle]
-pub fn boxer_size_u64_get_y(_ptr: *mut BoxerSizeU64) -> u64 {
+pub fn boxer_size_u64_get_height(_ptr: *mut BoxerSizeU64) -> u64 {
     BoxerSizeU64::boxer_size_get_height(_ptr)
 }
 
 #[no_mangle]
-pub fn boxer_size_u64_set_y(_ptr: *mut BoxerSizeU64, height: u64) {
+pub fn boxer_size_u64_set_height(_ptr: *mut BoxerSizeU64, height: u64) {
     BoxerSizeU64::boxer_size_set_height(_ptr, height);
 }
