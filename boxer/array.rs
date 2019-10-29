@@ -21,6 +21,14 @@ impl<T> BoxerArray<T> {
         array
     }
 
+    /// I create a copy of a given array
+    pub fn from_array(array_buffer: &[T]) -> Self {
+        let mut array = Self::new();
+        let vector = Vec::from(array_buffer);
+        array.set_vector(vector);
+        array
+    }
+
     /// Mutate me to hold a given vector
     pub fn set_vector(&mut self, vector: Vec<T>) {
         // first free existing char buffer
