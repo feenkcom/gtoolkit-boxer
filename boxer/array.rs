@@ -22,11 +22,8 @@ impl<T> BoxerArray<T> {
     }
 
     /// I create a copy of a given array
-    pub fn from_array(array_buffer: &[T]) -> Self {
-        let mut array = Self::new();
-        let vector = Vec::from(array_buffer);
-        array.set_vector(vector);
-        array
+    pub fn from_array(array_buffer: &[T]) -> Self where T: Clone {
+        Self::from_vector(Vec::<T>::from(array_buffer))
     }
 
     /// Mutate me to hold a given vector
@@ -39,6 +36,12 @@ impl<T> BoxerArray<T> {
         self.length = data.len();
         self.capacity = data.capacity();
         self.data = Self::vec_to_buffer(data)
+    }
+
+    /// Mutate me to hold a given vector
+    pub fn set_array(&mut self, array_buffer: &[T]) where T: Clone {
+        let vector = Vec::<T>::from(array_buffer);
+        self.set_vector(vector);
     }
 }
 
