@@ -19,6 +19,7 @@ impl CBox {
 
     /// This is dangerous! Rust takes the control over the memory back
     fn from_optional_raw<T>(pointer: *mut T) -> Option<Box<T>> {
+        assert_eq!(std::mem::size_of::<*mut T>(), std::mem::size_of::<*mut std::ffi::c_void>(), "The pointer must be compatible with void*");
         match Self::as_option(pointer) {
             None => None,
             Some(_not_null_pointer) => unsafe { Some(Box::from_raw(_not_null_pointer)) },
@@ -35,6 +36,7 @@ impl CBox {
 
 impl CBox {
     pub fn into_raw<T> (object: T) -> *mut T {
+        assert_eq!(std::mem::size_of::<*mut T>(), std::mem::size_of::<*mut std::ffi::c_void>(), "The pointer must be compatible with void*");
         Box::into_raw(Box::new(object))
     }
 
@@ -42,10 +44,12 @@ impl CBox {
     /// This is dangerous! Rust takes the control over the memory back
     pub unsafe fn from_raw<T>(pointer: *mut T) -> Box<T> {
         assert_eq!(pointer.is_null(), false, "CBox::from_raw(): Pointer must not be null!");
+        assert_eq!(std::mem::size_of::<*mut T>(), std::mem::size_of::<*mut std::ffi::c_void>(), "The pointer must be compatible with void*");
         Box::from_raw(pointer)
     }
 
     pub fn drop<T>(pointer: *mut T) {
+        assert_eq!(std::mem::size_of::<*mut T>(), std::mem::size_of::<*mut std::ffi::c_void>(), "The pointer must be compatible with void*");
         if pointer.is_null() {
             return;
         }
