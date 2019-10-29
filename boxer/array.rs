@@ -7,14 +7,30 @@ pub struct BoxerArray<T> {
 }
 
 impl<T> BoxerArray<T> {
+    pub fn new() -> Self {
+         BoxerArray {
+            length: 0,
+            capacity: 0,
+            data: std::ptr::null_mut()
+        }
+    }
+
     pub fn from_vector(vector: Vec<T>) -> Self {
+        let mut array = Self::new();
+        array.set_vector(vector);
+        array
+    }
+
+    /// Mutate me to hold a given vector
+    pub fn set_vector(&mut self, vector: Vec<T>) {
+        // first free existing char buffer
+        Self::free_buffer(self.data, self.length, self.capacity);
         let mut data = vector;
         data.shrink_to_fit();
-        BoxerArray {
-            length: data.len(),
-            capacity: data.capacity(),
-            data: Self::vec_to_buffer(data)
-        }
+
+        self.length = data.len();
+        self.capacity = data.capacity();
+        self.data = Self::vec_to_buffer(data)
     }
 }
 
@@ -26,6 +42,7 @@ impl<T> BoxerArray<T> {
     }
 
     fn free_buffer(_ptr_data: *mut T, _length: usize, _capacity: usize) {
+        if _ptr_data.is_null() { return }
         drop(unsafe { Vec::from_raw_parts(_ptr_data, _length, _capacity) });
     }
 }
