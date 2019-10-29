@@ -13,6 +13,10 @@ impl<T> BoxerPoint<T> where T: From<u8> + Default + Copy {
         self.y = 0u8.into();
     }
 
+    pub fn new(x: T, y: T) -> Self {
+        BoxerPoint::<T> { x, y }
+    }
+
     pub fn boxer_point_create() -> *mut BoxerPoint<T>{
         CBox::into_raw(BoxerPoint::<T>::default())
     }
