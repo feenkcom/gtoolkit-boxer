@@ -9,6 +9,18 @@ GtBoxerString class >> fromString: aString [
 	^ self new string: aString
 ]
 
+{ #category : #'instance creation' }
+GtBoxerString class >> getStringFrom: aBlock [
+	<return: #String>
+	| aBoxerString |
+
+	aBoxerString := self new.
+	^ [
+		aBlock value: aBoxerString.
+		aBoxerString string ]
+		ensure: [ aBoxerString release ]
+]
+
 { #category : #'private - ffi' }
 GtBoxerString class >> primCreate [
 	^ self ffiCall: #(void* boxer_string_create())

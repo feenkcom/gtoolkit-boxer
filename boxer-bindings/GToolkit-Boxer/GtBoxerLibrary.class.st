@@ -31,7 +31,7 @@ GtBoxerLibrary >> detectLibrary: aFileName [
 
 { #category : #'accessing platform' }
 GtBoxerLibrary >> hasModule [
-	"Return if there is a loadable and working Glutin library installed, false otherwise"
+	"Return if there is a loadable and working Boxer library installed, false otherwise"
 	<return: #Boolean>
 	| aResult |
 
