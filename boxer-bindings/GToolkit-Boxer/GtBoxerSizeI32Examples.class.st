@@ -1,17 +1,17 @@
 Class {
-	#name : #GtBoxerSizeF64Examples,
+	#name : #GtBoxerSizeI32Examples,
 	#superclass : #Object,
 	#category : #'GToolkit-Boxer-Examples'
 }
 
 { #category : #accessing }
-GtBoxerSizeF64Examples >> default [
+GtBoxerSizeI32Examples >> default [
 	<gtExample>
 	| aSize |
 	
-	aSize := GtBoxerSizeF64 new.
-	self assert: aSize width isFloat.
-	self assert: aSize height isFloat.
+	aSize := GtBoxerSizeI32 new.
+	self assert: aSize width isInteger.
+	self assert: aSize height isInteger.
 	self assert: aSize width isZero.
 	self assert: aSize height isZero.
 	
@@ -19,7 +19,7 @@ GtBoxerSizeF64Examples >> default [
 ]
 
 { #category : #'examples - null ptr' }
-GtBoxerSizeF64Examples >> getHeightFromReleased [
+GtBoxerSizeI32Examples >> getHeightFromReleased [
 	<gtExample>
 	| aSize |
 	
@@ -30,7 +30,7 @@ GtBoxerSizeF64Examples >> getHeightFromReleased [
 ]
 
 { #category : #'examples - null ptr' }
-GtBoxerSizeF64Examples >> getWidthFromReleased [
+GtBoxerSizeI32Examples >> getWidthFromReleased [
 	<gtExample>
 	| aSize |
 	
@@ -41,7 +41,7 @@ GtBoxerSizeF64Examples >> getWidthFromReleased [
 ]
 
 { #category : #'examples - null ptr' }
-GtBoxerSizeF64Examples >> release [
+GtBoxerSizeI32Examples >> release [
 	<gtExample>
 	| aSize |
 	
@@ -54,7 +54,7 @@ GtBoxerSizeF64Examples >> release [
 ]
 
 { #category : #'examples - null ptr' }
-GtBoxerSizeF64Examples >> releaseTwice [
+GtBoxerSizeI32Examples >> releaseTwice [
 	<gtExample>
 	| aSize |
 	
@@ -66,28 +66,28 @@ GtBoxerSizeF64Examples >> releaseTwice [
 ]
 
 { #category : #accessing }
-GtBoxerSizeF64Examples >> withHeight200 [
+GtBoxerSizeI32Examples >> withHeight200 [
 	<gtExample>
 	| aSize |
 	
 	aSize := self default.
-	aSize height: 200.0.
+	aSize height: 200.
 	
-	self assert: aSize height equals: 200.0.
+	self assert: aSize height equals: 200.
 	self assert: aSize width isZero.
-	
+
 	^ aSize
 ]
 
 { #category : #accessing }
-GtBoxerSizeF64Examples >> withWidth200 [
+GtBoxerSizeI32Examples >> withWidth200 [
 	<gtExample>
 	| aSize |
 	
 	aSize := self default.
-	aSize width: 200.0.
+	aSize width: 200.
 	
-	self assert: aSize width equals: 200.0.
+	self assert: aSize width equals: 200.
 	self assert: aSize height isZero.
 	
 	^ aSize

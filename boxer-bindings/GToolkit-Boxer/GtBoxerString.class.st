@@ -49,6 +49,13 @@ GtBoxerString >> printOn: aStream [
 ]
 
 { #category : #accessing }
+GtBoxerString >> size [
+	<return: #Number>
+
+	^ self string size
+]
+
+{ #category : #accessing }
 GtBoxerString >> string [
 	"Return UTF-8 decoded string"
 	<return: #String>
