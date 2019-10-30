@@ -1,6 +1,11 @@
 use boxer::array::BoxerArrayU8;
 
 #[no_mangle]
+pub fn boxer_array_u8_create() -> *mut BoxerArrayU8 {
+    BoxerArrayU8::boxer_array_create()
+}
+
+#[no_mangle]
 pub fn boxer_array_u8_create_with(element: u8, amount: usize) -> *mut BoxerArrayU8 {
     BoxerArrayU8::boxer_array_create_with(element, amount)
 }
