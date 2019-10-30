@@ -1,3 +1,5 @@
+use crate::CBox;
+
 #[derive(Debug)]
 #[repr(C)]
 pub struct BoxerArray<T> {
@@ -43,6 +45,10 @@ impl<T> BoxerArray<T> {
         let vector = Vec::<T>::from(array_buffer);
         self.set_vector(vector);
     }
+
+    pub fn to_slice(&self) -> &mut [T] {
+        unsafe { std::slice::from_raw_parts_mut(self.data, self.length) }
+    }
 }
 
 impl<T> BoxerArray<T> {
@@ -72,6 +78,43 @@ impl<T> Drop for BoxerArray<T> {
         self.capacity = 0;
     }
 }
+
+impl<T> BoxerArray<T> where T: From<u8> + Default + Copy {
+    pub fn boxer_array_create() -> *mut BoxerArray<T>{
+        CBox::into_raw(BoxerArray::<T>::default())
+    }
+
+    pub fn boxer_array_create_with(element: T, amount: usize) -> *mut BoxerArray<T>{
+        CBox::into_raw(BoxerArray::<T>::from_vector(vec![element; amount]))
+    }
+
+    pub fn boxer_array_drop(_ptr: *mut BoxerArray<T>)  {
+        CBox::drop(_ptr)
+    }
+
+    pub fn boxer_array_get_length(_ptr: *mut BoxerArray<T>) -> usize {
+        CBox::with_optional_raw(_ptr, |option| match option {
+            None => 0,
+            Some(array) => { array.length },
+        } )
+    }
+
+    pub fn boxer_array_get_capacity(_ptr: *mut BoxerArray<T>) -> usize {
+        CBox::with_optional_raw(_ptr, |option| match option {
+            None => 0,
+            Some(array) => { array.capacity },
+        } )
+    }
+
+    pub fn boxer_array_get_data(_ptr: *mut BoxerArray<T>) -> *mut T {
+        CBox::with_optional_raw(_ptr, |option| match option {
+            None => std::ptr::null_mut(),
+            Some(array) => { array.data },
+        } )
+    }
+}
+
+pub type BoxerArrayU8 = BoxerArray<u8>;
 
 #[test]
 fn default_array_u8() {
