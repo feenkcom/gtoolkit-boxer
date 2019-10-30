@@ -21,48 +21,48 @@ GtBoxerSizeU64Examples >> default [
 { #category : #'examples - null ptr' }
 GtBoxerSizeU64Examples >> getHeightFromReleased [
 	<gtExample>
-	| aPoint |
+	| aSize |
 	
-	aPoint := self release.
-	self assert: aPoint height isZero.
+	aSize := self release.
+	self assert: aSize height isZero.
 	
-	^ aPoint
+	^ aSize
 ]
 
 { #category : #'examples - null ptr' }
 GtBoxerSizeU64Examples >> getWidthFromReleased [
 	<gtExample>
-	| aPoint |
+	| aSize |
 	
-	aPoint := self release.
-	self assert: aPoint width isZero.
+	aSize := self release.
+	self assert: aSize width isZero.
 	
-	^ aPoint
+	^ aSize
 ]
 
 { #category : #'examples - null ptr' }
 GtBoxerSizeU64Examples >> release [
 	<gtExample>
-	| aPoint |
+	| aSize |
 	
-	aPoint := self default.
-	aPoint release.
+	aSize := self default.
+	aSize release.
 	
-	self assert: aPoint isNull.
+	self assert: aSize isNull.
 	
-	^ aPoint
+	^ aSize
 ]
 
 { #category : #'examples - null ptr' }
 GtBoxerSizeU64Examples >> releaseTwice [
 	<gtExample>
-	| aPoint |
+	| aSize |
 	
-	aPoint := self release.
-	aPoint release.
-	self assert: aPoint isNull.
+	aSize := self release.
+	aSize release.
+	self assert: aSize isNull.
 
-	^ aPoint
+	^ aSize
 ]
 
 { #category : #accessing }
