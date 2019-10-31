@@ -38,7 +38,7 @@ impl <T> ValueBox<T> {
     }
 }
 
-trait ValueBoxPointer<T> {
+pub trait ValueBoxPointer<T> {
     fn with<Block, Return>(&self, block: Block) -> Return where Block : FnOnce(&mut Box<T>) -> Return;
     fn with_reference<Block, Return>(&self, block: Block) -> Return where Block : FnOnce(&mut T) -> Return;
     fn with_value<Block, Return>(&self, block: Block) -> Return where
@@ -122,7 +122,7 @@ impl<T> Drop for ReferenceBox<T> {
     }
 }
 
-trait ReferenceBoxPointer<T> {
+pub trait ReferenceBoxPointer<T> {
     fn with<Block, Return>(&self, block: Block) -> Return where Block : FnOnce(&mut T) -> Return;
     fn with_value<Block, Return>(&self, block: Block) -> Return where
             Block: FnOnce(T) -> Return,
@@ -134,7 +134,7 @@ impl<T> ReferenceBoxPointer<T> for *mut ReferenceBox<T> {
     fn with<Block, Return>(&self, block: Block) -> Return where Block: FnOnce(&mut T) -> Return {
         assert_eq!(self.is_null(), false, "Pointer must not be null!");
 
-        let mut reference_box = unsafe { from_raw(*self) };
+        let reference_box = unsafe { from_raw(*self) };
         let referenced_object: &mut T = unsafe { std::mem::transmute(reference_box.referenced) };
         let result: Return = block(referenced_object);
 
@@ -194,35 +194,40 @@ fn value_box_with_reference() {
     assert_eq!(new_value, 2);
 }
 
-
+#[cfg(test)]
 #[derive(Default, Debug)]
 struct TestChild {
     value: i32
 }
 
+#[cfg(test)]
 #[derive(Default, Debug)]
 struct TestParent {
     child: TestChild
 }
 
+#[cfg(test)]
 impl TestParent {
     fn child(&mut self) -> &mut TestChild {
         &mut self.child
     }
 }
 
+#[cfg(test)]
 impl Drop for TestParent {
     fn drop(&mut self) {
         println!("destroyed {:?}", self);
     }
 }
 
+#[cfg(test)]
 impl Drop for TestChild {
     fn drop(&mut self) {
         println!("destroyed {:?}", self);
     }
 }
 
+#[cfg(test)]
 fn get_child_pointer(parent: &mut TestParent) -> *mut ReferenceBox<TestChild> {
     let reference = ReferenceBox::new(parent.child());
     reference.into_raw()
