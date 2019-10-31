@@ -5,6 +5,7 @@ pub mod point;
 pub mod size;
 pub mod number;
 pub mod string;
+pub mod boxes;
 
 pub struct CBox {}
 
