@@ -1,4 +1,5 @@
 use std::ops::DerefMut;
+use std::borrow::BorrowMut;
 
 /// Tell Rust to take back the control over memory
 /// This is dangerous! Rust takes the control over the memory back
@@ -11,18 +12,6 @@ unsafe fn from_raw<T>(pointer: *mut T) -> Box<T> {
 fn into_raw<T> (_box: Box<T>) -> *mut T {
     assert_eq!(std::mem::size_of::<*mut T>(), std::mem::size_of::<*mut std::ffi::c_void>(), "The pointer must be compatible with void*");
     Box::into_raw(_box)
-}
-
-trait AbstractBoxPointer<T> {
-    fn with<Block, Return>(&self, block: Block) -> Return where Block : FnOnce(&mut Box<T>) -> Return;
-    fn with_reference<Block, Return>(&self, block: Block) -> Return where Block : FnOnce(&mut T) -> Return;
-    fn with_value<Block, Return>(&self, block: Block) -> Return where
-            Block: FnOnce(T) -> Return,
-            T: Copy;
-}
-
-trait AbstractBox<T> {
-    fn into_raw(self) -> *mut Self;
 }
 
 #[derive(Debug)]
@@ -41,15 +30,21 @@ impl <T> ValueBox<T> {
             boxed: _box
         }
     }
+
+    fn into_raw(self) -> *mut Self {
+        into_raw(Box::new(self))
+    }
 }
 
-#[derive(Debug)]
-#[repr(C)]
-pub struct ReferenceBox<'boxed, T> {
-    referenced: &'boxed T
+trait ValueBoxPointer<T> {
+    fn with<Block, Return>(&self, block: Block) -> Return where Block : FnOnce(&mut Box<T>) -> Return;
+    fn with_reference<Block, Return>(&self, block: Block) -> Return where Block : FnOnce(&mut T) -> Return;
+    fn with_value<Block, Return>(&self, block: Block) -> Return where
+            Block: FnOnce(T) -> Return,
+            T: Copy;
 }
 
-impl<T> AbstractBoxPointer<T> for *mut ValueBox<T> {
+impl<T> ValueBoxPointer<T> for *mut ValueBox<T> {
     // self is `&*mut`
     fn with<Block, Return>(&self, block: Block) -> Return where Block: FnOnce(&mut Box<T>) -> Return {
         assert_eq!(self.is_null(), false, "Pointer must not be null!");
@@ -94,11 +89,65 @@ impl<T> AbstractBoxPointer<T> for *mut ValueBox<T> {
     }
 }
 
-impl<T> AbstractBox<T> for ValueBox<T> {
+
+#[derive(Debug)]
+#[repr(C)]
+pub struct ReferenceBox<'boxed, T> {
+    referenced: &'boxed mut T
+}
+
+impl <'boxed, T> ReferenceBox<'boxed, T> {
+    fn new (_reference: &'boxed mut T) -> Self {
+        ReferenceBox {
+            referenced: _reference
+        }
+    }
+
     fn into_raw(self) -> *mut Self {
         into_raw(Box::new(self))
     }
 }
+
+trait ReferenceBoxPointer<T> {
+    fn with<Block, Return>(&self, block: Block) -> Return where Block : FnOnce(&mut T) -> Return;
+    fn with_value<Block, Return>(&self, block: Block) -> Return where
+            Block: FnOnce(T) -> Return,
+            T: Copy;
+}
+
+impl<T> ReferenceBoxPointer<T> for *mut ReferenceBox<'_, T> {
+    fn with<Block, Return>(&self, block: Block) -> Return where Block: FnOnce(&mut T) -> Return {
+        assert_eq!(self.is_null(), false, "Pointer must not be null!");
+
+        let mut reference_box = unsafe { from_raw(*self) };
+        let referenced_object = reference_box.referenced.deref_mut();
+        let result: Return = block(referenced_object);
+
+        referenced_object.borrow_mut();
+
+        let new_pointer = into_raw(reference_box);
+        assert_eq!(new_pointer, *self, "The pointer must not change");
+
+        result
+    }
+
+    fn with_value<Block, Return>(&self, block: Block) -> Return where
+            Block: FnOnce(T) -> Return,
+            T: Copy {
+
+        assert_eq!(self.is_null(), false, "Pointer must not be null!");
+
+        let reference_box = unsafe { from_raw(*self) };
+        let referenced_object = *reference_box.referenced;
+        let result: Return = block(referenced_object);
+
+        let new_pointer = into_raw(reference_box);
+        assert_eq!(new_pointer, *self, "The pointer must not change");
+
+        result
+    }
+}
+
 
 #[test]
 fn value_box_with_value() {
