@@ -1,5 +1,4 @@
 use std::ops::DerefMut;
-use std::borrow::BorrowMut;
 
 /// Tell Rust to take back the control over memory
 /// This is dangerous! Rust takes the control over the memory back
@@ -134,11 +133,12 @@ impl<T> ReferenceBoxPointer<T> for *mut ReferenceBox<T> {
     fn with<Block, Return>(&self, block: Block) -> Return where Block: FnOnce(&mut T) -> Return {
         assert_eq!(self.is_null(), false, "Pointer must not be null!");
 
-        let reference_box = unsafe { from_raw(*self) };
+        let mut reference_box = unsafe { from_raw(*self) };
         let referenced_object: &mut T = unsafe { std::mem::transmute(reference_box.referenced) };
         let result: Return = block(referenced_object);
 
-        referenced_object.borrow_mut();
+        let referenced_object_pointer: *mut T = unsafe { std::mem::transmute(referenced_object) };
+        reference_box.referenced = referenced_object_pointer;
 
         let new_pointer = into_raw(reference_box);
         assert_eq!(new_pointer, *self, "The pointer must not change");
