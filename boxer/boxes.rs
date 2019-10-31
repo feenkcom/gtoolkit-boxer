@@ -17,7 +17,8 @@ fn into_raw<T> (_box: Box<T>) -> *mut T {
 #[derive(Debug)]
 #[repr(C)]
 pub struct ValueBox<T> {
-    boxed: Box<T>
+    boxed: Box<T>,
+    phantom: std::marker::PhantomData<T>,
 }
 
 impl <T> ValueBox<T> {
@@ -27,7 +28,8 @@ impl <T> ValueBox<T> {
 
     pub fn from_box (_box: Box<T>) -> Self {
         ValueBox {
-            boxed: _box
+            boxed: _box,
+            phantom: std::marker::PhantomData
         }
     }
 
@@ -42,6 +44,7 @@ trait ValueBoxPointer<T> {
     fn with_value<Block, Return>(&self, block: Block) -> Return where
             Block: FnOnce(T) -> Return,
             T: Copy;
+    fn drop(self);
 }
 
 impl<T> ValueBoxPointer<T> for *mut ValueBox<T> {
@@ -87,8 +90,12 @@ impl<T> ValueBoxPointer<T> for *mut ValueBox<T> {
 
         result
     }
-}
 
+    fn drop(self) {
+        let value_box = unsafe { from_raw(self) };
+        std::mem::drop(value_box)
+    }
+}
 
 #[derive(Debug)]
 #[repr(C)]
@@ -113,6 +120,7 @@ trait ReferenceBoxPointer<T> {
     fn with_value<Block, Return>(&self, block: Block) -> Return where
             Block: FnOnce(T) -> Return,
             T: Copy;
+    fn drop(self);
 }
 
 impl<T> ReferenceBoxPointer<T> for *mut ReferenceBox<'_, T> {
@@ -146,8 +154,12 @@ impl<T> ReferenceBoxPointer<T> for *mut ReferenceBox<'_, T> {
 
         result
     }
-}
 
+    fn drop(self) {
+        let value_box = unsafe { from_raw(self) };
+        std::mem::drop(value_box)
+    }
+}
 
 #[test]
 fn value_box_with_value() {
@@ -173,4 +185,44 @@ fn value_box_with_reference() {
 
     let new_value = _box_ptr.with_value(|value| value );
     assert_eq!(new_value, 2);
+}
+
+
+#[derive(Default, Debug)]
+struct TestChild {
+    value: i32
+}
+
+#[derive(Default, Debug)]
+struct TestParent {
+    child: TestChild
+}
+
+impl TestParent {
+    fn child(&mut self) -> &mut TestChild {
+        &mut self.child
+    }
+}
+
+fn get_child_pointer(parent: &mut TestParent) -> *mut ReferenceBox<TestChild> {
+    let reference = ReferenceBox::new(parent.child());
+    reference.into_raw()
+}
+
+#[test]
+fn reference_box_with_reference() {
+    let mut parent = TestParent::default();
+    parent.child.value = 5;
+
+    let pointer = ReferenceBox::new(parent.child()).into_raw();
+    let value = pointer.with(|child| child.value);
+    assert_eq!(value, 5);
+    pointer.drop();
+
+    parent.child.value = 7;
+
+    let pointer = get_child_pointer(&mut parent);
+    let value = pointer.with(|child| child.value);
+    assert_eq!(value, 7);
+    pointer.drop();
 }
