@@ -99,19 +99,26 @@ impl<T> ValueBoxPointer<T> for *mut ValueBox<T> {
 
 #[derive(Debug)]
 #[repr(C)]
-pub struct ReferenceBox<'boxed, T> {
-    referenced: &'boxed mut T
+pub struct ReferenceBox<T> {
+    referenced: *mut T
 }
 
-impl <'boxed, T> ReferenceBox<'boxed, T> {
-    pub fn new (_reference: &'boxed mut T) -> Self {
+impl <T> ReferenceBox<T> {
+    pub fn new (_reference: &mut T) -> Self {
+        let pointer: *mut T = unsafe { std::mem::transmute(_reference) };
         ReferenceBox {
-            referenced: _reference
+            referenced: pointer,
         }
     }
 
     pub fn into_raw(self) -> *mut Self {
         into_raw(Box::new(self))
+    }
+}
+
+impl<T> Drop for ReferenceBox<T> {
+    fn drop(&mut self) {
+        println!("destroyed ReferenceBox");
     }
 }
 
@@ -123,12 +130,12 @@ trait ReferenceBoxPointer<T> {
     fn drop(self);
 }
 
-impl<T> ReferenceBoxPointer<T> for *mut ReferenceBox<'_, T> {
+impl<T> ReferenceBoxPointer<T> for *mut ReferenceBox<T> {
     fn with<Block, Return>(&self, block: Block) -> Return where Block: FnOnce(&mut T) -> Return {
         assert_eq!(self.is_null(), false, "Pointer must not be null!");
 
         let mut reference_box = unsafe { from_raw(*self) };
-        let referenced_object = reference_box.referenced.deref_mut();
+        let referenced_object: &mut T = unsafe { std::mem::transmute(reference_box.referenced) };
         let result: Return = block(referenced_object);
 
         referenced_object.borrow_mut();
@@ -146,7 +153,7 @@ impl<T> ReferenceBoxPointer<T> for *mut ReferenceBox<'_, T> {
         assert_eq!(self.is_null(), false, "Pointer must not be null!");
 
         let reference_box = unsafe { from_raw(*self) };
-        let referenced_object = *reference_box.referenced;
+        let referenced_object = * &mut unsafe { *reference_box.referenced };
         let result: Return = block(referenced_object);
 
         let new_pointer = into_raw(reference_box);
@@ -201,6 +208,18 @@ struct TestParent {
 impl TestParent {
     fn child(&mut self) -> &mut TestChild {
         &mut self.child
+    }
+}
+
+impl Drop for TestParent {
+    fn drop(&mut self) {
+        println!("destroyed {:?}", self);
+    }
+}
+
+impl Drop for TestChild {
+    fn drop(&mut self) {
+        println!("destroyed {:?}", self);
     }
 }
 
