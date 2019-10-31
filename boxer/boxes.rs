@@ -163,8 +163,8 @@ impl<T> ReferenceBoxPointer<T> for *mut ReferenceBox<T> {
     }
 
     fn drop(self) {
-        let value_box = unsafe { from_raw(self) };
-        std::mem::drop(value_box)
+        let reference_box = unsafe { from_raw(self) };
+        std::mem::drop(reference_box);
     }
 }
 
