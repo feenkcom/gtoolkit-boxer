@@ -21,17 +21,17 @@ pub struct ValueBox<T> {
 }
 
 impl <T> ValueBox<T> {
-    fn new (object: T) -> Self {
+    pub fn new (object: T) -> Self {
         Self::from_box(Box::new(object))
     }
 
-    fn from_box (_box: Box<T>) -> Self {
+    pub fn from_box (_box: Box<T>) -> Self {
         ValueBox {
             boxed: _box
         }
     }
 
-    fn into_raw(self) -> *mut Self {
+    pub fn into_raw(self) -> *mut Self {
         into_raw(Box::new(self))
     }
 }
@@ -97,13 +97,13 @@ pub struct ReferenceBox<'boxed, T> {
 }
 
 impl <'boxed, T> ReferenceBox<'boxed, T> {
-    fn new (_reference: &'boxed mut T) -> Self {
+    pub fn new (_reference: &'boxed mut T) -> Self {
         ReferenceBox {
             referenced: _reference
         }
     }
 
-    fn into_raw(self) -> *mut Self {
+    pub fn into_raw(self) -> *mut Self {
         into_raw(Box::new(self))
     }
 }
