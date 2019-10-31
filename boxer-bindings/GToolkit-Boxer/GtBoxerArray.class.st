@@ -14,6 +14,16 @@ GtBoxerArray class >> primCreateNew: aSize withAll: aValue [
 	^ self subclassResponsibility
 ]
 
+{ #category : #converting }
+GtBoxerArray >> asArray [
+	^ self data asArray
+]
+
+{ #category : #accessing }
+GtBoxerArray >> at: anIndex [
+	^ self data at: anIndex
+]
+
 { #category : #accessing }
 GtBoxerArray >> capacity [
 	<return: #Number>
