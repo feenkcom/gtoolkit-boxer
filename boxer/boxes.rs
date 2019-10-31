@@ -168,85 +168,116 @@ impl<T> ReferenceBoxPointer<T> for *mut ReferenceBox<T> {
     }
 }
 
-#[test]
-fn value_box_with_value() {
-    let _box = ValueBox::new(5);
-
-    let _box_ptr = _box.into_raw();
-    assert_eq!(_box_ptr.is_null(), false);
-
-    let result = _box_ptr.with_value(|value| value * 2 );
-    assert_eq!(_box_ptr.is_null(), false);
-    assert_eq!(result, 10);
-}
-
-#[test]
-fn value_box_with_reference() {
-    let _box = ValueBox::new(5);
-
-    let _box_ptr = _box.into_raw();
-    assert_eq!(_box_ptr.is_null(), false);
-
-    _box_ptr.with_reference(| value| *value = 2 );
-    assert_eq!(_box_ptr.is_null(), false);
-
-    let new_value = _box_ptr.with_value(|value| value );
-    assert_eq!(new_value, 2);
-}
-
 #[cfg(test)]
-#[derive(Default, Debug)]
-struct TestChild {
-    value: i32
-}
+mod test {
+    use crate::boxes::{ValueBox, ValueBoxPointer};
 
-#[cfg(test)]
-#[derive(Default, Debug)]
-struct TestParent {
-    child: TestChild
-}
+    #[test]
+    fn value_box_with_value() {
+        let _box = ValueBox::new(5);
 
-#[cfg(test)]
-impl TestParent {
-    fn child(&mut self) -> &mut TestChild {
-        &mut self.child
+        let _box_ptr = _box.into_raw();
+        assert_eq!(_box_ptr.is_null(), false);
+
+        let result = _box_ptr.with_value(|value| value * 2 );
+        assert_eq!(_box_ptr.is_null(), false);
+        assert_eq!(result, 10);
     }
-}
 
-#[cfg(test)]
-impl Drop for TestParent {
-    fn drop(&mut self) {
-        println!("destroyed {:?}", self);
+    #[test]
+    fn value_box_with_reference() {
+        let _box = ValueBox::new(5);
+
+        let _box_ptr = _box.into_raw();
+        assert_eq!(_box_ptr.is_null(), false);
+
+        _box_ptr.with_reference(| value| *value = 2 );
+        assert_eq!(_box_ptr.is_null(), false);
+
+        let new_value = _box_ptr.with_value(|value| value );
+        assert_eq!(new_value, 2);
     }
-}
 
-#[cfg(test)]
-impl Drop for TestChild {
-    fn drop(&mut self) {
-        println!("destroyed {:?}", self);
+    struct Child<'counter> {
+        value: i32,
+        counter: &'counter mut i32
     }
-}
 
-#[cfg(test)]
-fn get_child_pointer(parent: &mut TestParent) -> *mut ReferenceBox<TestChild> {
-    let reference = ReferenceBox::new(parent.child());
-    reference.into_raw()
-}
+    struct Parent<'counter> {
+        child: Child<'counter>,
+        counter: &'counter mut i32,
+    }
 
-#[test]
-fn reference_box_with_reference() {
-    let mut parent = TestParent::default();
-    parent.child.value = 5;
+    impl<'counter> Drop for Parent<'counter> {
+        fn drop(&mut self) {
+            println!("destroyed Parent");
+            *self.counter += 1;
+        }
+    }
 
-    let pointer = ReferenceBox::new(parent.child()).into_raw();
-    let value = pointer.with(|child| child.value);
-    assert_eq!(value, 5);
-    pointer.drop();
+    impl<'counter> Drop for Child<'counter> {
+        fn drop(&mut self) {
+            println!("destroyed Child");
+            *self.counter += 1;
+        }
+    }
 
-    parent.child.value = 7;
+    fn create_parent<'counter>(parents_drop: &'counter mut i32, children_drop: &'counter mut i32) -> Parent<'counter> {
+        Parent {
+            child: Child {
+                value: 5,
+                counter: children_drop
+            },
+            counter: parents_drop
+        }
+    }
 
-    let pointer = get_child_pointer(&mut parent);
-    let value = pointer.with(|child| child.value);
-    assert_eq!(value, 7);
-    pointer.drop();
+    #[test]
+    fn drop_parent() {
+        let mut parents_drop = 0;
+        let mut children_drop = 0;
+
+        let mut parent = create_parent(&mut parents_drop, &mut children_drop);
+
+        std::mem::drop(parent);
+
+        assert_eq!(parents_drop, 1);
+        assert_eq!(children_drop, 1);
+    }
+
+
+    fn put_parent_in_value_box_without_return(parent: Parent) {
+        put_parent_in_value_box_with_return(parent);
+    }
+
+    fn put_parent_in_value_box_with_return(parent: Parent) -> *mut ValueBox<Parent> {
+        ValueBox::new(parent).into_raw()
+    }
+
+    #[test]
+    fn leak_parent_by_putting_in_value_box_without_drop() {
+        let mut parents_drop = 0;
+        let mut children_drop = 0;
+
+        let mut parent = create_parent(&mut parents_drop, &mut children_drop);
+
+        put_parent_in_value_box_without_return(parent);
+
+        assert_eq!(parents_drop, 0);
+        assert_eq!(children_drop, 0);
+    }
+
+    #[test]
+    fn drop_parent_by_dropping_value_box () {
+        let mut parents_drop = 0;
+        let mut children_drop = 0;
+
+        let mut parent = create_parent(&mut parents_drop, &mut children_drop);
+
+        let parent_ptr = put_parent_in_value_box_with_return(parent);
+        parent_ptr.drop();
+
+        assert_eq!(parents_drop, 1);
+        assert_eq!(children_drop, 1);
+    }
 }
