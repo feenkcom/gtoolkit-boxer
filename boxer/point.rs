@@ -1,4 +1,4 @@
-use super::*;
+use crate::boxes::{ValueBox, ValueBoxPointer};
 
 #[derive(Debug, Copy, Clone, Default)]
 #[repr(C)]
@@ -17,40 +17,40 @@ impl<T> BoxerPoint<T> where T: From<u8> + Default + Copy {
         BoxerPoint::<T> { x, y }
     }
 
-    pub fn boxer_point_create() -> *mut BoxerPoint<T>{
-        CBox::into_raw(BoxerPoint::<T>::default())
+    pub fn boxer_point_create() -> *mut ValueBox<BoxerPoint<T>>{
+        ValueBox::new(BoxerPoint::<T>::default()).into_raw()
     }
 
-    pub fn boxer_point_drop(_ptr: *mut BoxerPoint<T>)  {
-        CBox::drop(_ptr)
+    pub fn boxer_point_drop(_ptr: *mut ValueBox<BoxerPoint<T>>)  {
+        _ptr.drop();
     }
 
-    pub fn boxer_point_get_x(_point_ptr: *mut BoxerPoint<T>) -> T {
-        CBox::with_optional_raw(_point_ptr, |option| match option {
+    pub fn boxer_point_get_x(_maybe_null_ptr: *mut ValueBox<BoxerPoint<T>>) -> T {
+        match _maybe_null_ptr.as_option() {
             None => 0u8.into(),
-            Some(point) => { point.x },
-        } )
+            Some(_ptr) => _ptr.with(|point| point.x)
+        }
     }
 
-    pub fn boxer_point_set_x(_point_ptr: *mut BoxerPoint<T>, x: T) {
-        CBox::with_optional_raw(_point_ptr, |option| match option {
-            None => {},
-            Some(point) => { point.x = x },
-        } )
+    pub fn boxer_point_set_x(_maybe_null_ptr: *mut ValueBox<BoxerPoint<T>>, x: T) {
+        match _maybe_null_ptr.as_option() {
+            None => { },
+            Some(_ptr) => _ptr.with(|point| point.x = x)
+        }
     }
 
-    pub fn boxer_point_get_y(_point_ptr: *mut BoxerPoint<T>) -> T {
-        CBox::with_optional_raw(_point_ptr, |option| match option {
+    pub fn boxer_point_get_y(_maybe_null_ptr: *mut ValueBox<BoxerPoint<T>>) -> T {
+        match _maybe_null_ptr.as_option() {
             None => 0u8.into(),
-            Some(point) => { point.y },
-        } )
+            Some(_ptr) => _ptr.with(|point| point.y)
+        }
     }
 
-    pub fn boxer_point_set_y(_point_ptr: *mut BoxerPoint<T>, y: T) {
-        CBox::with_optional_raw(_point_ptr, |option| match option {
-            None => {},
-            Some(point) => { point.y = y },
-        } )
+    pub fn boxer_point_set_y(_maybe_null_ptr: *mut ValueBox<BoxerPoint<T>>, y: T) {
+        match _maybe_null_ptr.as_option() {
+            None => { },
+            Some(_ptr) => _ptr.with(|point| point.y = y)
+        }
     }
 }
 

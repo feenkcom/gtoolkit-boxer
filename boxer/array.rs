@@ -1,4 +1,5 @@
-use crate::CBox;
+use crate::point::BoxerPointF32;
+use crate::boxes::{ValueBox, ValueBoxPointer};
 
 #[derive(Debug)]
 #[repr(C)]
@@ -79,42 +80,43 @@ impl<T> Drop for BoxerArray<T> {
     }
 }
 
-impl<T> BoxerArray<T> where T: From<u8> + Default + Copy {
-    pub fn boxer_array_create() -> *mut BoxerArray<T>{
-        CBox::into_raw(BoxerArray::<T>::default())
+impl<T> BoxerArray<T> where T: Default + Copy {
+    pub fn boxer_array_create() -> *mut ValueBox<BoxerArray<T>>{
+        ValueBox::new(BoxerArray::<T>::default()).into_raw()
     }
 
-    pub fn boxer_array_create_with(element: T, amount: usize) -> *mut BoxerArray<T>{
-        CBox::into_raw(BoxerArray::<T>::from_vector(vec![element; amount]))
+    pub fn boxer_array_create_with(element: T, amount: usize) -> *mut ValueBox<BoxerArray<T>>{
+        ValueBox::new(BoxerArray::<T>::from_vector(vec![element; amount])).into_raw()
     }
 
-    pub fn boxer_array_drop(_ptr: *mut BoxerArray<T>)  {
-        CBox::drop(_ptr)
+    pub fn boxer_array_drop(_ptr: *mut ValueBox<BoxerArray<T>>) {
+        _ptr.drop();
     }
 
-    pub fn boxer_array_get_length(_ptr: *mut BoxerArray<T>) -> usize {
-        CBox::with_optional_raw(_ptr, |option| match option {
+    pub fn boxer_array_get_length(_maybe_null_ptr: *mut ValueBox<BoxerArray<T>>) -> usize {
+        match _maybe_null_ptr.as_option() {
             None => 0,
-            Some(array) => { array.length },
-        } )
+            Some(_ptr) => _ptr.with(|array| array.length)
+        }
     }
 
-    pub fn boxer_array_get_capacity(_ptr: *mut BoxerArray<T>) -> usize {
-        CBox::with_optional_raw(_ptr, |option| match option {
+    pub fn boxer_array_get_capacity(_maybe_null_ptr: *mut ValueBox<BoxerArray<T>>) -> usize {
+        match _maybe_null_ptr.as_option() {
             None => 0,
-            Some(array) => { array.capacity },
-        } )
+            Some(_ptr) => _ptr.with(|array| array.capacity)
+        }
     }
 
-    pub fn boxer_array_get_data(_ptr: *mut BoxerArray<T>) -> *mut T {
-        CBox::with_optional_raw(_ptr, |option| match option {
+    pub fn boxer_array_get_data(_maybe_null_ptr: *mut ValueBox<BoxerArray<T>>) -> *mut T {
+        match _maybe_null_ptr.as_option() {
             None => std::ptr::null_mut(),
-            Some(array) => { array.data },
-        } )
+            Some(_ptr) => _ptr.with(|array| array.data)
+        }
     }
 }
 
 pub type BoxerArrayU8 = BoxerArray<u8>;
+pub type BoxerArrayPointF32 = BoxerArray<BoxerPointF32>;
 
 #[test]
 fn default_array_u8() {
