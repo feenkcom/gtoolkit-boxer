@@ -22,12 +22,7 @@ GtBoxerArrayU8 class >> primRelease: aHandle [
 ]
 
 { #category : #converting }
-GtBoxerArrayU8 >> asByteArray [
-	^ self data asByteArray
-]
-
-{ #category : #converting }
-GtBoxerArrayU8 >> asForm [
+GtBoxerArrayU8 >> asBitmap [
 	| aByteArray alphaIndex blueIndex greenIndex redIndex red green blue alpha aBitmap |
 	aByteArray := self asByteArray.
 	
@@ -51,7 +46,12 @@ GtBoxerArrayU8 >> asForm [
 	aBitmap := Bitmap new: aByteArray size // 4.
 	aBitmap copyFromByteArray: aByteArray.
 
-	^ Form extent: 1@1 depth: 32 bits: aBitmap
+	^ aBitmap
+]
+
+{ #category : #converting }
+GtBoxerArrayU8 >> asByteArray [
+	^ self data asByteArray
 ]
 
 { #category : #'private - ffi' }
