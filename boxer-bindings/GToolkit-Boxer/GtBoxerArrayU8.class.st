@@ -21,6 +21,39 @@ GtBoxerArrayU8 class >> primRelease: aHandle [
 	self ffiCall: #(void boxer_array_u8_drop(void* aHandle))
 ]
 
+{ #category : #converting }
+GtBoxerArrayU8 >> asByteArray [
+	^ self data asByteArray
+]
+
+{ #category : #converting }
+GtBoxerArrayU8 >> asForm [
+	| aByteArray alphaIndex blueIndex greenIndex redIndex red green blue alpha aBitmap |
+	aByteArray := self asByteArray.
+	
+	"We should convert RGBA to ARGB"	
+	1 to: aByteArray size // 4 do: [ :index |
+		alphaIndex := 4 * index.
+		blueIndex := alphaIndex - 1.
+		greenIndex := blueIndex - 1.
+		redIndex := greenIndex - 1.
+		
+		red := aByteArray at: redIndex.
+		green := aByteArray at: greenIndex.
+		blue := aByteArray at: blueIndex.
+		alpha := aByteArray at: alphaIndex.
+		
+		aByteArray at: redIndex put: alpha.
+		aByteArray at: greenIndex put: red.
+		aByteArray at: blueIndex put: green.
+		aByteArray at: alphaIndex put: blue ].
+
+	aBitmap := Bitmap new: aByteArray size // 4.
+	aBitmap copyFromByteArray: aByteArray.
+
+	^ Form extent: 1@1 depth: 32 bits: aBitmap
+]
+
 { #category : #'private - ffi' }
 GtBoxerArrayU8 >> externalType [
 	^ FFIUInt8 externalType
