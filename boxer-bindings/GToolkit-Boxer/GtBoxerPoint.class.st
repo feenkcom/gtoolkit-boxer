@@ -4,6 +4,13 @@ Class {
 	#category : #'GToolkit-Boxer-Core'
 }
 
+{ #category : #'instance creation' }
+GtBoxerPoint class >> x: aX y: aY [
+	^ self new
+		x: aX;
+		y: aY
+]
+
 { #category : #converting }
 GtBoxerPoint >> asPoint [
 	^ self x @ self y

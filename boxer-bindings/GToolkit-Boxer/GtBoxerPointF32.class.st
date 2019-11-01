@@ -4,6 +4,11 @@ Class {
 	#category : #'GToolkit-Boxer-Core'
 }
 
+{ #category : #converting }
+GtBoxerPointF32 class >> asExternalTypeOn: generator [
+	^ FFIExternalObjectType objectClass: self
+]
+
 { #category : #'private - ffi' }
 GtBoxerPointF32 class >> primCreate [
 	^ self ffiCall: #(void* boxer_point_f32_create())
