@@ -19,6 +19,11 @@ GtBoxerPointF32Structure class >> fieldsDesc [
  	)
 ]
 
+{ #category : #converting }
+GtBoxerPointF32Structure >> asPoint [
+	^ self x @ self y
+]
+
 { #category : #'accessing structure variables' }
 GtBoxerPointF32Structure >> x [
 	"This method was automatically generated"

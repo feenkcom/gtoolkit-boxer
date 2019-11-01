@@ -21,6 +21,13 @@ GtBoxerArrayPointF32 class >> primRelease: aHandle [
 	self ffiCall: #(void boxer_array_point_f32_drop(void* aHandle))
 ]
 
+{ #category : #converting }
+GtBoxerArrayPointF32 >> asPoints [
+	<return: #Collection of: #Point>
+
+	^ self data collect: [ :eachPointF32 | eachPointF32 asPoint ] as: Array
+]
+
 { #category : #'private - ffi' }
 GtBoxerArrayPointF32 >> externalType [
 	^ GtBoxerPointF32Structure
