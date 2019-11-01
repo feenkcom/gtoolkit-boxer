@@ -38,6 +38,7 @@ impl <T> ValueBox<T> {
 }
 
 pub trait ValueBoxPointer<T> {
+    fn as_option(self) -> Option<*mut ValueBox<T>>;
     fn with<Block, Return>(&self, block: Block) -> Return where Block : FnOnce(&mut Box<T>) -> Return;
     fn with_reference<Block, Return>(&self, block: Block) -> Return where Block : FnOnce(&mut T) -> Return;
     fn with_value<Block, Return>(&self, block: Block) -> Return where
@@ -47,6 +48,15 @@ pub trait ValueBoxPointer<T> {
 }
 
 impl<T> ValueBoxPointer<T> for *mut ValueBox<T> {
+    fn as_option(self) -> Option<*mut ValueBox<T>> {
+        if self.is_null() {
+            None
+        }
+        else {
+           Some(self)
+        }
+    }
+
     // self is `&*mut`
     fn with<Block, Return>(&self, block: Block) -> Return where Block: FnOnce(&mut Box<T>) -> Return {
         assert_eq!(self.is_null(), false, "Pointer must not be null!");
