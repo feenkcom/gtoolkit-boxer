@@ -39,6 +39,7 @@ impl <T> ValueBox<T> {
 
 pub trait ValueBoxPointer<T> {
     fn as_option(self) -> Option<*mut ValueBox<T>>;
+    fn as_box(self) -> Option<Box<T>>;
     fn with<Block, Return>(&self, block: Block) -> Return where Block : FnOnce(&mut Box<T>) -> Return;
     fn with_reference<Block, Return>(&self, block: Block) -> Return where Block : FnOnce(&mut T) -> Return;
     fn with_value<Block, Return>(&self, block: Block) -> Return where
@@ -54,6 +55,16 @@ impl<T> ValueBoxPointer<T> for *mut ValueBox<T> {
         }
         else {
            Some(self)
+        }
+    }
+
+    fn as_box(self) -> Option<Box<T>> {
+        match self.as_option() {
+            None => { None },
+            Some(value_box_ptr) => {
+                let value_box = unsafe { from_raw(value_box_ptr) };
+                Some(value_box.boxed)
+            }
         }
     }
 
