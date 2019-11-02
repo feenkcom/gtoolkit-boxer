@@ -42,6 +42,7 @@ pub trait ValueBoxPointer<T> {
     fn as_box(self) -> Option<Box<T>>;
     fn with<Block, Return>(&self, block: Block) -> Return where Block : FnOnce(&mut Box<T>) -> Return;
     fn with_not_null<Block>(&self, block: Block) where Block : FnOnce(&mut Box<T>);
+    fn with_not_null_return<Block, Return>(&self, default: Return, block: Block) -> Return where Block : FnOnce(&mut Box<T>) -> Return;
     fn with_reference<Block, Return>(&self, block: Block) -> Return where Block : FnOnce(&mut T) -> Return;
     fn with_value<Block, Return>(&self, block: Block) -> Return where
             Block: FnOnce(T) -> Return,
@@ -87,12 +88,14 @@ impl<T> ValueBoxPointer<T> for *mut ValueBox<T> {
         if self.is_null() {
             return;
         }
+        self.with(|boxed_object| { block(boxed_object); } );
+    }
 
-        let mut value_box = unsafe { from_raw(*self) };
-        let boxed_object = &mut value_box.boxed;
-        block(boxed_object);
-        let new_pointer = into_raw(value_box);
-        assert_eq!(new_pointer, *self, "The pointer must not change");
+    fn with_not_null_return<Block, Return>(&self, default: Return, block: Block) -> Return where Block: FnOnce(&mut Box<T>) -> Return {
+        if self.is_null() {
+            return default;
+        }
+        self.with(block)
     }
 
     fn with_reference<Block, Return>(&self, block: Block) -> Return where Block: FnOnce(&mut T) -> Return {
