@@ -1,4 +1,4 @@
-use super::*;
+use crate::boxes::{ValueBox, ValueBoxPointer};
 
 #[derive(Debug, Copy, Clone, Default)]
 #[repr(C)]
@@ -17,40 +17,28 @@ impl<T> BoxerSize<T> where T: From<u8> + Default + Copy {
         BoxerSize::<T> { width, height }
     }
 
-    pub fn boxer_size_create() -> *mut BoxerSize<T>{
-        CBox::into_raw(BoxerSize::<T>::default())
+    pub fn boxer_size_create() -> *mut ValueBox<BoxerSize<T>>{
+        ValueBox::new(BoxerSize::<T>::default()).into_raw()
     }
 
-    pub fn boxer_size_drop(_ptr: *mut BoxerSize<T>)  {
-        CBox::drop(_ptr)
+    pub fn boxer_size_drop(_ptr: *mut ValueBox<BoxerSize<T>>)  {
+        _ptr.drop();
     }
 
-    pub fn boxer_size_get_width(_ptr: *mut BoxerSize<T>) -> T {
-        CBox::with_optional_raw(_ptr, |option| match option {
-            None => 0u8.into(),
-            Some(size) => { size.width },
-        } )
+    pub fn boxer_size_get_width(_ptr: *mut ValueBox<BoxerSize<T>>) -> T {
+        _ptr.with_not_null_return(0u8.into(), |size| size.width)
     }
 
-    pub fn boxer_size_set_width(_ptr: *mut BoxerSize<T>, width: T) {
-        CBox::with_optional_raw(_ptr, |option| match option {
-            None => {},
-            Some(size) => { size.width = width },
-        } )
+    pub fn boxer_size_set_width(_ptr: *mut ValueBox<BoxerSize<T>>, width: T) {
+        _ptr.with_not_null(|size| size.width = width);
     }
 
-    pub fn boxer_size_get_height(_ptr: *mut BoxerSize<T>) -> T {
-        CBox::with_optional_raw(_ptr, |option| match option {
-            None => 0u8.into(),
-            Some(size) => { size.height },
-        } )
+    pub fn boxer_size_get_height(_ptr: *mut ValueBox<BoxerSize<T>>) -> T {
+        _ptr.with_not_null_return(0u8.into(), |size| size.height)
     }
 
-    pub fn boxer_size_set_height(_ptr: *mut BoxerSize<T>, height: T) {
-        CBox::with_optional_raw(_ptr, |option| match option {
-            None => {},
-            Some(size) => { size.height = height },
-        } )
+    pub fn boxer_size_set_height(_ptr: *mut ValueBox<BoxerSize<T>>, height: T) {
+        _ptr.with_not_null(|size| size.height = height);
     }
 }
 

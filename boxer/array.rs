@@ -116,6 +116,7 @@ impl<T> BoxerArray<T> where T: Default + Copy {
 }
 
 pub type BoxerArrayU8 = BoxerArray<u8>;
+pub type BoxerArrayF32 = BoxerArray<f32>;
 pub type BoxerArrayPointF32 = BoxerArray<BoxerPointF32>;
 
 #[test]
