@@ -1,6 +1,7 @@
 use std::ffi::CStr;
 use std::os::raw::c_char;
 use std::ffi::CString;
+use crate::CBox;
 
 /**
  I represent a null-terminated string of a given length (without null character).
@@ -75,6 +76,16 @@ impl BoxerString {
             // we later copy into a String
             CStr::from_ptr(_data).to_string_lossy().into_owned()
         }
+    }
+}
+
+pub trait BoxerStringPointer {
+    fn with<Block, Return>(&self, block: Block) -> Return where Block : FnOnce(&mut Box<BoxerString>) -> Return;
+}
+
+impl BoxerStringPointer for *mut BoxerString {
+    fn with<Block, Return>(&self, block: Block) -> Return where Block: FnOnce(&mut Box<BoxerString>) -> Return {
+        CBox::with_raw(*self, block)
     }
 }
 
