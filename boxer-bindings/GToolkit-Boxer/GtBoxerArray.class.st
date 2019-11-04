@@ -53,6 +53,16 @@ GtBoxerArray >> externalType [
 	^ self subclassResponsibility
 ]
 
+{ #category : #'gt-extension' }
+GtBoxerArray >> gtItemsFor: aView [
+	<gtView>
+
+	^ aView list
+		title: 'Items';
+		priority: 2;
+		items: [ self asArray ]
+]
+
 { #category : #'private - ffi' }
 GtBoxerArray >> primGetCapacity [
 	^ self subclassResponsibility
