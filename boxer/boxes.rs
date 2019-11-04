@@ -274,7 +274,7 @@ mod test {
         let mut parents_drop = 0;
         let mut children_drop = 0;
 
-        let mut parent = create_parent(&mut parents_drop, &mut children_drop);
+        let parent = create_parent(&mut parents_drop, &mut children_drop);
 
         std::mem::drop(parent);
 
@@ -309,7 +309,7 @@ mod test {
         let mut parents_drop = 0;
         let mut children_drop = 0;
 
-        let mut parent = create_parent(&mut parents_drop, &mut children_drop);
+        let parent = create_parent(&mut parents_drop, &mut children_drop);
 
         let parent_ptr = put_parent_in_value_box_with_return(parent);
         parent_ptr.drop();
