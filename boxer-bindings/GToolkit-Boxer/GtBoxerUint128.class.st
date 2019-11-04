@@ -1,6 +1,6 @@
 Class {
 	#name : #GtBoxerUint128,
-	#superclass : #GtBoxerExternalObject,
+	#superclass : #GtBoxerValueBox,
 	#classVars : [
 		'MAX',
 		'MIN'
