@@ -2,13 +2,13 @@ use std::ops::DerefMut;
 
 /// Tell Rust to take back the control over memory
 /// This is dangerous! Rust takes the control over the memory back
-unsafe fn from_raw<T>(pointer: *mut T) -> Box<T> {
+pub unsafe fn from_raw<T>(pointer: *mut T) -> Box<T> {
     assert_eq!(pointer.is_null(), false, "from_raw(): Pointer must not be null!");
     assert_eq!(std::mem::size_of::<*mut T>(), std::mem::size_of::<*mut std::ffi::c_void>(), "The pointer must be compatible with void*");
     Box::from_raw(pointer)
 }
 
-fn into_raw<T> (_box: Box<T>) -> *mut T {
+pub fn into_raw<T> (_box: Box<T>) -> *mut T {
     assert_eq!(std::mem::size_of::<*mut T>(), std::mem::size_of::<*mut std::ffi::c_void>(), "The pointer must be compatible with void*");
     Box::into_raw(_box)
 }
@@ -16,7 +16,7 @@ fn into_raw<T> (_box: Box<T>) -> *mut T {
 #[derive(Debug)]
 #[repr(C)]
 pub struct ValueBox<T> {
-    boxed: *mut T
+   boxed: *mut T
 }
 
 impl <T> ValueBox<T> {
@@ -34,6 +34,10 @@ impl <T> ValueBox<T> {
 
     pub fn into_raw(self) -> *mut Self {
         into_raw(Box::new(self))
+    }
+
+    pub fn boxed(&self) -> *mut T {
+        self.boxed
     }
 }
 
@@ -56,7 +60,7 @@ pub trait ValueBoxPointer<T> {
     fn with_value<Block, Return>(&self, block: Block) -> Return where
             Block: FnOnce(T) -> Return,
             T: Copy;
-     fn with_value_consumed<Block, Return>(&mut self, block: Block) -> Return where Block: FnOnce(T) -> Return;
+    fn with_value_consumed<Block, Return>(&mut self, block: Block) -> Return where Block: FnOnce(T) -> Return;
     fn drop(self);
 }
 
