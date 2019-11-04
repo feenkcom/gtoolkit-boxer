@@ -16,8 +16,7 @@ fn into_raw<T> (_box: Box<T>) -> *mut T {
 #[derive(Debug)]
 #[repr(C)]
 pub struct ValueBox<T> {
-    boxed: Box<T>,
-    phantom: std::marker::PhantomData<T>,
+    boxed: Box<T>
 }
 
 impl <T> ValueBox<T> {
@@ -27,8 +26,7 @@ impl <T> ValueBox<T> {
 
     pub fn from_box (_box: Box<T>) -> Self {
         ValueBox {
-            boxed: _box,
-            phantom: std::marker::PhantomData
+            boxed: _box
         }
     }
 
@@ -47,6 +45,7 @@ pub trait ValueBoxPointer<T> {
     fn with_value<Block, Return>(&self, block: Block) -> Return where
             Block: FnOnce(T) -> Return,
             T: Copy;
+     fn with_value_consumed<Block, Return>(&mut self, block: Block) -> Return where Block: FnOnce(T) -> Return;
     fn drop(self);
 }
 
@@ -124,6 +123,18 @@ impl<T> ValueBoxPointer<T> for *mut ValueBox<T> {
         let new_pointer = into_raw(value_box);
         assert_eq!(new_pointer, *self, "The pointer must not change");
 
+        result
+    }
+
+    /// The value
+    fn with_value_consumed<Block, Return>(&mut self, block: Block) -> Return where Block: FnOnce(T) -> Return {
+        assert_eq!(self.is_null(), false, "Pointer must not be null!");
+
+        let value_box = unsafe { from_raw(*self) };
+        let boxed_object = *value_box.boxed;
+
+        *self = std::ptr::null_mut();
+        let result: Return = block(boxed_object);
         result
     }
 
@@ -208,6 +219,18 @@ impl<T> ReferenceBoxPointer<T> for *mut ReferenceBox<T> {
 #[cfg(test)]
 mod test {
     use crate::boxes::{ValueBox, ValueBoxPointer};
+
+    #[test]
+    fn value_box_with_consumed() {
+        let _box = ValueBox::new(5);
+
+        let mut _box_ptr = _box.into_raw();
+        assert_eq!(_box_ptr.is_null(), false);
+
+        let result = _box_ptr.with_value_consumed(|value| value * 2 );
+        assert_eq!(_box_ptr.is_null(), true);
+        assert_eq!(result, 10);
+    }
 
     #[test]
     fn value_box_with_value() {
