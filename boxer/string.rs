@@ -48,6 +48,11 @@ impl BoxerString {
         self.data = Self::vec_to_chars(string.as_str());
         self.length = string.len()
     }
+
+    /// Return a slice of character bytes
+    pub fn to_slice_u8(&self) -> &[u8] {
+        unsafe { std::slice::from_raw_parts(self.data as *const u8, self.length) }
+    }
 }
 
 impl BoxerString {

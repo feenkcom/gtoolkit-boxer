@@ -1,6 +1,6 @@
 Class {
 	#name : #GtBoxerSize,
-	#superclass : #GtBoxerExternalObject,
+	#superclass : #GtBoxerValueBox,
 	#category : #'GToolkit-Boxer-Core'
 }
 

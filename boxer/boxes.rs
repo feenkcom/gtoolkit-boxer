@@ -2,13 +2,13 @@ use std::ops::DerefMut;
 
 /// Tell Rust to take back the control over memory
 /// This is dangerous! Rust takes the control over the memory back
-unsafe fn from_raw<T>(pointer: *mut T) -> Box<T> {
+pub unsafe fn from_raw<T>(pointer: *mut T) -> Box<T> {
     assert_eq!(pointer.is_null(), false, "from_raw(): Pointer must not be null!");
     assert_eq!(std::mem::size_of::<*mut T>(), std::mem::size_of::<*mut std::ffi::c_void>(), "The pointer must be compatible with void*");
     Box::from_raw(pointer)
 }
 
-fn into_raw<T> (_box: Box<T>) -> *mut T {
+pub fn into_raw<T> (_box: Box<T>) -> *mut T {
     assert_eq!(std::mem::size_of::<*mut T>(), std::mem::size_of::<*mut std::ffi::c_void>(), "The pointer must be compatible with void*");
     Box::into_raw(_box)
 }
@@ -16,24 +16,37 @@ fn into_raw<T> (_box: Box<T>) -> *mut T {
 #[derive(Debug)]
 #[repr(C)]
 pub struct ValueBox<T> {
-    boxed: Box<T>,
-    phantom: std::marker::PhantomData<T>,
+   boxed: *mut T
 }
 
 impl <T> ValueBox<T> {
     pub fn new (object: T) -> Self {
-        Self::from_box(Box::new(object))
+        ValueBox {
+            boxed: Box::into_raw(Box::new(object))
+        }
     }
 
     pub fn from_box (_box: Box<T>) -> Self {
         ValueBox {
-            boxed: _box,
-            phantom: std::marker::PhantomData
+            boxed: Box::into_raw(_box)
         }
     }
 
     pub fn into_raw(self) -> *mut Self {
         into_raw(Box::new(self))
+    }
+
+    pub fn boxed(&self) -> *mut T {
+        self.boxed
+    }
+}
+
+impl<T> Drop for ValueBox<T> {
+    fn drop(&mut self) {
+        if !self.boxed.is_null() {
+            unsafe { from_raw(self.boxed) };
+            self.boxed = std::ptr::null_mut();
+        }
     }
 }
 
@@ -47,6 +60,7 @@ pub trait ValueBoxPointer<T> {
     fn with_value<Block, Return>(&self, block: Block) -> Return where
             Block: FnOnce(T) -> Return,
             T: Copy;
+    fn with_value_consumed<Block, Return>(&mut self, block: Block) -> Return where Block: FnOnce(T) -> Return;
     fn drop(self);
 }
 
@@ -65,7 +79,11 @@ impl<T> ValueBoxPointer<T> for *mut ValueBox<T> {
             None => { None },
             Some(value_box_ptr) => {
                 let value_box = unsafe { from_raw(value_box_ptr) };
-                Some(value_box.boxed)
+
+                if value_box.boxed.is_null() {
+                    None
+                }
+                else { unsafe { Some(from_raw(value_box.boxed)) } }
             }
         }
     }
@@ -75,8 +93,12 @@ impl<T> ValueBoxPointer<T> for *mut ValueBox<T> {
         assert_eq!(self.is_null(), false, "Pointer must not be null!");
 
         let mut value_box = unsafe { from_raw(*self) };
-        let boxed_object = &mut value_box.boxed;
-        let result: Return = block(boxed_object);
+        let mut boxed_object = unsafe { from_raw(value_box.boxed) };
+        let result: Return = block(&mut boxed_object);
+
+        let new_boxed_pointer = into_raw(boxed_object);
+        assert_eq!(new_boxed_pointer, value_box.boxed, "The boxed pointer must not change");
+        value_box.boxed = new_boxed_pointer;
 
         let new_pointer = into_raw(value_box);
         assert_eq!(new_pointer, *self, "The pointer must not change");
@@ -102,8 +124,12 @@ impl<T> ValueBoxPointer<T> for *mut ValueBox<T> {
         assert_eq!(self.is_null(), false, "Pointer must not be null!");
 
         let mut value_box = unsafe { from_raw(*self) };
-        let boxed_object = value_box.boxed.deref_mut();
-        let result: Return = block(boxed_object);
+        let mut boxed_object = unsafe { from_raw(value_box.boxed) };
+        let result: Return = block(boxed_object.deref_mut());
+
+        let new_boxed_pointer = into_raw(boxed_object);
+        assert_eq!(new_boxed_pointer, value_box.boxed, "The boxed pointer must not change");
+        value_box.boxed = new_boxed_pointer;
 
         let new_pointer = into_raw(value_box);
         assert_eq!(new_pointer, *self, "The pointer must not change");
@@ -117,9 +143,31 @@ impl<T> ValueBoxPointer<T> for *mut ValueBox<T> {
 
         assert_eq!(self.is_null(), false, "Pointer must not be null!");
 
-        let value_box = unsafe { from_raw(*self) };
-        let boxed_object = **(&value_box.boxed);
-        let result: Return = block(boxed_object);
+        let mut value_box = unsafe { from_raw(*self) };
+        let boxed_object = unsafe { from_raw(value_box.boxed) };
+        let object = (*boxed_object).clone();
+        let result: Return = block(object);
+
+        let new_boxed_pointer = into_raw(boxed_object);
+        assert_eq!(new_boxed_pointer, value_box.boxed, "The boxed pointer must not change");
+        value_box.boxed = new_boxed_pointer;
+
+        let new_pointer = into_raw(value_box);
+        assert_eq!(new_pointer, *self, "The pointer must not change");
+
+        result
+    }
+
+    /// The value
+    fn with_value_consumed<Block, Return>(&mut self, block: Block) -> Return where Block: FnOnce(T) -> Return {
+        assert_eq!(self.is_null(), false, "Pointer must not be null!");
+
+        let mut value_box = unsafe { from_raw(*self) };
+        let boxed_object = unsafe { from_raw(value_box.boxed) };
+        let object = *boxed_object;
+        let result: Return = block(object);
+
+        value_box.boxed = std::ptr::null_mut();
 
         let new_pointer = into_raw(value_box);
         assert_eq!(new_pointer, *self, "The pointer must not change");
@@ -149,12 +197,6 @@ impl <T> ReferenceBox<T> {
 
     pub fn into_raw(self) -> *mut Self {
         into_raw(Box::new(self))
-    }
-}
-
-impl<T> Drop for ReferenceBox<T> {
-    fn drop(&mut self) {
-        println!("destroyed ReferenceBox");
     }
 }
 
@@ -207,7 +249,22 @@ impl<T> ReferenceBoxPointer<T> for *mut ReferenceBox<T> {
 
 #[cfg(test)]
 mod test {
-    use crate::boxes::{ValueBox, ValueBoxPointer};
+    use crate::boxes::{ValueBox, ValueBoxPointer, from_raw};
+
+    #[test]
+    fn value_box_with_consumed() {
+        let _box = ValueBox::new(5);
+
+        let mut _box_ptr = _box.into_raw();
+        assert_eq!(_box_ptr.is_null(), false);
+
+        let result = _box_ptr.with_value_consumed(|value| value * 2 );
+        assert_eq!(_box_ptr.is_null(), false);
+
+        let _box = unsafe { from_raw(_box_ptr) };
+        assert_eq!(_box.boxed.is_null(), true);
+        assert_eq!(result, 10);
+    }
 
     #[test]
     fn value_box_with_value() {
@@ -274,7 +331,7 @@ mod test {
         let mut parents_drop = 0;
         let mut children_drop = 0;
 
-        let mut parent = create_parent(&mut parents_drop, &mut children_drop);
+        let parent = create_parent(&mut parents_drop, &mut children_drop);
 
         std::mem::drop(parent);
 
@@ -309,7 +366,7 @@ mod test {
         let mut parents_drop = 0;
         let mut children_drop = 0;
 
-        let mut parent = create_parent(&mut parents_drop, &mut children_drop);
+        let parent = create_parent(&mut parents_drop, &mut children_drop);
 
         let parent_ptr = put_parent_in_value_box_with_return(parent);
         parent_ptr.drop();
