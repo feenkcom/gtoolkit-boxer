@@ -172,9 +172,9 @@ impl<T> ValueBoxPointer<T> for *mut ValueBox<T> {
         let mut value_box = unsafe { from_raw(*self) };
         let boxed_object = unsafe { from_raw(value_box.boxed) };
         let object = *boxed_object;
-        let result: Return = block(object);
 
         value_box.boxed = std::ptr::null_mut();
+        let result: Return = block(object);
 
         let new_pointer = into_raw(value_box);
         assert_eq!(new_pointer, *self, "The pointer must not change");
@@ -189,9 +189,9 @@ impl<T> ValueBoxPointer<T> for *mut ValueBox<T> {
         let mut value_box = unsafe { from_raw(*self) };
         let boxed_object = unsafe { from_raw(value_box.boxed) };
         let object = *boxed_object;
-        let result: Return = block(object, &mut value_box);
 
         value_box.boxed = std::ptr::null_mut();
+        let result: Return = block(object, &mut value_box);
 
         let new_pointer = into_raw(value_box);
         assert_eq!(new_pointer, *self, "The pointer must not change");
