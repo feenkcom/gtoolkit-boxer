@@ -33,6 +33,28 @@ GtBoxerString class >> primRelease: aHandle [
 	self ffiCall: #(void boxer_string_drop(void* aHandle))
 ]
 
+{ #category : #converting }
+GtBoxerString >> asArray [
+	^ self data asArray
+]
+
+{ #category : #accessing }
+GtBoxerString >> data [
+	| anExternalHandle |
+	
+	anExternalHandle := self primGetData getHandle.
+	anExternalHandle isNull
+		ifTrue: [
+			^ (FFIExternalArray
+				externalNewType: FFIUInt8 externalType
+				size: 0) autoRelease ].
+
+	^ FFIExternalArray
+		fromHandle: anExternalHandle
+		type: FFIUInt8 externalType
+		size: self length
+]
+
 { #category : #accessing }
 GtBoxerString >> length [
 	<return: #Number>
