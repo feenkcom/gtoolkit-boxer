@@ -200,8 +200,10 @@ impl<T> ValueBoxPointer<T> for *mut ValueBox<T> {
     }
 
     fn drop(self) {
-        let value_box = unsafe { from_raw(self) };
-        std::mem::drop(value_box)
+        if !self.is_null() {
+            let value_box = unsafe { from_raw(self) };
+            std::mem::drop(value_box)
+        }
     }
 }
 
