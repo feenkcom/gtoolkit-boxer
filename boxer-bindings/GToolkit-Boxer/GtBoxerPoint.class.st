@@ -4,6 +4,11 @@ Class {
 	#category : #'GToolkit-Boxer-Core'
 }
 
+{ #category : #'instance creation' }
+GtBoxerPoint class >> fromPoint: aPoint [
+	^ self x: aPoint x y: aPoint y
+]
+
 { #category : #'private - ffi' }
 GtBoxerPoint class >> primCreateX: aX y: aY [
 	^ self subclassResponsibility

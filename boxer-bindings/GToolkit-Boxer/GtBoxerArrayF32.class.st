@@ -27,6 +27,11 @@ GtBoxerArrayF32 >> externalType [
 ]
 
 { #category : #'private - ffi' }
+GtBoxerArrayF32 >> primAt: anIndex put: anItem [
+	^ self ffiCall: #(void boxer_array_f32_at_put(self, size_t anIndex, float32 anItem))
+]
+
+{ #category : #'private - ffi' }
 GtBoxerArrayF32 >> primGetCapacity [
 	^ self ffiCall: #(size_t boxer_array_f32_get_capacity(self))
 ]

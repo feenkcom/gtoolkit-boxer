@@ -25,6 +25,11 @@ GtBoxerArray >> at: anIndex [
 ]
 
 { #category : #accessing }
+GtBoxerArray >> at: anIndex put: anItem [
+	self primAt: anIndex - 1 put: anItem
+]
+
+{ #category : #accessing }
 GtBoxerArray >> capacity [
 	<return: #Number>
 	
@@ -73,6 +78,11 @@ GtBoxerArray >> gtItemsFor: aView [
 		title: 'Items';
 		priority: 2;
 		items: [ self asArray ]
+]
+
+{ #category : #'private - ffi' }
+GtBoxerArray >> primAt: anIndex put: anItem [
+	^ self subclassResponsibility
 ]
 
 { #category : #'private - ffi' }
