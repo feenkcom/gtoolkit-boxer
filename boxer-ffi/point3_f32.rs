@@ -38,10 +38,10 @@ pub fn boxer_point3_f32_set_y(_point_ptr: *mut ValueBox<BoxerPoint3F32>, y: f32)
 
 #[no_mangle]
 pub fn boxer_point3_f32_get_z(_point_ptr: *mut ValueBox<BoxerPoint3F32>) -> f32 {
-    BoxerPoint3F32::boxer_point_get_y(_point_ptr)
+    BoxerPoint3F32::boxer_point_get_z(_point_ptr)
 }
 
 #[no_mangle]
 pub fn boxer_point3_f32_set_z(_point_ptr: *mut ValueBox<BoxerPoint3F32>, z: f32) {
-    BoxerPoint3F32::boxer_point_set_y(_point_ptr, z);
+    BoxerPoint3F32::boxer_point_set_z(_point_ptr, z);
 }
