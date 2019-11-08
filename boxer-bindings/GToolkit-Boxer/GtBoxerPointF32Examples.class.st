@@ -5,6 +5,20 @@ Class {
 }
 
 { #category : #accessing }
+GtBoxerPointF32Examples >> createFromXY [
+	<gtExample>
+	| aPoint |
+	
+	aPoint := GtBoxerPointF32 x: 2.0 y: 3.0.
+	self assert: aPoint x isFloat.
+	self assert: aPoint y isFloat.
+	self assert: aPoint x equals: 2.0.
+	self assert: aPoint y equals: 3.0.
+	
+	^ aPoint
+]
+
+{ #category : #accessing }
 GtBoxerPointF32Examples >> default [
 	<gtExample>
 	| aPoint |

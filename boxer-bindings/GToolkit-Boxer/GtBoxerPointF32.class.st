@@ -11,7 +11,12 @@ GtBoxerPointF32 class >> asExternalTypeOn: generator [
 
 { #category : #'private - ffi' }
 GtBoxerPointF32 class >> primCreate [
-	^ self ffiCall: #(void* boxer_point_f32_create())
+	^ self ffiCall: #(void* boxer_point_f32_default())
+]
+
+{ #category : #'private - ffi' }
+GtBoxerPointF32 class >> primCreateX: aX y: aY [
+	^ self ffiCall: #(void* boxer_point_f32_create(float32 aX, float32 aY))
 ]
 
 { #category : #'private - ffi' }
