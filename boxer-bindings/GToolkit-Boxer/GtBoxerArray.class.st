@@ -54,6 +54,18 @@ GtBoxerArray >> externalType [
 ]
 
 { #category : #'gt-extension' }
+GtBoxerArray >> gtInforFor: aView [
+	<gtView>
+
+	^ ({ 
+		#capacity -> self capacity.
+		#size -> self size
+	 } asOrderedDictionary gtItemsFor: aView)
+			title: 'Info';
+			priority: 3
+]
+
+{ #category : #'gt-extension' }
 GtBoxerArray >> gtItemsFor: aView [
 	<gtView>
 
