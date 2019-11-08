@@ -50,6 +50,13 @@ impl<T> BoxerArray<T> {
     pub fn to_slice(&self) -> &mut [T] {
         unsafe { std::slice::from_raw_parts_mut(self.data, self.length) }
     }
+
+    pub fn at_put(&mut self, index: usize, object: T) {
+        assert!(index < self.length, "Index must be less than array length");
+
+        let slice = self.to_slice();
+        slice[index] = object;
+    }
 }
 
 impl<T> BoxerArray<T> {
@@ -112,6 +119,14 @@ impl<T> BoxerArray<T> where T: Default + Copy {
             None => std::ptr::null_mut(),
             Some(_ptr) => _ptr.with(|array| array.data)
         }
+    }
+
+    pub fn boxer_array_at_put(_maybe_null_ptr: *mut ValueBox<BoxerArray<T>>, index: usize, _object_ptr: *mut ValueBox<T>) where T: Clone {
+        _maybe_null_ptr.with_not_null(|array|
+            _object_ptr.with_value(|object| {
+                array.at_put(index, object)
+            })
+        );
     }
 }
 
