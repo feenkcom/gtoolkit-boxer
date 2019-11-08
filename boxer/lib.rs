@@ -2,6 +2,7 @@
 
 pub mod array;
 pub mod point;
+pub mod point3;
 pub mod size;
 pub mod number;
 pub mod string;

@@ -2,8 +2,13 @@ use boxer::point::{BoxerPointU64};
 use boxer::boxes::ValueBox;
 
 #[no_mangle]
-pub fn boxer_point_u64_create() -> *mut ValueBox<BoxerPointU64> {
-    BoxerPointU64::boxer_point_create()
+pub fn boxer_point_u64_default() -> *mut ValueBox<BoxerPointU64> {
+    BoxerPointU64::boxer_point_default()
+}
+
+#[no_mangle]
+pub fn boxer_point_u64_create(x: u64, y: u64) -> *mut ValueBox<BoxerPointU64> {
+    BoxerPointU64::boxer_point_create(x, y)
 }
 
 #[no_mangle]
