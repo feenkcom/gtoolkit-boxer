@@ -21,6 +21,16 @@ GtBoxerArrayF32 class >> primRelease: aHandle [
 	self ffiCall: #(void boxer_array_f32_drop(void* aHandle))
 ]
 
+{ #category : #'instance creation' }
+GtBoxerArrayF32 class >> withAll: aCollectionOfFloats [
+	| theBoxedFloats |
+	
+	theBoxedFloats := self new: aCollectionOfFloats size withAll: 0.0.
+	aCollectionOfFloats withIndexDo: [ :eachPosition :eachIndex | theBoxedFloats at: eachIndex put: eachPosition ].
+	
+	^ theBoxedFloats
+]
+
 { #category : #'private - ffi' }
 GtBoxerArrayF32 >> externalType [
 	^ FFIFloat32 externalType
