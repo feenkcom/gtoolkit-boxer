@@ -13,7 +13,7 @@ GtBoxerValueBox class >> boxedPointerOf: anExternalObject [
 
 { #category : #'private - ffi' }
 GtBoxerValueBox class >> primGetBoxedPointer: aHandle [
-	^ self ffiCall: #(void* boxer_value_box_get_pointer(void* aHandle))
+	^ self ffiCall: #(void* boxer_value_box_get_pointer(void* aHandle)) library: GtBoxerLibrary uniqueInstance
 ]
 
 { #category : #accessing }
