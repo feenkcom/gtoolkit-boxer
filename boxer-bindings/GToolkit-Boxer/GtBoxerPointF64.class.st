@@ -6,7 +6,12 @@ Class {
 
 { #category : #'private - ffi' }
 GtBoxerPointF64 class >> primCreate [
-	^ self ffiCall: #(void* boxer_point_f64_create())
+	^ self ffiCall: #(void* boxer_point_f64_default())
+]
+
+{ #category : #'private - ffi' }
+GtBoxerPointF64 class >> primCreateX: aX y: aY [
+	^ self ffiCall: #(void* boxer_point_f64_create(float64 aX, float64 aY))
 ]
 
 { #category : #'private - ffi' }

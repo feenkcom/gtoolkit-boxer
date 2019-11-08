@@ -6,7 +6,7 @@ Class {
 
 { #category : #'instance creation' }
 GtBoxerArray class >> new: aSize withAll: aValue [
-	^ (self fromHandle: ((self primCreateNew: aSize withAll: aValue) getHandle)) autoRelease
+	^ self fromNativeHandle: (self primCreateNew: aSize withAll: aValue)
 ]
 
 { #category : #'private - ffi' }
