@@ -19,8 +19,12 @@ impl<T> BoxerPoint3<T> where T: From<u8> + Default + Copy {
         BoxerPoint3::<T> { x, y, z }
     }
 
-    pub fn boxer_point_create() -> *mut ValueBox<BoxerPoint3<T>>{
+    pub fn boxer_point_default() -> *mut ValueBox<BoxerPoint3<T>>{
         ValueBox::new(BoxerPoint3::<T>::default()).into_raw()
+    }
+
+    pub fn boxer_point_create(x: T,y: T, z: T) -> *mut ValueBox<BoxerPoint3<T>>{
+        ValueBox::new(BoxerPoint3::<T>::new(x, y, z)).into_raw()
     }
 
     pub fn boxer_point_drop(_ptr: *mut ValueBox<BoxerPoint3<T>>)  {
