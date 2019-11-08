@@ -27,6 +27,11 @@ pub fn boxer_array_f32_get_data(_ptr: *mut ValueBox<BoxerArrayF32>) -> *mut f32 
 }
 
 #[no_mangle]
+pub fn boxer_array_f32_at_put(_ptr: *mut ValueBox<BoxerArrayF32>, index: usize, item: f32) {
+    BoxerArrayF32::boxer_array_at_put(_ptr, index, item);
+}
+
+#[no_mangle]
 pub fn boxer_array_f32_drop(_ptr: *mut ValueBox<BoxerArrayF32>) {
     BoxerArrayF32::boxer_array_drop(_ptr);
 }

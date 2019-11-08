@@ -121,12 +121,8 @@ impl<T> BoxerArray<T> where T: Default + Copy {
         }
     }
 
-    pub fn boxer_array_at_put(_maybe_null_ptr: *mut ValueBox<BoxerArray<T>>, index: usize, _object_ptr: *mut ValueBox<T>) where T: Clone {
-        _maybe_null_ptr.with_not_null(|array|
-            _object_ptr.with_value(|object| {
-                array.at_put(index, object)
-            })
-        );
+    pub fn boxer_array_at_put(_maybe_null_ptr: *mut ValueBox<BoxerArray<T>>, index: usize, item: T) where T: Clone {
+        _maybe_null_ptr.with_not_null(|array|array.at_put(index, item));
     }
 }
 
