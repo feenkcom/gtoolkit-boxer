@@ -27,6 +27,11 @@ pub fn boxer_array_u8_get_data(_ptr: *mut ValueBox<BoxerArrayU8>) -> *mut u8 {
 }
 
 #[no_mangle]
+pub fn boxer_array_u8_at_put(_ptr: *mut ValueBox<BoxerArrayU8>, index: usize, item: u8) {
+    BoxerArrayU8::boxer_array_at_put(_ptr, index, item);
+}
+
+#[no_mangle]
 pub fn boxer_array_u8_drop(_ptr: *mut ValueBox<BoxerArrayU8>) {
     BoxerArrayU8::boxer_array_drop(_ptr);
 }

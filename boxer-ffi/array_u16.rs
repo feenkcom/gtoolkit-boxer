@@ -27,6 +27,11 @@ pub fn boxer_array_u16_get_data(_ptr: *mut ValueBox<BoxerArrayU16>) -> *mut u16 
 }
 
 #[no_mangle]
+pub fn boxer_array_u16_at_put(_ptr: *mut ValueBox<BoxerArrayU16>, index: usize, item: u16) {
+    BoxerArrayU16::boxer_array_at_put(_ptr, index, item);
+}
+
+#[no_mangle]
 pub fn boxer_array_u16_drop(_ptr: *mut ValueBox<BoxerArrayU16>) {
     BoxerArrayU16::boxer_array_drop(_ptr);
 }

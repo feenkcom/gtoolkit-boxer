@@ -5,10 +5,18 @@ Class {
 }
 
 { #category : #'instance creation' }
+GtBoxerPoint class >> fromPoint: aPoint [
+	^ self x: aPoint x y: aPoint y
+]
+
+{ #category : #'private - ffi' }
+GtBoxerPoint class >> primCreateX: aX y: aY [
+	^ self subclassResponsibility
+]
+
+{ #category : #'instance creation' }
 GtBoxerPoint class >> x: aX y: aY [
-	^ self new
-		x: aX;
-		y: aY
+	^ self fromNativeHandle: (self primCreateX: aX y: aY)
 ]
 
 { #category : #converting }

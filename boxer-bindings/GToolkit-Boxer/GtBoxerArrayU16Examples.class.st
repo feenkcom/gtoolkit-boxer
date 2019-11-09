@@ -33,6 +33,25 @@ GtBoxerArrayU16Examples >> release [
 ]
 
 { #category : #accessing }
+GtBoxerArrayU16Examples >> setElement [
+	<gtExample>
+	| anArray |
+	
+	anArray := GtBoxerArrayU16 new: 2 withAll: 0.
+	self assert: anArray size equals: 2.
+	self assert: anArray capacity >= 2. 
+
+	self assert: anArray asArray equals: #(0 0).
+	
+	anArray at: 1 put: 1.
+	anArray at: 2 put: 2.
+	
+	self assert: anArray asArray equals: #(1 2).
+	
+	^ anArray
+]
+
+{ #category : #accessing }
 GtBoxerArrayU16Examples >> withElement [
 	<gtExample>
 	| anArray |

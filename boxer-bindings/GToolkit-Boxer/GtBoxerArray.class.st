@@ -6,7 +6,7 @@ Class {
 
 { #category : #'instance creation' }
 GtBoxerArray class >> new: aSize withAll: aValue [
-	^ (self fromHandle: ((self primCreateNew: aSize withAll: aValue) getHandle)) autoRelease
+	^ self fromNativeHandle: (self primCreateNew: aSize withAll: aValue)
 ]
 
 { #category : #'private - ffi' }
@@ -22,6 +22,11 @@ GtBoxerArray >> asArray [
 { #category : #accessing }
 GtBoxerArray >> at: anIndex [
 	^ self data at: anIndex
+]
+
+{ #category : #accessing }
+GtBoxerArray >> at: anIndex put: anItem [
+	self primAt: anIndex - 1 put: anItem
 ]
 
 { #category : #accessing }
@@ -54,6 +59,18 @@ GtBoxerArray >> externalType [
 ]
 
 { #category : #'gt-extension' }
+GtBoxerArray >> gtInforFor: aView [
+	<gtView>
+
+	^ ({ 
+		#capacity -> self capacity.
+		#size -> self size
+	 } asOrderedDictionary gtItemsFor: aView)
+			title: 'Info';
+			priority: 3
+]
+
+{ #category : #'gt-extension' }
 GtBoxerArray >> gtItemsFor: aView [
 	<gtView>
 
@@ -61,6 +78,11 @@ GtBoxerArray >> gtItemsFor: aView [
 		title: 'Items';
 		priority: 2;
 		items: [ self asArray ]
+]
+
+{ #category : #'private - ffi' }
+GtBoxerArray >> primAt: anIndex put: anItem [
+	^ self subclassResponsibility
 ]
 
 { #category : #'private - ffi' }
