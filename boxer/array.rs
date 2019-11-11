@@ -6,15 +6,17 @@ use crate::boxes::{ValueBox, ValueBoxPointer};
 pub struct BoxerArray<T> {
     pub data: *mut T,
     pub length: usize,
-    pub capacity: usize
+    pub capacity: usize,
+    pub owned: bool,
 }
 
 impl<T> BoxerArray<T> {
     pub fn new() -> Self {
          BoxerArray {
-            length: 0,
-            capacity: 0,
-            data: std::ptr::null_mut()
+             length: 0,
+             capacity: 0,
+             data: std::ptr::null_mut(),
+             owned: true
         }
     }
 
@@ -29,10 +31,20 @@ impl<T> BoxerArray<T> {
         Self::from_vector(Vec::<T>::from(array_buffer))
     }
 
+     /// Create an array assuming that I don't own the data
+    pub fn from_data(_data: *mut T, _length: usize) -> Self {
+        BoxerArray {
+             length: _length,
+             capacity: _length,
+             data: _data,
+             owned: false
+        }
+    }
+
     /// Mutate me to hold a given vector
     pub fn set_vector(&mut self, vector: Vec<T>) {
         // first free existing char buffer
-        Self::free_buffer(self.data, self.length, self.capacity);
+        Self::free_buffer(self.data, self.length, self.capacity, self.owned);
         let mut data = vector;
         data.shrink_to_fit();
 
@@ -66,8 +78,9 @@ impl<T> BoxerArray<T> {
         _ptr
     }
 
-    fn free_buffer(_ptr_data: *mut T, _length: usize, _capacity: usize) {
+    fn free_buffer(_ptr_data: *mut T, _length: usize, _capacity: usize, _owned: bool) {
         if _ptr_data.is_null() { return }
+        if !_owned { return }
         drop(unsafe { Vec::from_raw_parts(_ptr_data, _length, _capacity) });
     }
 }
@@ -80,7 +93,7 @@ impl<T> Default for BoxerArray<T> {
 
 impl<T> Drop for BoxerArray<T> {
     fn drop(&mut self) {
-        Self::free_buffer(self.data, self.length, self.capacity);
+        Self::free_buffer(self.data, self.length, self.capacity, self.owned);
         self.data = std::ptr::null_mut();
         self.length = 0;
         self.capacity = 0;
@@ -94,6 +107,10 @@ impl<T> BoxerArray<T> where T: Default + Copy {
 
     pub fn boxer_array_create_with(element: T, amount: usize) -> *mut ValueBox<BoxerArray<T>>{
         ValueBox::new(BoxerArray::<T>::from_vector(vec![element; amount])).into_raw()
+    }
+
+    pub fn boxer_array_create_from_data(_data: *mut T, amount: usize) -> *mut ValueBox<BoxerArray<T>>{
+        ValueBox::new(BoxerArray::<T>::from_data(_data, amount)).into_raw()
     }
 
     pub fn boxer_array_drop(_ptr: *mut ValueBox<BoxerArray<T>>) {

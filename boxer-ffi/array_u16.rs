@@ -12,6 +12,11 @@ pub fn boxer_array_u16_create_with(element: u16, amount: usize) -> *mut ValueBox
 }
 
 #[no_mangle]
+pub fn boxer_array_u16_create_from_data(_data: *mut u16, amount: usize) -> *mut ValueBox<BoxerArrayU16> {
+    BoxerArrayU16::boxer_array_create_from_data(_data, amount)
+}
+
+#[no_mangle]
 pub fn boxer_array_u16_get_length(_ptr: *mut ValueBox<BoxerArrayU16>) -> usize {
     BoxerArrayU16::boxer_array_get_length(_ptr)
 }

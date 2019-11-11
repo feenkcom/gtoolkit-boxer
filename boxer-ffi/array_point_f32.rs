@@ -15,6 +15,11 @@ pub fn boxer_array_point_f32_create_with(element_ptr: *mut ValueBox<BoxerPointF3
 }
 
 #[no_mangle]
+pub fn boxer_array_point_f32_create_from_data(_data: *mut BoxerPointF32, amount: usize) -> *mut ValueBox<BoxerArrayPointF32> {
+    BoxerArrayPointF32::boxer_array_create_from_data(_data, amount)
+}
+
+#[no_mangle]
 pub fn boxer_array_point_f32_drop(_ptr: *mut ValueBox<BoxerArrayPointF32>) {
     BoxerArrayPointF32::boxer_array_drop(_ptr);
 }
