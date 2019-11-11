@@ -10,6 +10,11 @@ GtBoxerArrayU16 class >> primCreate [
 ]
 
 { #category : #'private - ffi' }
+GtBoxerArrayU16 class >> primCreateFromData: anExternalAddress size: aSize [
+	^ self ffiCall: #(void* boxer_array_u16_create_from_data(void* anExternalAddress, size_t aSize))
+]
+
+{ #category : #'private - ffi' }
 GtBoxerArrayU16 class >> primCreateNew: aSize withAll: aValue [
 	^ self ffiCall: #(void* boxer_array_u16_create_with(uint8 aValue, size_t aSize))
 ]

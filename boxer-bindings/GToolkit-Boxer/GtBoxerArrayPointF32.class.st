@@ -10,6 +10,11 @@ GtBoxerArrayPointF32 class >> primCreate [
 ]
 
 { #category : #'private - ffi' }
+GtBoxerArrayPointF32 class >> primCreateFromData: anExternalAddress size: aSize [
+	^ self ffiCall: #(void* boxer_array_point_f32_create_from_data(void* anExternalAddress, size_t aSize))
+]
+
+{ #category : #'private - ffi' }
 GtBoxerArrayPointF32 class >> primCreateNew: aSize withAll: aValue [
 	^ self ffiCall: #(void* boxer_array_point_f32_create_with(GtBoxerPointF32 aValue, size_t aSize))
 ]

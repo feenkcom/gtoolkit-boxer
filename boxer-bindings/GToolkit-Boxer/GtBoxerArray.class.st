@@ -5,8 +5,21 @@ Class {
 }
 
 { #category : #'instance creation' }
+GtBoxerArray class >> fromHandle: anExternalAddress size: aSize [
+	^ self fromNativeHandle: (self primCreateFromData: anExternalAddress size: aSize)
+]
+
+{ #category : #'instance creation' }
 GtBoxerArray class >> new: aSize withAll: aValue [
 	^ self fromNativeHandle: (self primCreateNew: aSize withAll: aValue)
+]
+
+{ #category : #'private - ffi' }
+GtBoxerArray class >> primCreateFromData: anExternalAddress size: aSize [
+	"
+	^ self ffiCall: #(void* boxer_array_point_f32_create_from_data(void* anExternalAddress, size_t aSize))
+	"
+	^ self subclassResponsibility
 ]
 
 { #category : #'private - ffi' }
