@@ -12,6 +12,11 @@ pub fn boxer_array_u8_create_with(element: u8, amount: usize) -> *mut ValueBox<B
 }
 
 #[no_mangle]
+pub fn boxer_array_u8_create_from_data(_data: *mut u8, amount: usize) -> *mut ValueBox<BoxerArrayU8> {
+    BoxerArrayU8::boxer_array_create_from_data(_data, amount)
+}
+
+#[no_mangle]
 pub fn boxer_array_u8_get_length(_ptr: *mut ValueBox<BoxerArrayU8>) -> usize {
     BoxerArrayU8::boxer_array_get_length(_ptr)
 }

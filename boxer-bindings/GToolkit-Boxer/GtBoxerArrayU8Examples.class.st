@@ -4,7 +4,7 @@ Class {
 	#category : #'GToolkit-Boxer-Examples'
 }
 
-{ #category : #accessing }
+{ #category : #'instance creation' }
 GtBoxerArrayU8Examples >> default [
 	<gtExample>
 	| anArray |
@@ -15,6 +15,28 @@ GtBoxerArrayU8Examples >> default [
 	self assert: anArray data isEmpty. 
 	
 	^ anArray
+]
+
+{ #category : #'instance creation' }
+GtBoxerArrayU8Examples >> fromData [
+	<gtExample>
+	| anFFIExternalArray anArray |
+	
+	anFFIExternalArray := FFIExternalArray externalNewType: FFIUInt8 externalType size: 100.
+	anFFIExternalArray atAll: (1 to: 100) putAll: (1 to: 100).
+	anFFIExternalArray autoRelease.
+	
+	anArray := GtBoxerArrayU8 fromHandle: anFFIExternalArray getHandle size: 100.
+	self assert: anArray size equals: 100.
+	self assert: anArray capacity >= 100.
+	self assert: anArray asArray equals: (1 to: 100) asArray.
+	
+	"anFFIExternalArray is the owner of data"
+	anArray release.
+	
+	self assert: anFFIExternalArray asArray equals: (1 to: 100) asArray. 
+	
+	^ anFFIExternalArray
 ]
 
 { #category : #'examples - null ptr' }
@@ -51,7 +73,7 @@ GtBoxerArrayU8Examples >> setElement [
 	^ anArray
 ]
 
-{ #category : #accessing }
+{ #category : #'instance creation' }
 GtBoxerArrayU8Examples >> withElement [
 	<gtExample>
 	| anArray |
