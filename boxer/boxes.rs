@@ -224,6 +224,10 @@ impl <T> ReferenceBox<T> {
     pub fn into_raw(self) -> *mut Self {
         into_raw(Box::new(self))
     }
+
+    pub fn boxed(&self) -> *mut T {
+        self.referenced
+    }
 }
 
 pub trait ReferenceBoxPointer<T> {
