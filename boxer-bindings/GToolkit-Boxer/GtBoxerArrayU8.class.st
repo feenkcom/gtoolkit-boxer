@@ -26,6 +26,16 @@ GtBoxerArrayU8 class >> primRelease: aHandle [
 	self ffiCall: #(void boxer_array_u8_drop(void* aHandle))
 ]
 
+{ #category : #'instance creation' }
+GtBoxerArrayU8 class >> withAll: aCollectionOfBytes [
+	| theBoxedBytes |
+	
+	theBoxedBytes := self new: aCollectionOfBytes size withAll: 0.0.
+	aCollectionOfBytes withIndexDo: [ :eachByte :eachIndex | theBoxedBytes at: eachIndex put: eachByte ].
+
+	^ theBoxedBytes
+]
+
 { #category : #converting }
 GtBoxerArrayU8 >> asBitmap [
 	| aByteArray alphaIndex blueIndex greenIndex redIndex red green blue alpha aBitmap |
