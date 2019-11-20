@@ -30,6 +30,7 @@ pub fn boxer_string_get_data(_size_ptr: *mut BoxerString) -> *mut c_char {
 }
 
 /// I mutate the string to be backed by the copy of a given char buffer in utf-8
+/// _length should not include a null char
 #[no_mangle]
 pub fn boxer_string_set_data(_string_ptr: *mut BoxerString, _data_utf8: *mut c_char, _length: usize) {
     CBox::with_optional_raw(_string_ptr, |option| match option {
