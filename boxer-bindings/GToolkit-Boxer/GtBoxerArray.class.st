@@ -6,7 +6,16 @@ Class {
 
 { #category : #'instance creation' }
 GtBoxerArray class >> fromHandle: anExternalAddress size: aSize [
+	"This is unsafe, you must make sure that the data will overlive boxer array"
+	
 	^ self fromNativeHandle: (self primCreateFromData: anExternalAddress size: aSize)
+]
+
+{ #category : #'instance creation' }
+GtBoxerArray class >> fromHandle: anExternalAddress size: aSize during: aBlock [
+	"This is unsafe, you must make sure that the data will live during evaluation of a block"
+
+	^ self fromNativeHandle: (self primCreateFromData: anExternalAddress size: aSize) during: aBlock
 ]
 
 { #category : #'instance creation' }

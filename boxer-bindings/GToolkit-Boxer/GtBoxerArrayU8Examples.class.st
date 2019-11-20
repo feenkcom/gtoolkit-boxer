@@ -18,6 +18,26 @@ GtBoxerArrayU8Examples >> default [
 ]
 
 { #category : #'instance creation' }
+GtBoxerArrayU8Examples >> fromByteArray [
+	<gtExample>
+	| aByteArray |
+	
+	aByteArray := #[0 16 32 64 128 255].
+	
+	GtBoxerArrayU8
+		fromByteArray: aByteArray
+		during: [ :aBoxerArray |
+			self assert: aBoxerArray size equals: aByteArray size.
+			self assert: aBoxerArray capacity >= aByteArray size.
+			self assert: aBoxerArray asArray equals: aByteArray asArray.
+			self assert: aBoxerArray asByteArray equals: aByteArray ].
+
+	self assert: aByteArray equals: #[0 16 32 64 128 255].
+	
+	^ aByteArray
+]
+
+{ #category : #'instance creation' }
 GtBoxerArrayU8Examples >> fromData [
 	<gtExample>
 	| anFFIExternalArray anArray |
