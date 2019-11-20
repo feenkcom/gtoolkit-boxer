@@ -10,15 +10,22 @@ GtBoxerString class >> fromString: aString [
 ]
 
 { #category : #'instance creation' }
+GtBoxerString class >> fromString: aString during: aBlock [
+	^ self newDuring: [ :aBoxerString | aBlock value: (aBoxerString string: aString) ]
+]
+
+{ #category : #'instance creation' }
 GtBoxerString class >> getStringFrom: aBlock [
 	<return: #String>
-	| aBoxerString |
+	| aString |
 
-	aBoxerString := self new.
-	^ [
+	aString := ''.
+
+	self newDuring: [ :aBoxerString |
 		aBlock value: aBoxerString.
-		aBoxerString string ]
-		ensure: [ aBoxerString release ]
+		aString := aBoxerString string ].
+
+	^ aString
 ]
 
 { #category : #'private - ffi' }
@@ -39,20 +46,18 @@ GtBoxerString >> asArray [
 ]
 
 { #category : #accessing }
-GtBoxerString >> data [
+GtBoxerString >> data [	
 	| anExternalHandle |
 	
 	anExternalHandle := self primGetData getHandle.
 	anExternalHandle isNull
-		ifTrue: [
-			^ (FFIExternalArray
-				externalNewType: FFIUInt8 externalType
-				size: 0) autoRelease ].
+		ifTrue: [ ^ (GtBoxer externalArrayNewType: FFIUInt8 size: 0) autoRelease ].
 
-	^ FFIExternalArray
-		fromHandle: anExternalHandle
-		type: FFIUInt8 externalType
-		size: self length
+	"the memory is managed by external library, we should not auto-release it"
+	^ GtBoxer
+		externalArrayFromHandle: self primGetData getHandle
+		type: FFIUInt8
+		size: self size
 ]
 
 { #category : #accessing }
@@ -93,21 +98,22 @@ GtBoxerString >> size [
 GtBoxerString >> string [
 	"Return UTF-8 decoded string"
 	<return: #String>
-	| aLength aBuffer |
+	| aLength |
 	
 	aLength := self length.
 	aLength isZero
 		ifTrue: [ ^ '' ].
 	
-	"memory is handled by rust"
-	aBuffer := FFIExternalArray fromHandle: self primGetData getHandle type: FFIUInt8 externalType size: aLength + 1.
-
-	^ ZnCharacterEncoder utf8 decodeBytes: aBuffer asArray allButLast
+	^ ZnCharacterEncoder utf8 decodeBytes: (GtBoxer
+		externalArrayFromHandle: self primGetData getHandle
+		type: FFIUInt8
+		size: aLength "a zero byte is at aLength + 1, we ignore it"
+		during: [ :anExternalArray | anExternalArray asArray ])
 ]
 
 { #category : #accessing }
 GtBoxerString >> string: aString [
-	| anEncodedString aBuffer |
+	| anEncodedString |
 
 	self
 		assert: [ aString isNotNil ]
@@ -122,8 +128,11 @@ GtBoxerString >> string: aString [
 			toStream: aStream.
 		aStream nextPut: 0 ].
 	
-	aBuffer := FFIExternalArray externalNewType: FFIUInt8 externalType size: anEncodedString size.
-	aBuffer atAll: (1 to: anEncodedString size) putAll: anEncodedString.
-	[ self primSetData: aBuffer getHandle length: (anEncodedString size - 1) ]
-		ensure: [ aBuffer free ]
+	GtBoxer
+		externalArrayNewType: FFIUInt8
+		size: anEncodedString size
+		during: [ :anExternalArray |
+			anExternalArray atAll: (1 to: anEncodedString size) putAll: anEncodedString.
+			"anEncodedString size - 1 because we should not include a null char in amount of characters"
+			self primSetData: anExternalArray getHandle length: (anEncodedString size - 1) ]
 ]
