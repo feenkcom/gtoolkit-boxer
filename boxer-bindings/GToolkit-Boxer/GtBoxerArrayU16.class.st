@@ -4,6 +4,36 @@ Class {
 	#category : #'GToolkit-Boxer-Core'
 }
 
+{ #category : #'instance creation' }
+GtBoxerArrayU16 class >> fromByteArray: aByteArray [
+	| aBoxerArray |
+	
+	aBoxerArray := self new: aByteArray size // 2 withAll: 0.
+	
+	GtBoxer
+		externalArrayNewType: FFIUInt8
+		size: aByteArray size
+		during: [ :anExternalArrayU8 |
+			GtBoxer
+				externalArrayFromHandle: anExternalArrayU8 getHandle
+				type: FFIUInt16
+				size: anExternalArrayU8 size // 2
+				during: [ :anExternalArrayU16 |
+					1 to: aBoxerArray size do: [ :anIndex | aBoxerArray at: anIndex put: (anExternalArrayU16 at: anIndex) ] ] ].
+	
+	^ aBoxerArray
+]
+
+{ #category : #'instance creation' }
+GtBoxerArrayU16 class >> fromByteArray: aByteArray during: aBlock [
+	^ GtBoxer
+		externalArrayNewType: FFIUInt8
+		size: aByteArray size
+		during: [ :anExternalArray |
+			anExternalArray atAll: (1 to: aByteArray size) putAll: aByteArray.
+			self fromNativeHandle: (self primCreateFromData: anExternalArray getHandle size: aByteArray size // 2) during: aBlock ]
+]
+
 { #category : #'private - ffi' }
 GtBoxerArrayU16 class >> primCreate [
 	^ self ffiCall: #(void* boxer_array_u16_create())
@@ -26,9 +56,25 @@ GtBoxerArrayU16 class >> primRelease: aHandle [
 	self ffiCall: #(void boxer_array_u16_drop(void* aHandle))
 ]
 
+{ #category : #converting }
+GtBoxerArrayU16 >> asByteArray [
+	<return: #ByteArray>
+	| anExternalHandle |
+	
+	anExternalHandle := self primGetData getHandle.
+	anExternalHandle isNull
+		ifTrue: [ ^ #[] ].
+
+	^ GtBoxer
+		externalArrayFromHandle: self primGetData
+		getHandle type: FFIUInt8
+		size: self size * 2
+		during: [ :anExternalArray | anExternalArray asByteArray ]
+]
+
 { #category : #'private - ffi' }
 GtBoxerArrayU16 >> externalType [
-	^ FFIUInt16 externalType
+	^ FFIUInt16
 ]
 
 { #category : #'private - ffi' }

@@ -71,7 +71,7 @@ GtBoxerArrayU8 >> asByteArray [
 
 { #category : #'private - ffi' }
 GtBoxerArrayU8 >> externalType [
-	^ FFIUInt8 externalType
+	^ FFIUInt8
 ]
 
 { #category : #'private - ffi' }
