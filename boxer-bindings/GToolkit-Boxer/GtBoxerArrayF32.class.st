@@ -38,7 +38,7 @@ GtBoxerArrayF32 class >> withAll: aCollectionOfFloats [
 
 { #category : #'private - ffi' }
 GtBoxerArrayF32 >> externalType [
-	^ FFIFloat32 externalType
+	^ FFIFloat32
 ]
 
 { #category : #'private - ffi' }

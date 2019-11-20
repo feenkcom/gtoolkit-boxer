@@ -29,7 +29,9 @@ GtBoxerArray class >> primCreateNew: aSize withAll: aValue [
 
 { #category : #converting }
 GtBoxerArray >> asArray [
-	^ self data asArray
+	<return: #Array>
+
+	^ self dataDuring: [ :anExternalArray | anExternalArray asArray ]
 ]
 
 { #category : #accessing }
@@ -55,19 +57,34 @@ GtBoxerArray >> data [
 	
 	anExternalHandle := self primGetData getHandle.
 	anExternalHandle isNull
-		ifTrue: [
-			^ (FFIExternalArray
-				externalNewType: self externalType
-				size: 0) autoRelease ].
+		ifTrue: [ ^ (GtBoxer externalArrayNewType: self externalType size: 0) autoRelease ].
 
-	^ FFIExternalArray
-		fromHandle: self primGetData getHandle
+	"the memory is managed by external library, we should not auto-release it"
+	^ GtBoxer
+		externalArrayFromHandle: self primGetData getHandle
 		type: self externalType
 		size: self size
 ]
 
+{ #category : #accessing }
+GtBoxerArray >> dataDuring: aBlock [
+	| anExternalHandle |
+	
+	anExternalHandle := self primGetData getHandle.
+	anExternalHandle isNull
+		ifTrue: [ ^ GtBoxer externalArrayNewType: self externalType size: 0 during: aBlock ].
+
+	^ GtBoxer
+		externalArrayFromHandle: self primGetData getHandle
+		type: self externalType
+		size: self size
+		during: aBlock
+]
+
 { #category : #'private - ffi' }
 GtBoxerArray >> externalType [
+	<return: #'FFIExternalType class'>
+
 	^ self subclassResponsibility
 ]
 
