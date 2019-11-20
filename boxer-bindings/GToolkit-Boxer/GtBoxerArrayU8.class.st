@@ -4,6 +4,15 @@ Class {
 	#category : #'GToolkit-Boxer-Core'
 }
 
+{ #category : #'instance creation' }
+GtBoxerArrayU8 class >> fromByteArray: aByteArray during: aBlock [
+	"I create a boxer array that does not own a given data for duration of a block"
+
+	aByteArray pinInMemory.
+	^ [ self fromHandle: aByteArray size: aByteArray size during: aBlock ]
+		ensure: [ aByteArray unpinInMemory ]
+]
+
 { #category : #'private - ffi' }
 GtBoxerArrayU8 class >> primCreate [
 	^ self ffiCall: #(void* boxer_array_u8_create())

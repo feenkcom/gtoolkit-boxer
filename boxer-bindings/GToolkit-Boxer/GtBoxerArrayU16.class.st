@@ -6,6 +6,8 @@ Class {
 
 { #category : #'instance creation' }
 GtBoxerArrayU16 class >> fromByteArray: aByteArray [
+	"I create a boxer array from a given byte array that own the data"
+	<return: #GtBoxerArrayU16>
 	| aBoxerArray |
 	
 	aBoxerArray := self new: aByteArray size // 2 withAll: 0.
@@ -26,12 +28,11 @@ GtBoxerArrayU16 class >> fromByteArray: aByteArray [
 
 { #category : #'instance creation' }
 GtBoxerArrayU16 class >> fromByteArray: aByteArray during: aBlock [
-	^ GtBoxer
-		externalArrayNewType: FFIUInt8
-		size: aByteArray size
-		during: [ :anExternalArray |
-			anExternalArray atAll: (1 to: aByteArray size) putAll: aByteArray.
-			self fromNativeHandle: (self primCreateFromData: anExternalArray getHandle size: aByteArray size // 2) during: aBlock ]
+	"I create a boxer array that does not own a given data for duration of a block"
+
+	aByteArray pinInMemory.
+	^ [ self fromHandle: aByteArray size: aByteArray size // 2 during: aBlock ]
+		ensure: [ aByteArray unpinInMemory ]
 ]
 
 { #category : #'private - ffi' }
