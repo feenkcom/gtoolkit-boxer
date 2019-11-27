@@ -59,6 +59,7 @@ GtBoxerExternalObject class >> newDuring: aBlock [
 
 { #category : #'private - ffi' }
 GtBoxerExternalObject class >> primCreate [
+	"^ self ffiCall: #(void* lib_object_default())"
 	^ self subclassResponsibility
 ]
 
@@ -66,6 +67,7 @@ GtBoxerExternalObject class >> primCreate [
 GtBoxerExternalObject class >> primRelease: aHandle [
 	
 	"Plain pointers must be deleted using delete(), all users must implement a specific method"
+	"self ffiCall: #(void lib_object_drop(void* aHandle))"
 	self subclassResponsibility
 ]
 
