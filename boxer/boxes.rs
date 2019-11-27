@@ -61,6 +61,7 @@ pub trait ValueBoxPointer<T> {
     fn as_box(self) -> Option<Box<T>>;
     fn with<Block, Return>(&self, block: Block) -> Return where Block : FnOnce(&mut Box<T>) -> Return;
     fn with_not_null<Block>(&self, block: Block) where Block : FnOnce(&mut Box<T>);
+    fn with_not_null_value_mutate_consumed<Block>(&mut self, block: Block) where Block : FnOnce(T) -> T;
     fn with_not_null_return<Block, Return>(&self, default: Return, block: Block) -> Return where Block : FnOnce(&mut Box<T>) -> Return;
     fn with_not_null_return_block<DefaultBlock, Block, Return>(&self, default: DefaultBlock, block: Block) -> Return where
             DefaultBlock : FnOnce() -> Return,
@@ -123,6 +124,16 @@ impl<T> ValueBoxPointer<T> for *mut ValueBox<T> {
         self.with(|boxed_object| { block(boxed_object); } );
     }
 
+    fn with_not_null_value_mutate_consumed<Block>(&mut self, block: Block) where Block: FnOnce(T) -> T {
+        if self.is_null() {
+            return;
+        }
+
+        self.with_value_and_box_consumed(|boxed, value_box|{
+            unsafe { value_box.mutate(block(boxed)) }
+        });
+    }
+
     fn with_not_null_return<Block, Return>(&self, default: Return, block: Block) -> Return where Block: FnOnce(&mut Box<T>) -> Return {
         if self.is_null() {
             return default;
@@ -158,7 +169,7 @@ impl<T> ValueBoxPointer<T> for *mut ValueBox<T> {
 
     fn with_value<Block, Return>(&self, block: Block) -> Return where
             Block: FnOnce(T) -> Return,
-            T: Copy {
+            T: Clone {
 
         assert_eq!(self.is_null(), false, "Pointer must not be null!");
 
