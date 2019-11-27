@@ -69,7 +69,7 @@ pub trait ValueBoxPointer<T> {
     fn with_reference<Block, Return>(&self, block: Block) -> Return where Block : FnOnce(&mut T) -> Return;
     fn with_value<Block, Return>(&self, block: Block) -> Return where
             Block: FnOnce(T) -> Return,
-            T: Copy;
+            T: Clone;
     fn with_value_consumed<Block, Return>(&mut self, block: Block) -> Return where Block: FnOnce(T) -> Return;
     fn with_value_and_box_consumed<Block, Return>(&mut self, block: Block) -> Return where Block: FnOnce(T, &mut Box<ValueBox<T>>) -> Return;
     fn drop(self);
