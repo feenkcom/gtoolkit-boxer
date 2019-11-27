@@ -169,7 +169,7 @@ impl<T> ValueBoxPointer<T> for *mut ValueBox<T> {
 
     fn with_value<Block, Return>(&self, block: Block) -> Return where
             Block: FnOnce(T) -> Return,
-            T: Copy {
+            T: Clone {
 
         assert_eq!(self.is_null(), false, "Pointer must not be null!");
 
