@@ -59,6 +59,7 @@ impl<T> Drop for ValueBox<T> {
 pub trait ValueBoxPointer<T> {
     fn as_option(self) -> Option<*mut ValueBox<T>>;
     fn as_box(self) -> Option<Box<T>>;
+    fn mutate(&self, object: T);
     fn with<Block, Return>(&self, block: Block) -> Return where Block : FnOnce(&mut Box<T>) -> Return;
     fn with_not_null<Block>(&self, block: Block) where Block : FnOnce(&mut Box<T>);
     fn with_not_null_value_mutate_consumed<Block>(&mut self, block: Block) where Block : FnOnce(T) -> T;
@@ -97,6 +98,25 @@ impl<T> ValueBoxPointer<T> for *mut ValueBox<T> {
                 else { unsafe { Some(from_raw(value_box.boxed)) } }
             }
         }
+    }
+
+    fn mutate(&self, object: T){
+        assert_eq!(self.is_null(), false, "Pointer must not be null!");
+
+        let mut value_box = unsafe { from_raw(*self) };
+
+        // we should first get rid of the potentially boxed object
+        if !value_box.boxed.is_null() {
+            let boxed_object = unsafe { from_raw(value_box.boxed) };
+            let object = *boxed_object;
+            value_box.boxed = std::ptr::null_mut();
+            drop(object);
+        }
+
+        unsafe { value_box.mutate(object); }
+
+        let new_pointer = into_raw(value_box);
+        assert_eq!(new_pointer, *self, "The pointer must not change");
     }
 
     // self is `&*mut`
