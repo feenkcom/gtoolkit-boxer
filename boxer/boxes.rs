@@ -328,6 +328,32 @@ impl<T> ReferenceBoxPointer<T> for *mut ReferenceBox<T> {
     }
 }
 
+
+
+#[derive(Debug)]
+#[repr(C)]
+pub struct DynamicBox<T> {
+   boxed: Option<T>
+}
+
+impl <T> DynamicBox<T> {
+    pub fn new (object: T) -> Self {
+        DynamicBox {
+            boxed: Some(object)
+        }
+    }
+
+    /// dangerously replaces a pointer with the one for the given object
+    /// I do not drop an existing pointer
+    pub unsafe fn mutate(&mut self, object: T) {
+        self.boxed = Some(object);
+    }
+
+    pub fn into_raw(self) -> *mut Self {
+        into_raw(Box::new(self))
+    }
+}
+
 #[cfg(test)]
 mod test {
     use crate::boxes::{ValueBox, ValueBoxPointer, from_raw};
