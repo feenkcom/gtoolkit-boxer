@@ -32,6 +32,12 @@ impl <T> ValueBox<T> {
         }
     }
 
+    pub fn null() -> Self {
+        ValueBox {
+            boxed: std::ptr::null_mut()
+        }
+    }
+
     /// dangerously replaces a pointer with the one for the given object
     /// I do not drop an existing pointer
     pub unsafe fn mutate(&mut self, object: T) {
