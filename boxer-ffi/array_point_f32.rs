@@ -41,12 +41,12 @@ pub fn boxer_array_point_f32_get_data(_ptr: *mut ValueBox<BoxerArrayPointF32>) -
 
 #[cfg(test)]
 mod test {
-    use crate::point_f32::boxer_point_f32_create;
+    use crate::point_f32::{boxer_point_f32_create, boxer_point_f32_default};
     use crate::array_point_f32::boxer_array_point_f32_create_with;
 
     #[test]
     fn create_with_point() {
-        let point = boxer_point_f32_create();
+        let point = boxer_point_f32_default();
         let array = boxer_array_point_f32_create_with(point, 10);
     }
 }
