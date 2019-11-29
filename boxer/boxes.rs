@@ -78,6 +78,7 @@ pub trait ValueBoxPointer<T> {
             Block: FnOnce(T) -> Return,
             T: Clone;
     fn with_value_consumed<Block, Return>(&mut self, block: Block) -> Return where Block: FnOnce(T) -> Return;
+    fn with_not_null_value_consumed<Block>(&mut self, block: Block) where Block: FnOnce(T);
     fn with_value_and_box_consumed<Block, Return>(&mut self, block: Block) -> Return where Block: FnOnce(T, &mut Box<ValueBox<T>>) -> Return;
     fn drop(self);
 }
@@ -229,6 +230,25 @@ impl<T> ValueBoxPointer<T> for *mut ValueBox<T> {
         assert_eq!(new_pointer, *self, "The pointer must not change");
 
         result
+    }
+
+    fn with_not_null_value_consumed<Block>(&mut self, block: Block) where Block: FnOnce(T) {
+        if self.is_null() {
+            return;
+        }
+
+        let mut value_box = unsafe { from_raw(*self) };
+
+        if !value_box.boxed.is_null() {
+            let boxed_object = unsafe { from_raw(value_box.boxed) };
+            let object = *boxed_object;
+
+            value_box.boxed = std::ptr::null_mut();
+            block(object);
+        }
+
+        let new_pointer = into_raw(value_box);
+        assert_eq!(new_pointer, *self, "The pointer must not change");
     }
 
     /// The value
