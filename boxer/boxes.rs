@@ -32,6 +32,12 @@ impl <T> ValueBox<T> {
         }
     }
 
+    pub fn null() -> Self {
+        ValueBox {
+            boxed: std::ptr::null_mut()
+        }
+    }
+
     /// dangerously replaces a pointer with the one for the given object
     /// I do not drop an existing pointer
     pub unsafe fn mutate(&mut self, object: T) {
@@ -59,6 +65,7 @@ impl<T> Drop for ValueBox<T> {
 pub trait ValueBoxPointer<T> {
     fn as_option(self) -> Option<*mut ValueBox<T>>;
     fn as_box(self) -> Option<Box<T>>;
+    fn mutate(&self, object: T);
     fn with<Block, Return>(&self, block: Block) -> Return where Block : FnOnce(&mut Box<T>) -> Return;
     fn with_not_null<Block>(&self, block: Block) where Block : FnOnce(&mut Box<T>);
     fn with_not_null_value_mutate_consumed<Block>(&mut self, block: Block) where Block : FnOnce(T) -> T;
@@ -71,6 +78,7 @@ pub trait ValueBoxPointer<T> {
             Block: FnOnce(T) -> Return,
             T: Clone;
     fn with_value_consumed<Block, Return>(&mut self, block: Block) -> Return where Block: FnOnce(T) -> Return;
+    fn with_not_null_value_consumed<Block>(&mut self, block: Block) where Block: FnOnce(T);
     fn with_value_and_box_consumed<Block, Return>(&mut self, block: Block) -> Return where Block: FnOnce(T, &mut Box<ValueBox<T>>) -> Return;
     fn drop(self);
 }
@@ -97,6 +105,25 @@ impl<T> ValueBoxPointer<T> for *mut ValueBox<T> {
                 else { unsafe { Some(from_raw(value_box.boxed)) } }
             }
         }
+    }
+
+    fn mutate(&self, object: T){
+        assert_eq!(self.is_null(), false, "Pointer must not be null!");
+
+        let mut value_box = unsafe { from_raw(*self) };
+
+        // we should first get rid of the potentially boxed object
+        if !value_box.boxed.is_null() {
+            let boxed_object = unsafe { from_raw(value_box.boxed) };
+            let object = *boxed_object;
+            value_box.boxed = std::ptr::null_mut();
+            drop(object);
+        }
+
+        unsafe { value_box.mutate(object); }
+
+        let new_pointer = into_raw(value_box);
+        assert_eq!(new_pointer, *self, "The pointer must not change");
     }
 
     // self is `&*mut`
@@ -203,6 +230,25 @@ impl<T> ValueBoxPointer<T> for *mut ValueBox<T> {
         assert_eq!(new_pointer, *self, "The pointer must not change");
 
         result
+    }
+
+    fn with_not_null_value_consumed<Block>(&mut self, block: Block) where Block: FnOnce(T) {
+        if self.is_null() {
+            return;
+        }
+
+        let mut value_box = unsafe { from_raw(*self) };
+
+        if !value_box.boxed.is_null() {
+            let boxed_object = unsafe { from_raw(value_box.boxed) };
+            let object = *boxed_object;
+
+            value_box.boxed = std::ptr::null_mut();
+            block(object);
+        }
+
+        let new_pointer = into_raw(value_box);
+        assert_eq!(new_pointer, *self, "The pointer must not change");
     }
 
     /// The value
@@ -325,6 +371,32 @@ impl<T> ReferenceBoxPointer<T> for *mut ReferenceBox<T> {
     fn drop(self) {
         let reference_box = unsafe { from_raw(self) };
         std::mem::drop(reference_box);
+    }
+}
+
+
+
+#[derive(Debug)]
+#[repr(C)]
+pub struct DynamicBox<T> {
+   boxed: Option<T>
+}
+
+impl <T> DynamicBox<T> {
+    pub fn new (object: T) -> Self {
+        DynamicBox {
+            boxed: Some(object)
+        }
+    }
+
+    /// dangerously replaces a pointer with the one for the given object
+    /// I do not drop an existing pointer
+    pub unsafe fn mutate(&mut self, object: T) {
+        self.boxed = Some(object);
+    }
+
+    pub fn into_raw(self) -> *mut Self {
+        into_raw(Box::new(self))
     }
 }
 
