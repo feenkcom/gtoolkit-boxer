@@ -46,6 +46,13 @@ GtBoxerArrayU8 class >> withAll: aCollectionOfBytes [
 ]
 
 { #category : #converting }
+GtBoxerArrayU8 >> argbToRgba [
+	"in place transform me from argb to rgba"
+	
+	self primArgbToRgba
+]
+
+{ #category : #converting }
 GtBoxerArrayU8 >> asBitmap [
 	| aByteArray alphaIndex blueIndex greenIndex redIndex red green blue alpha aBitmap |
 	aByteArray := self asByteArray.
@@ -81,6 +88,11 @@ GtBoxerArrayU8 >> asByteArray [
 { #category : #'private - ffi' }
 GtBoxerArrayU8 >> externalType [
 	^ FFIUInt8
+]
+
+{ #category : #'private - ffi' }
+GtBoxerArrayU8 >> primArgbToRgba [
+	^ self ffiCall: #(void boxer_array_u8_argb_to_rgba(self))
 ]
 
 { #category : #'private - ffi' }
