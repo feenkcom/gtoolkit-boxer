@@ -69,6 +69,13 @@ impl<T> BoxerArray<T> {
         let slice = self.to_slice();
         slice[index] = object;
     }
+
+    pub fn at(&mut self, index: usize) -> T where T: Clone {
+        assert!(index < self.length, "Index must be less than array length");
+
+        let slice = self.to_slice();
+        slice[index].clone()
+    }
 }
 
 impl<T> BoxerArray<T> {
