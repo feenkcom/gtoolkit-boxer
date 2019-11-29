@@ -98,7 +98,7 @@ GtBoxerArray >> externalType [
 ]
 
 { #category : #'gt-extension' }
-GtBoxerArray >> gtInforFor: aView [
+GtBoxerArray >> gtInfoFor: aView [
 	<gtView>
 
 	^ ({ 
