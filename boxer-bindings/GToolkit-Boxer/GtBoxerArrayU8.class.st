@@ -5,6 +5,16 @@ Class {
 }
 
 { #category : #'instance creation' }
+GtBoxerArrayU8 class >> fromBitmap: aBitmap during: aBlock [
+	"I create a boxer array that does not own a given data for duration of a block"
+	| wasPinned |
+	
+	wasPinned := aBitmap pinInMemory.
+	^ [ self fromHandle: aBitmap size: aBitmap size * 4 during: aBlock ]
+		ensure: [ aBitmap setPinnedInMemory: wasPinned ]
+]
+
+{ #category : #'instance creation' }
 GtBoxerArrayU8 class >> fromByteArray: aByteArray during: aBlock [
 	"I create a boxer array that does not own a given data for duration of a block"
 	| wasPinned |
@@ -55,28 +65,11 @@ GtBoxerArrayU8 >> argbToRgba [
 
 { #category : #converting }
 GtBoxerArrayU8 >> asBitmap [
-	| aByteArray alphaIndex blueIndex greenIndex redIndex red green blue alpha aBitmap |
-	aByteArray := self asByteArray.
+	| aBitmap |
+	"The data must be in ARGB8888 format"
 	
-	"We should convert RGBA to ARGB"	
-	1 to: aByteArray size // 4 do: [ :index |
-		alphaIndex := 4 * index.
-		blueIndex := alphaIndex - 1.
-		greenIndex := blueIndex - 1.
-		redIndex := greenIndex - 1.
-		
-		red := aByteArray at: redIndex.
-		green := aByteArray at: greenIndex.
-		blue := aByteArray at: blueIndex.
-		alpha := aByteArray at: alphaIndex.
-		
-		aByteArray at: redIndex put: alpha.
-		aByteArray at: greenIndex put: red.
-		aByteArray at: blueIndex put: green.
-		aByteArray at: alphaIndex put: blue ].
-
-	aBitmap := Bitmap new: aByteArray size // 4.
-	aBitmap copyFromByteArray: aByteArray.
+	aBitmap := Bitmap new: self size // 4.
+	aBitmap copyFromByteArray: self asByteArray.
 
 	^ aBitmap
 ]
@@ -84,6 +77,13 @@ GtBoxerArrayU8 >> asBitmap [
 { #category : #converting }
 GtBoxerArrayU8 >> asByteArray [
 	^ self data asByteArray
+]
+
+{ #category : #converting }
+GtBoxerArrayU8 >> bgraToArgb [
+	"in place transform me from bgra to argb"
+	
+	self primBgraToArgb
 ]
 
 { #category : #'private - ffi' }
@@ -102,6 +102,11 @@ GtBoxerArrayU8 >> primAt: anIndex put: anItem [
 ]
 
 { #category : #'private - ffi' }
+GtBoxerArrayU8 >> primBgraToArgb [
+	^ self ffiCall: #(void boxer_array_u8_bgra_to_argb(self))
+]
+
+{ #category : #'private - ffi' }
 GtBoxerArrayU8 >> primGetCapacity [
 	^ self ffiCall: #(size_t boxer_array_u8_get_capacity(self))
 ]
@@ -114,4 +119,16 @@ GtBoxerArrayU8 >> primGetData [
 { #category : #'private - ffi' }
 GtBoxerArrayU8 >> primGetLength [
 	^ self ffiCall: #(size_t boxer_array_u8_get_length(self))
+]
+
+{ #category : #'private - ffi' }
+GtBoxerArrayU8 >> primRgbaToArgb [
+	^ self ffiCall: #(void boxer_array_u8_rgba_to_argb(self))
+]
+
+{ #category : #converting }
+GtBoxerArrayU8 >> rgbaToArgb [
+	"in place transform me from rgba to argb"
+	
+	self primBgraToArgb
 ]
