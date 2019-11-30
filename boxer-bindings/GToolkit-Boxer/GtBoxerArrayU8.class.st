@@ -7,10 +7,11 @@ Class {
 { #category : #'instance creation' }
 GtBoxerArrayU8 class >> fromByteArray: aByteArray during: aBlock [
 	"I create a boxer array that does not own a given data for duration of a block"
-
-	aByteArray pinInMemory.
+	| wasPinned |
+	
+	wasPinned := aByteArray pinInMemory.
 	^ [ self fromHandle: aByteArray size: aByteArray size during: aBlock ]
-		ensure: [ aByteArray unpinInMemory ]
+		ensure: [ aByteArray setPinnedInMemory: wasPinned ]
 ]
 
 { #category : #'private - ffi' }
