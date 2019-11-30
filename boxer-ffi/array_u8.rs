@@ -36,6 +36,7 @@ pub fn boxer_array_u8_at_put(_ptr: *mut ValueBox<BoxerArrayU8>, index: usize, it
     BoxerArrayU8::boxer_array_at_put(_ptr, index, item);
 }
 
+#[no_mangle]
 pub fn boxer_array_u8_at(_maybe_null_ptr: *mut ValueBox<BoxerArrayU8>, index: usize) -> u8 {
     _maybe_null_ptr.with_not_null_return(0, |array|array.at(index))
 }
@@ -47,7 +48,7 @@ pub fn boxer_array_u8_argb_to_rgba(_ptr: *mut ValueBox<BoxerArrayU8>) {
         let slice = array.to_slice();
 
         if slice.len() % 4 == 0 {
-            let argb_u32 = unsafe { std::mem::transmute::<&mut[u8], &mut[u32]>(slice) };
+            let argb_u32 = unsafe { std::slice::from_raw_parts_mut(slice.as_mut_ptr() as *mut u32, slice.len() / 4) };
 
             if argb_u32.len() > 512 {
                 let threads = 16;
@@ -68,7 +69,7 @@ pub fn boxer_array_u8_argb_to_rgba(_ptr: *mut ValueBox<BoxerArrayU8>) {
                     // `crossbeam::scope` ensures that *all* spawned threads join before
                     // returning control back from this closure.
                 });
-            }
+           }
             else {
                 for argb in argb_u32 {
                     *argb = (*argb).rotate_right(8);
