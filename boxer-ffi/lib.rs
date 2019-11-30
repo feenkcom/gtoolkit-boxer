@@ -1,5 +1,6 @@
 #![allow(non_snake_case)]
 extern crate boxer;
+extern crate crossbeam;
 
 pub mod array_f32;
 pub mod array_point_f32;
