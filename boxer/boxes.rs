@@ -13,6 +13,23 @@ pub fn into_raw<T> (_box: Box<T>) -> *mut T {
     Box::into_raw(_box)
 }
 
+#[inline]
+pub fn assert_box<T>(_ptr: *mut ValueBox<T>, method_name: &str) {
+    if cfg!(debug_assertions) {
+        if _ptr.is_null() {
+            eprintln!("[{:?}] ValueBox<{}> pointer is null", method_name, std::any::type_name::<T>());
+            return;
+        }
+        let reference_box = unsafe { from_raw(_ptr) };
+        let pointer = reference_box.boxed();
+        into_raw(reference_box);
+
+        if pointer.is_null() {
+            eprintln!("[{:?}] {} pointer is null", method_name, std::any::type_name::<T>())
+        }
+    }
+}
+
 #[derive(Debug)]
 #[repr(C)]
 pub struct ValueBox<T> {
