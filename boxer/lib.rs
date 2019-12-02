@@ -26,7 +26,7 @@ macro_rules! function {
 pub fn assert_box<T>(_ptr: *mut ValueBox<T>, method_name: &str) {
     if cfg!(debug_assertions) {
         if _ptr.is_null() {
-            eprintln!("[{:?}] ValueBox<{}> pointer is null", method_name, std::any::type_name::<T>());
+            eprintln!("[{}] ValueBox<{}> pointer is null", method_name, std::any::type_name::<T>());
             return;
         }
         let reference_box = unsafe { from_raw(_ptr) };
@@ -34,7 +34,7 @@ pub fn assert_box<T>(_ptr: *mut ValueBox<T>, method_name: &str) {
         into_raw(reference_box);
 
         if pointer.is_null() {
-            eprintln!("[{:?}] {} pointer is null", method_name, std::any::type_name::<T>())
+            eprintln!("[{}] {} pointer is null", method_name, std::any::type_name::<T>())
         }
     }
 }
