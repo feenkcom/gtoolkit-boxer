@@ -43,5 +43,6 @@ impl<T> BoxerSize<T> where T: From<u8> + Default + Copy {
 }
 
 pub type BoxerSizeU64 = BoxerSize<u64>;
+pub type BoxerSizeF32 = BoxerSize<f32>;
 pub type BoxerSizeF64 = BoxerSize<f64>;
 pub type BoxerSizeI32 = BoxerSize<i32>;
