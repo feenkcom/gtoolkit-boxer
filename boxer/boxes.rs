@@ -63,6 +63,7 @@ impl<T> Drop for ValueBox<T> {
 }
 
 pub trait ValueBoxPointer<T> {
+    fn is_valid(self) -> bool;
     fn as_option(self) -> Option<*mut ValueBox<T>>;
     fn as_box(self) -> Option<Box<T>>;
     fn mutate(&self, object: T);
@@ -84,6 +85,17 @@ pub trait ValueBoxPointer<T> {
 }
 
 impl<T> ValueBoxPointer<T> for *mut ValueBox<T> {
+    fn is_valid(self) -> bool {
+        if self.is_null() {
+            return false
+        };
+
+        let value_box =  unsafe { from_raw(self) };
+        let is_valid = !value_box.boxed().is_null();
+        into_raw(value_box);
+        is_valid
+    }
+
     fn as_option(self) -> Option<*mut ValueBox<T>> {
         if self.is_null() {
             None
