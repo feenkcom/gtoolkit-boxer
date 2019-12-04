@@ -35,7 +35,7 @@ GtBoxerArrayPointF32 >> asPoints [
 
 { #category : #'private - ffi' }
 GtBoxerArrayPointF32 >> externalType [
-	^ GtBoxerPointF32Structure
+	^ FFIExternalStructureType objectClass: GtBoxerPointF32Structure
 ]
 
 { #category : #'private - ffi' }
