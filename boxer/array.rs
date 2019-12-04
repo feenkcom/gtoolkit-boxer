@@ -63,6 +63,16 @@ impl<T> BoxerArray<T> {
         unsafe { std::slice::from_raw_parts_mut(self.data, self.length) }
     }
 
+    pub fn to_vector(self) -> Vec<T> where T: Clone{
+        let vector = unsafe { Vec::from_raw_parts(self.data, self.length, self.capacity) };
+        if self.owned {
+            vector
+        }
+        else {
+            vector.clone()
+        }
+    }
+
     pub fn at_put(&mut self, index: usize, object: T) {
         assert!(index < self.length, "Index must be less than array length");
 

@@ -86,11 +86,19 @@ impl BoxerString {
 
 pub trait BoxerStringPointer {
     fn with<Block, Return>(&self, block: Block) -> Return where Block : FnOnce(&mut Box<BoxerString>) -> Return;
+    fn with_not_null<Block>(&self, block: Block) where Block : FnOnce(&mut Box<BoxerString>);
 }
 
 impl BoxerStringPointer for *mut BoxerString {
     fn with<Block, Return>(&self, block: Block) -> Return where Block: FnOnce(&mut Box<BoxerString>) -> Return {
         CBox::with_raw(*self, block)
+    }
+
+    fn with_not_null<Block>(&self, block: Block) where Block: FnOnce(&mut Box<BoxerString>) {
+       CBox::with_optional_raw(*self, |option| match option {
+           None => {}
+           Some(string) => { block(string) }
+        })
     }
 }
 
