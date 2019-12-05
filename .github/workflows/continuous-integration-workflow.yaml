@@ -11,15 +11,15 @@ jobs:
             matrix:
                 variant:
                     - os: ubuntu-18.04
-                      artifact: lib$LIBRARY.so
+                      artifact: lib
                       extension: .so
                       deploy: linux
                     - os: macos-latest
-                      artifact: lib$LIBRARY.dylib
+                      artifact: lib
                       extension: .dylib
                       deploy: osx
                     - os: windows-latest
-                      artifact: $LIBRARY.dll
+                      artifact: ''
                       extension: .dll
                       deploy: windows
         steps:
@@ -37,8 +37,8 @@ jobs:
             - name: Deploy
               uses: garygrossgarten/github-action-scp@release
               with:
-                  local: target/release/libBoxer.so
-                  remote: /var/www/html/boxer/linux/development/x86_64/libBoxer.so
-                  host: ec2-3-122-60-80.eu-central-1.compute.amazonaws.com
+                  local: target/release/${{matrix.variant.artifact}}${{LIBRARY}}.${{matrix.variant.extension}}
+                  remote: /var/www/html/${{LIBRARY}}/${{matrix.variant.deploy}}/development/x86_64/lib${{LIBRARY}}.${{matrix.variant.extension}}
+                  host: ${{ secrets.FEENK_CLOUD }}
                   username: ubuntu
                   privateKey: ${{ secrets.SSH_KEY }}
