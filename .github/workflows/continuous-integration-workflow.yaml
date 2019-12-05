@@ -2,15 +2,26 @@ name: Continuous integration
 on: [push, pull_request]
 
 jobs:
-    build-unixes:
-        name: Build Unixes
+    build:
+        name: Build
+        env:
+            LIBRARY: Boxer
         runs-on: ${{ matrix.variant.os }}
         strategy:
             matrix:
                 variant:
                     - os: ubuntu-18.04
+                      artifact: lib$LIBRARY.so
+                      extension: .so
+                      deploy: linux
                     - os: macos-latest
+                      artifact: lib$LIBRARY.dylib
+                      extension: .dylib
+                      deploy: osx
                     - os: windows-latest
+                      artifact: $LIBRARY.dll
+                      extension: .dll
+                      deploy: windows
         steps:
             - uses: actions/checkout@master
             - name: Install latest stable
@@ -23,3 +34,8 @@ jobs:
               with:
                 command: build
                 args: --release
+            - name: Deploy
+              uses: garygrossgarten/github-action-scp@release
+              with:
+                  host: ${{ secrets.FEENK_CLOUD }}
+                  privateKey: ${{ secrets.SSH_KEY }}
