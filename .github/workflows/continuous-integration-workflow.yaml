@@ -11,17 +11,17 @@ jobs:
             matrix:
                 variant:
                     - os: ubuntu-18.04
-                      artifact: lib
+                      prefix: lib
                       extension: .so
-                      deploy: linux
+                      platform: linux
                     - os: macos-latest
-                      artifact: lib
+                      prefix: lib
                       extension: .dylib
-                      deploy: osx
+                      platform: osx
                     - os: windows-latest
-                      artifact: ''
+                      prefix: ''
                       extension: .dll
-                      deploy: windows
+                      platform: windows
         steps:
             - uses: actions/checkout@master
             - name: Install latest stable
@@ -37,8 +37,8 @@ jobs:
             - name: Deploy
               uses: garygrossgarten/github-action-scp@release
               with:
-                  local: target/release/${{matrix.variant.artifact}}${{env.LIBRARY}}${{matrix.variant.extension}}
-                  remote: "/var/www/html/$LIBRARY/${{matrix.variant.deploy}}/development/x86_64/lib$LIBRARY${{matrix.variant.extension}}"
+                  local: target/release/${{matrix.variant.prefix}}${{env.LIBRARY}}${{matrix.variant.extension}}
+                  remote: /var/www/html/${{env.LIBRARY}}/${{matrix.variant.platform}}/development/x86_64/lib${{env.LIBRARY}}${{matrix.variant.extension}}
                   host: ${{ secrets.FEENK_CLOUD }}
                   username: ubuntu
                   privateKey: ${{ secrets.SSH_KEY }}
