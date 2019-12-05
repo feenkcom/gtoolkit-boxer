@@ -1,16 +1,31 @@
-name: Continuous integration
-on: [push, pull_request]
+name: Cargo Build
+
+on:
+  push:
+    branches:    
+      - master
 
 jobs:
-    build-unixes:
-        name: Build Unixes
+    build:
+        name: Build
+        env:
+            LIBRARY: Boxer
         runs-on: ${{ matrix.variant.os }}
         strategy:
             matrix:
                 variant:
                     - os: ubuntu-18.04
+                      prefix: lib
+                      extension: .so
+                      platform: linux
                     - os: macos-latest
+                      prefix: lib
+                      extension: .dylib
+                      platform: osx
                     - os: windows-latest
+                      prefix: ''
+                      extension: .dll
+                      platform: windows
         steps:
             - uses: actions/checkout@master
             - name: Install latest stable
@@ -23,3 +38,11 @@ jobs:
               with:
                 command: build
                 args: --release
+            - name: Deploy
+              uses: garygrossgarten/github-action-scp@release
+              with:
+                  local: target/release/${{matrix.variant.prefix}}${{env.LIBRARY}}${{matrix.variant.extension}}
+                  remote: /var/www/html/${{env.LIBRARY}}/${{matrix.variant.platform}}/development/x86_64/lib${{env.LIBRARY}}${{matrix.variant.extension}}
+                  host: ${{ secrets.FEENK_CLOUD }}
+                  username: ubuntu
+                  privateKey: ${{ secrets.SSH_KEY }}
