@@ -135,6 +135,22 @@ fn test_argb_to_rgba() {
 }
 
 #[test]
+fn test_rgba_to_argb() {
+    let rgba = boxer_array_u8_create_with(0, 4);
+    boxer_array_u8_at_put(rgba, 0, 0);
+    boxer_array_u8_at_put(rgba, 1, 100);
+    boxer_array_u8_at_put(rgba, 2, 200);
+    boxer_array_u8_at_put(rgba, 3, 255);
+
+    boxer_array_u8_rgba_to_argb(rgba);
+
+    assert_eq!(boxer_array_u8_at(rgba, 0), 255);
+    assert_eq!(boxer_array_u8_at(rgba, 1), 0);
+    assert_eq!(boxer_array_u8_at(rgba, 2), 100);
+    assert_eq!(boxer_array_u8_at(rgba, 3), 200);
+}
+
+#[test]
 fn test_bgra_to_argb() {
     let bgra = boxer_array_u8_create_with(0, 4);
     boxer_array_u8_at_put(bgra, 0, 0);

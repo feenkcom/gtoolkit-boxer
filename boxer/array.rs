@@ -69,7 +69,10 @@ impl<T> BoxerArray<T> {
             vector
         }
         else {
-            vector.clone()
+            let clone = vector.clone();
+            // do not de-allocate
+            std::mem::forget(vector);
+            clone
         }
     }
 
