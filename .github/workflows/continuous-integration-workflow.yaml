@@ -11,14 +11,14 @@ jobs:
             matrix:
                 variant:
                     - os: ubuntu-18.04
-                      artifact: lib$LIBRARY.so
-                      deploy: /var/www/html/$LIBRARY/linux/development/x86_64/lib$LIBRARY.so
+                      extension: .so
+                      deploy: linux
                     - os: macos-latest
-                      artifact: lib$LIBRARY.dylib
-                      deploy: /var/www/html/$LIBRARY/osx/development/x86_64/lib$LIBRARY.dylib
+                      extension: .dylib
+                      deploy: osx
                     - os: windows-latest
-                      artifact: $LIBRARY.dll
-                      deploy: /var/www/html/$LIBRARY/windows/development/x86_64/lib$LIBRARY.dll
+                      extension: .dll
+                      deploy: windows
         steps:
             - uses: actions/checkout@master
             - name: Install latest stable
@@ -32,8 +32,7 @@ jobs:
                 command: build
                 args: --release
             - name: Deploy
-              uses: alinz/ssh-scp-action@master
+              uses: appleboy/scp-action@master
               with:
-                  key: ${{ secrets.SSH_KEY }}
                   host: ${{ secrets.FEENK_CLOUD }}
-                  
+                  key: ${{ secrets.SSH_KEY }}
