@@ -130,5 +130,5 @@ GtBoxerArrayU8 >> primRgbaToArgb [
 GtBoxerArrayU8 >> rgbaToArgb [
 	"in place transform me from rgba to argb"
 	
-	self primBgraToArgb
+	self primRgbaToArgb
 ]
