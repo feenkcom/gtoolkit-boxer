@@ -1,5 +1,9 @@
-name: Continuous integration
-on: [push, pull_request]
+name: Cargo Build
+
+on:
+  push:
+    branches:    
+      - master
 
 jobs:
     build:
