@@ -37,8 +37,8 @@ jobs:
             - name: Deploy
               uses: garygrossgarten/github-action-scp@release
               with:
-                  local: target/release/${{matrix.variant.artifact}}"$LIBRARY"${{matrix.variant.extension}}
-                  remote: /var/www/html/$LIBRARY/${{matrix.variant.deploy}}/development/x86_64/lib"$LIBRARY"${{matrix.variant.extension}}
+                  local: target/release/${{matrix.variant.artifact}}${{env.LIBRARY}}${{matrix.variant.extension}}
+                  remote: "/var/www/html/$LIBRARY/${{matrix.variant.deploy}}/development/x86_64/lib$LIBRARY${{matrix.variant.extension}}"
                   host: ${{ secrets.FEENK_CLOUD }}
                   username: ubuntu
                   privateKey: ${{ secrets.SSH_KEY }}
