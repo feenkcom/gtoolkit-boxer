@@ -37,5 +37,7 @@ jobs:
             - name: Deploy
               uses: garygrossgarten/github-action-scp@release
               with:
+                  local: target/release/libBoxer.so
+                  remote: /var/www/html/boxer/linux/development/x86_64/libBoxer.so
                   host: ${{ secrets.FEENK_CLOUD }}
                   privateKey: ${{ secrets.SSH_KEY }}
