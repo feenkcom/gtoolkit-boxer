@@ -1,6 +1,6 @@
 use boxer::array::BoxerArrayPointF32;
-use boxer::point::BoxerPointF32;
 use boxer::boxes::{ValueBox, ValueBoxPointer};
+use boxer::point::BoxerPointF32;
 
 #[no_mangle]
 pub fn boxer_array_point_f32_create() -> *mut ValueBox<BoxerArrayPointF32> {
@@ -8,14 +8,18 @@ pub fn boxer_array_point_f32_create() -> *mut ValueBox<BoxerArrayPointF32> {
 }
 
 #[no_mangle]
-pub fn boxer_array_point_f32_create_with(element_ptr: *mut ValueBox<BoxerPointF32>, amount: usize) -> *mut ValueBox<BoxerArrayPointF32> {
-    element_ptr.with_value(|point| {
-        BoxerArrayPointF32::boxer_array_create_with(point, amount)
-    })
+pub fn boxer_array_point_f32_create_with(
+    element_ptr: *mut ValueBox<BoxerPointF32>,
+    amount: usize,
+) -> *mut ValueBox<BoxerArrayPointF32> {
+    element_ptr.with_value(|point| BoxerArrayPointF32::boxer_array_create_with(point, amount))
 }
 
 #[no_mangle]
-pub fn boxer_array_point_f32_create_from_data(_data: *mut BoxerPointF32, amount: usize) -> *mut ValueBox<BoxerArrayPointF32> {
+pub fn boxer_array_point_f32_create_from_data(
+    _data: *mut BoxerPointF32,
+    amount: usize,
+) -> *mut ValueBox<BoxerArrayPointF32> {
     BoxerArrayPointF32::boxer_array_create_from_data(_data, amount)
 }
 
@@ -35,14 +39,16 @@ pub fn boxer_array_point_f32_get_capacity(_ptr: *mut ValueBox<BoxerArrayPointF32
 }
 
 #[no_mangle]
-pub fn boxer_array_point_f32_get_data(_ptr: *mut ValueBox<BoxerArrayPointF32>) -> *mut BoxerPointF32 {
+pub fn boxer_array_point_f32_get_data(
+    _ptr: *mut ValueBox<BoxerArrayPointF32>,
+) -> *mut BoxerPointF32 {
     BoxerArrayPointF32::boxer_array_get_data(_ptr)
 }
 
 #[cfg(test)]
 mod test {
-    use crate::point_f32::{boxer_point_f32_create, boxer_point_f32_default};
     use crate::array_point_f32::boxer_array_point_f32_create_with;
+    use crate::point_f32::{boxer_point_f32_create, boxer_point_f32_default};
 
     #[test]
     fn create_with_point() {

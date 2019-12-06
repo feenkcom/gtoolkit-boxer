@@ -2,7 +2,7 @@
 #[repr(C)]
 pub struct BoxerUint128 {
     pub high: u64,
-    pub low: u64
+    pub low: u64,
 }
 
 impl BoxerUint128 {
@@ -32,9 +32,9 @@ impl From<&BoxerUint128> for u128 {
 
 impl From<u128> for BoxerUint128 {
     fn from(number: u128) -> BoxerUint128 {
-        let low = number as u64 ;
+        let low = number as u64;
         let high = (number >> 64) as u64;
-        BoxerUint128 { high , low }
+        BoxerUint128 { high, low }
     }
 }
 

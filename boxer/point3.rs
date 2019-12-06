@@ -2,13 +2,19 @@ use crate::boxes::{ValueBox, ValueBoxPointer};
 
 #[derive(Debug, Copy, Clone, Default)]
 #[repr(C)]
-pub struct BoxerPoint3<T> where T: From<u8> + Default + Copy {
+pub struct BoxerPoint3<T>
+where
+    T: From<u8> + Default + Copy,
+{
     pub x: T,
     pub y: T,
     pub z: T,
 }
 
-impl<T> BoxerPoint3<T> where T: From<u8> + Default + Copy {
+impl<T> BoxerPoint3<T>
+where
+    T: From<u8> + Default + Copy,
+{
     pub fn be_zero(&mut self) {
         self.x = 0u8.into();
         self.y = 0u8.into();
@@ -19,15 +25,15 @@ impl<T> BoxerPoint3<T> where T: From<u8> + Default + Copy {
         BoxerPoint3::<T> { x, y, z }
     }
 
-    pub fn boxer_point_default() -> *mut ValueBox<BoxerPoint3<T>>{
+    pub fn boxer_point_default() -> *mut ValueBox<BoxerPoint3<T>> {
         ValueBox::new(BoxerPoint3::<T>::default()).into_raw()
     }
 
-    pub fn boxer_point_create(x: T,y: T, z: T) -> *mut ValueBox<BoxerPoint3<T>>{
+    pub fn boxer_point_create(x: T, y: T, z: T) -> *mut ValueBox<BoxerPoint3<T>> {
         ValueBox::new(BoxerPoint3::<T>::new(x, y, z)).into_raw()
     }
 
-    pub fn boxer_point_drop(_ptr: *mut ValueBox<BoxerPoint3<T>>)  {
+    pub fn boxer_point_drop(_ptr: *mut ValueBox<BoxerPoint3<T>>) {
         _ptr.drop();
     }
 

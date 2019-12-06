@@ -2,12 +2,18 @@ use crate::boxes::{ValueBox, ValueBoxPointer};
 
 #[derive(Debug, Copy, Clone, Default)]
 #[repr(C)]
-pub struct BoxerSize<T> where T: From<u8> + Default + Copy {
+pub struct BoxerSize<T>
+where
+    T: From<u8> + Default + Copy,
+{
     pub width: T,
     pub height: T,
 }
 
-impl<T> BoxerSize<T> where T: From<u8> + Default + Copy {
+impl<T> BoxerSize<T>
+where
+    T: From<u8> + Default + Copy,
+{
     pub fn be_zero(&mut self) {
         self.width = 0u8.into();
         self.height = 0u8.into();
@@ -17,11 +23,11 @@ impl<T> BoxerSize<T> where T: From<u8> + Default + Copy {
         BoxerSize::<T> { width, height }
     }
 
-    pub fn boxer_size_create() -> *mut ValueBox<BoxerSize<T>>{
+    pub fn boxer_size_create() -> *mut ValueBox<BoxerSize<T>> {
         ValueBox::new(BoxerSize::<T>::default()).into_raw()
     }
 
-    pub fn boxer_size_drop(_ptr: *mut ValueBox<BoxerSize<T>>)  {
+    pub fn boxer_size_drop(_ptr: *mut ValueBox<BoxerSize<T>>) {
         _ptr.drop();
     }
 
