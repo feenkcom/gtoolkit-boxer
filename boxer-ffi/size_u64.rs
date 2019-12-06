@@ -1,5 +1,5 @@
-use boxer::size::{BoxerSizeU64};
 use boxer::boxes::ValueBox;
+use boxer::size::BoxerSizeU64;
 
 #[no_mangle]
 pub fn boxer_size_u64_create() -> *mut ValueBox<BoxerSizeU64> {

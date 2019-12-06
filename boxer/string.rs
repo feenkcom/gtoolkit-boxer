@@ -1,7 +1,7 @@
-use std::ffi::CStr;
-use std::os::raw::c_char;
-use std::ffi::CString;
 use crate::CBox;
+use std::ffi::CStr;
+use std::ffi::CString;
+use std::os::raw::c_char;
 
 /**
  I represent a null-terminated string of a given length (without null character).
@@ -19,7 +19,7 @@ impl BoxerString {
     pub fn from_slice(slice: &str) -> Self {
         BoxerString {
             data: Self::vec_to_chars(slice),
-            length: slice.len()
+            length: slice.len(),
         }
     }
 
@@ -27,7 +27,7 @@ impl BoxerString {
     pub fn from_string(string: &String) -> Self {
         BoxerString {
             data: Self::vec_to_chars(string.as_str()),
-            length: string.len()
+            length: string.len(),
         }
     }
 
@@ -85,26 +85,39 @@ impl BoxerString {
 }
 
 pub trait BoxerStringPointer {
-    fn with<Block, Return>(&self, block: Block) -> Return where Block : FnOnce(&mut Box<BoxerString>) -> Return;
-    fn with_not_null<Block>(&self, block: Block) where Block : FnOnce(&mut Box<BoxerString>);
+    fn with<Block, Return>(&self, block: Block) -> Return
+    where
+        Block: FnOnce(&mut Box<BoxerString>) -> Return;
+    fn with_not_null<Block>(&self, block: Block)
+    where
+        Block: FnOnce(&mut Box<BoxerString>);
 }
 
 impl BoxerStringPointer for *mut BoxerString {
-    fn with<Block, Return>(&self, block: Block) -> Return where Block: FnOnce(&mut Box<BoxerString>) -> Return {
+    fn with<Block, Return>(&self, block: Block) -> Return
+    where
+        Block: FnOnce(&mut Box<BoxerString>) -> Return,
+    {
         CBox::with_raw(*self, block)
     }
 
-    fn with_not_null<Block>(&self, block: Block) where Block: FnOnce(&mut Box<BoxerString>) {
-       CBox::with_optional_raw(*self, |option| match option {
-           None => {}
-           Some(string) => { block(string) }
+    fn with_not_null<Block>(&self, block: Block)
+    where
+        Block: FnOnce(&mut Box<BoxerString>),
+    {
+        CBox::with_optional_raw(*self, |option| match option {
+            None => {}
+            Some(string) => block(string),
         })
     }
 }
 
 impl Default for BoxerString {
     fn default() -> Self {
-        BoxerString { data: Self::vec_to_chars("") , length: 0 }
+        BoxerString {
+            data: Self::vec_to_chars(""),
+            length: 0,
+        }
     }
 }
 
@@ -119,7 +132,7 @@ impl Drop for BoxerString {
 #[test]
 fn default_string() {
     let _boxer_string = BoxerString::default();
-    let data = unsafe {  Vec::from_raw_parts(_boxer_string.data, 1, 1) };
+    let data = unsafe { Vec::from_raw_parts(_boxer_string.data, 1, 1) };
 
     assert_eq!(data, [0]);
     assert_eq!(_boxer_string.length, 0);
@@ -131,7 +144,13 @@ fn default_string() {
 #[test]
 fn from_string() {
     let _boxer_string = BoxerString::from_string(&String::from("HelloWorld"));
-    let data = unsafe {  Vec::from_raw_parts(_boxer_string.data, _boxer_string.length + 1, _boxer_string.length + 1) };
+    let data = unsafe {
+        Vec::from_raw_parts(
+            _boxer_string.data,
+            _boxer_string.length + 1,
+            _boxer_string.length + 1,
+        )
+    };
 
     assert_eq!(data, [72, 101, 108, 108, 111, 87, 111, 114, 108, 100, 0]);
     assert_eq!(_boxer_string.length, 10);
@@ -143,7 +162,13 @@ fn from_string() {
 #[test]
 fn from_slice() {
     let _boxer_string = BoxerString::from_slice("HelloWorld");
-    let data = unsafe {  Vec::from_raw_parts(_boxer_string.data, _boxer_string.length + 1, _boxer_string.length + 1) };
+    let data = unsafe {
+        Vec::from_raw_parts(
+            _boxer_string.data,
+            _boxer_string.length + 1,
+            _boxer_string.length + 1,
+        )
+    };
 
     assert_eq!(data, [72, 101, 108, 108, 111, 87, 111, 114, 108, 100, 0]);
     assert_eq!(_boxer_string.length, 10);

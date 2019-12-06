@@ -12,7 +12,10 @@ pub fn boxer_array_u8_create_with(element: u8, amount: usize) -> *mut ValueBox<B
 }
 
 #[no_mangle]
-pub fn boxer_array_u8_create_from_data(_data: *mut u8, amount: usize) -> *mut ValueBox<BoxerArrayU8> {
+pub fn boxer_array_u8_create_from_data(
+    _data: *mut u8,
+    amount: usize,
+) -> *mut ValueBox<BoxerArrayU8> {
     BoxerArrayU8::boxer_array_create_from_data(_data, amount)
 }
 
@@ -37,18 +40,24 @@ pub fn boxer_array_u8_at_put(_ptr: *mut ValueBox<BoxerArrayU8>, index: usize, it
 }
 
 #[no_mangle]
-pub fn boxer_array_u8_at(_maybe_null_ptr: *mut ValueBox<BoxerArrayU8>, index: usize) -> u8 {
-    _maybe_null_ptr.with_not_null_return(0, |array|array.at(index))
+pub fn boxer_array_u8_at(_ptr: *mut ValueBox<BoxerArrayU8>, index: usize) -> u8 {
+    BoxerArrayU8::boxer_array_at(_ptr, index, 0)
 }
 
 /// In-place convert between color formats
-pub fn boxer_array_u8_convert_color_format<Block>(slice: &mut[u8], _converter: Block) where Block: Fn(u32) -> u32 + Send + Copy {
+pub fn boxer_array_u8_convert_color_format<Block>(slice: &mut [u8], _converter: Block)
+where
+    Block: Fn(u32) -> u32 + Send + Copy,
+{
     if slice.len() % 4 == 0 {
-        let slice_u32 = unsafe { std::slice::from_raw_parts_mut(slice.as_mut_ptr() as *mut u32, slice.len() / 4) };
+        let slice_u32 = unsafe {
+            std::slice::from_raw_parts_mut(slice.as_mut_ptr() as *mut u32, slice.len() / 4)
+        };
 
         if slice_u32.len() > 512 {
             let threads = 16;
-            let chunk_size = slice_u32.len() / threads + if slice_u32.len() % threads != 0 { 1 } else { 0 };
+            let chunk_size =
+                slice_u32.len() / threads + if slice_u32.len() % threads != 0 { 1 } else { 0 };
 
             // Scoped threads allow the compiler to prove that no threads will outlive
             // table (which would be bad).
@@ -65,8 +74,7 @@ pub fn boxer_array_u8_convert_color_format<Block>(slice: &mut[u8], _converter: B
                 // `crossbeam::scope` ensures that *all* spawned threads join before
                 // returning control back from this closure.
             });
-       }
-        else {
+        } else {
             for color in slice_u32 {
                 *color = _converter(*color);
             }
