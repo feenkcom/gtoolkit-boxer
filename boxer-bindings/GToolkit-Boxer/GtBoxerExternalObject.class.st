@@ -57,6 +57,11 @@ GtBoxerExternalObject class >> newDuring: aBlock [
 	^ self fromNativeHandle: self primCreate during: aBlock
 ]
 
+{ #category : #'instance creation' }
+GtBoxerExternalObject class >> null [
+	^ self fromHandle: ExternalAddress new
+]
+
 { #category : #'private - ffi' }
 GtBoxerExternalObject class >> primCreate [
 	"^ self ffiCall: #(void* lib_object_default())"
