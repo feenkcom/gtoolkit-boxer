@@ -26,6 +26,15 @@ GtBoxerArrayUInt class >> primRelease: aHandle [
 	self ffiCall: #(void boxer_array_uint_drop(void* aHandle))
 ]
 
+{ #category : #'instance creation' }
+GtBoxerArrayUInt class >> withAll: aCollectionOfNumbers during: aBlock [	
+	^ self
+		fromNativeHandle: (self primCreateNew: aCollectionOfNumbers size withAll: 0)
+		during: [ :aGtBoxerArray |
+			aCollectionOfNumbers withIndexDo: [ :eachNumber :eachIndex | aGtBoxerArray at: eachIndex put: eachNumber ].
+			aBlock value: aGtBoxerArray ]
+]
+
 { #category : #accessing }
 GtBoxerArrayUInt >> at: anIndex [
 	^ self primAt: anIndex - 1
