@@ -48,6 +48,7 @@ where
     }
 }
 
+pub type BoxerSizeU32 = BoxerSize<u32>;
 pub type BoxerSizeU64 = BoxerSize<u64>;
 pub type BoxerSizeF32 = BoxerSize<f32>;
 pub type BoxerSizeF64 = BoxerSize<f64>;
