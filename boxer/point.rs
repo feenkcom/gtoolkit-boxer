@@ -67,3 +67,4 @@ where
 pub type BoxerPointU64 = BoxerPoint<u64>;
 pub type BoxerPointF64 = BoxerPoint<f64>;
 pub type BoxerPointF32 = BoxerPoint<f32>;
+pub type BoxerPointI32 = BoxerPoint<i32>;
