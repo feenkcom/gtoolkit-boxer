@@ -70,6 +70,13 @@ impl<T> BoxerArray<T> {
         unsafe { std::slice::from_raw_parts_mut(self.data, self.length) }
     }
 
+    pub fn copy_into(&self, another_array: &mut BoxerArray<T>) {
+        assert!(self.length <= another_array.length, "The source does not fit into destination");
+        assert!(!self.data.is_null(), "The source data must not be nil");
+        assert!(!another_array.data.is_null(), "The destination data must not be nil");
+        unsafe { std::ptr::copy_nonoverlapping::<T>(self.data, another_array.data, self.length) }
+    }
+
     pub fn to_vector(self) -> Vec<T>
     where
         T: Clone,
@@ -140,6 +147,11 @@ impl<T> BoxerArray<T>
 where
     T: Default + Copy,
 {
+
+    pub fn boxer_array_byte_size(count: usize) -> usize {
+        std::mem::size_of::<T>() * count
+    }
+
     pub fn boxer_array_create() -> *mut ValueBox<BoxerArray<T>> {
         ValueBox::new(BoxerArray::<T>::default()).into_raw()
     }
@@ -157,6 +169,23 @@ where
 
     pub fn boxer_array_drop(_ptr: *mut ValueBox<BoxerArray<T>>) {
         _ptr.drop();
+    }
+
+    pub fn boxer_array_copy_into(_maybe_null_source_ptr: *mut ValueBox<BoxerArray<T>>, _maybe_null_destination_ptr: *mut ValueBox<BoxerArray<T>>) {
+        _maybe_null_source_ptr.with_not_null(|source| {
+            _maybe_null_destination_ptr.with_not_null(|destination| {
+                source.copy_into(destination);
+            })
+        })
+    }
+
+    pub fn boxer_array_copy_into_data(_maybe_null_source_ptr: *mut ValueBox<BoxerArray<T>>, _destination_data: *mut T, length: usize) {
+        _maybe_null_source_ptr.with_not_null(|source| {
+            assert!(source.length <= length, "The source does not fit into destination");
+            assert!(!source.data.is_null(), "The source data must not be nil");
+            assert!(!_destination_data.is_null(), "The destination data must not be nil");
+            unsafe { std::ptr::copy_nonoverlapping::<T>(source.data, _destination_data, length) }
+        })
     }
 
     pub fn boxer_array_get_length(_maybe_null_ptr: *mut ValueBox<BoxerArray<T>>) -> usize {

@@ -2,6 +2,11 @@ use boxer::array::BoxerArrayU8;
 use boxer::boxes::{ValueBox, ValueBoxPointer};
 
 #[no_mangle]
+pub fn boxer_array_u8_byte_size(count: usize) -> usize {
+    BoxerArrayU8::boxer_array_byte_size(count)
+}
+
+#[no_mangle]
 pub fn boxer_array_u8_create() -> *mut ValueBox<BoxerArrayU8> {
     BoxerArrayU8::boxer_array_create()
 }
@@ -17,6 +22,16 @@ pub fn boxer_array_u8_create_from_data(
     amount: usize,
 ) -> *mut ValueBox<BoxerArrayU8> {
     BoxerArrayU8::boxer_array_create_from_data(_data, amount)
+}
+
+#[no_mangle]
+pub fn boxer_array_u8_copy_into(_ptr_src: *mut ValueBox<BoxerArrayU8>, _ptr_dst: *mut ValueBox<BoxerArrayU8>) {
+    BoxerArrayU8::boxer_array_copy_into(_ptr_src, _ptr_dst);
+}
+
+#[no_mangle]
+pub fn boxer_array_u8_copy_into_data(_ptr_src: *mut ValueBox<BoxerArrayU8>, _data: *mut u8, amount: usize) {
+    BoxerArrayU8::boxer_array_copy_into_data(_ptr_src, _data, amount);
 }
 
 #[no_mangle]
@@ -124,6 +139,13 @@ pub fn boxer_array_u8_rgba_to_argb(_ptr: *mut ValueBox<BoxerArrayU8>) {
 #[no_mangle]
 pub fn boxer_array_u8_drop(_ptr: *mut ValueBox<BoxerArrayU8>) {
     BoxerArrayU8::boxer_array_drop(_ptr);
+}
+
+#[test]
+fn test_byte_size() {
+    assert_eq!(boxer_array_u8_byte_size(0), 0);
+    assert_eq!(boxer_array_u8_byte_size(1), 1);
+    assert_eq!(boxer_array_u8_byte_size(2), 2);
 }
 
 #[test]
