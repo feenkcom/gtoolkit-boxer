@@ -4,6 +4,11 @@ Class {
 	#category : #'GToolkit-Boxer-Core'
 }
 
+{ #category : #accessing }
+GtBoxerArrayU8 class >> byteSize: anAmountOfBytes [
+	^ self primByteSize: anAmountOfBytes
+]
+
 { #category : #'instance creation' }
 GtBoxerArrayU8 class >> fromBitmap: aBitmap during: aBlock [
 	"I create a boxer array that does not own a given data for duration of a block"
@@ -22,6 +27,11 @@ GtBoxerArrayU8 class >> fromByteArray: aByteArray during: aBlock [
 	wasPinned := aByteArray pinInMemory.
 	^ [ self fromHandle: aByteArray size: aByteArray size during: aBlock ]
 		ensure: [ aByteArray setPinnedInMemory: wasPinned ]
+]
+
+{ #category : #'private - ffi' }
+GtBoxerArrayU8 class >> primByteSize: aCount [
+	^ self ffiCall: #(size_t boxer_array_u8_byte_size(size_t aCount))
 ]
 
 { #category : #'private - ffi' }
@@ -76,7 +86,12 @@ GtBoxerArrayU8 >> asBitmap [
 
 { #category : #converting }
 GtBoxerArrayU8 >> asByteArray [
-	^ self data asByteArray
+	<return: #ByteArray>
+	| aByteArray |
+	
+	aByteArray := ByteArray new: self size.
+	self copyIntoByteArray: aByteArray.
+	^ aByteArray
 ]
 
 { #category : #converting }
@@ -84,6 +99,11 @@ GtBoxerArrayU8 >> bgraToArgb [
 	"in place transform me from bgra to argb"
 	
 	self primBgraToArgb
+]
+
+{ #category : #copying }
+GtBoxerArrayU8 >> copyIntoByteArray: aByteArray [
+	self primCopyIntoData: aByteArray length: aByteArray size
 ]
 
 { #category : #'private - ffi' }
@@ -104,6 +124,16 @@ GtBoxerArrayU8 >> primAt: anIndex put: anItem [
 { #category : #'private - ffi' }
 GtBoxerArrayU8 >> primBgraToArgb [
 	^ self ffiCall: #(void boxer_array_u8_bgra_to_argb(self))
+]
+
+{ #category : #'private - ffi' }
+GtBoxerArrayU8 >> primCopyInto: aGtBoxerArrayU8 [
+	^ self ffiCall: #(void boxer_array_u8_copy_into(self, GtBoxerArrayU8 aGtBoxerArrayU8))
+]
+
+{ #category : #'private - ffi' }
+GtBoxerArrayU8 >> primCopyIntoData: anExternalAddress length: aLength [
+	^ self ffiCall: #(void boxer_array_u8_copy_into_data(self, void* anExternalAddress, size_t aLength))
 ]
 
 { #category : #'private - ffi' }

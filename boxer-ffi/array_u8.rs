@@ -25,6 +25,16 @@ pub fn boxer_array_u8_create_from_data(
 }
 
 #[no_mangle]
+pub fn boxer_array_u8_copy_into(_ptr_src: *mut ValueBox<BoxerArrayU8>, _ptr_dst: *mut ValueBox<BoxerArrayU8>) {
+    BoxerArrayU8::boxer_array_copy_into(_ptr_src, _ptr_dst);
+}
+
+#[no_mangle]
+pub fn boxer_array_u8_copy_into_data(_ptr_src: *mut ValueBox<BoxerArrayU8>, _data: *mut u8, amount: usize) {
+    BoxerArrayU8::boxer_array_copy_into_data(_ptr_src, _data, amount);
+}
+
+#[no_mangle]
 pub fn boxer_array_u8_get_length(_ptr: *mut ValueBox<BoxerArrayU8>) -> usize {
     BoxerArrayU8::boxer_array_get_length(_ptr)
 }
