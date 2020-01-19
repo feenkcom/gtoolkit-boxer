@@ -60,6 +60,19 @@ GtBoxerArray >> capacity [
 	^ self primGetCapacity
 ]
 
+{ #category : #copying }
+GtBoxerArray >> copyInto: anotherGtBoxerArray [
+	self
+		assert: [ self class == anotherGtBoxerArray class ]
+		description: [ 'Can only copy between similar arrays' ].
+		
+	self
+		assert: [ self size = anotherGtBoxerArray size ]
+		description: [ 'Can only copy between arrays of same length' ].
+		
+	self primCopyInto: anotherGtBoxerArray
+]
+
 { #category : #accessing }
 GtBoxerArray >> data [
 	| anExternalHandle |
@@ -121,6 +134,11 @@ GtBoxerArray >> gtItemsFor: aView [
 
 { #category : #'private - ffi' }
 GtBoxerArray >> primAt: anIndex put: anItem [
+	^ self subclassResponsibility
+]
+
+{ #category : #'private - ffi' }
+GtBoxerArray >> primCopyInto: aGtBoxerArray [
 	^ self subclassResponsibility
 ]
 
