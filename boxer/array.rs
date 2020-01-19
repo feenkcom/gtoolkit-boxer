@@ -179,6 +179,15 @@ where
         })
     }
 
+    pub fn boxer_array_copy_into_data(_maybe_null_source_ptr: *mut ValueBox<BoxerArray<T>>, _destination_data: *mut T, length: usize) {
+        _maybe_null_source_ptr.with_not_null(|source| {
+            assert!(source.length <= length, "The source does not fit into destination");
+            assert!(!source.data.is_null(), "The source data must not be nil");
+            assert!(!_destination_data.is_null(), "The destination data must not be nil");
+            unsafe { std::ptr::copy_nonoverlapping::<T>(source.data, _destination_data, length) }
+        })
+    }
+
     pub fn boxer_array_get_length(_maybe_null_ptr: *mut ValueBox<BoxerArray<T>>) -> usize {
         match _maybe_null_ptr.as_option() {
             None => 0,
