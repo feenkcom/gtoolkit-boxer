@@ -9,6 +9,11 @@ pub fn boxer_string_create() -> *mut BoxerString {
 }
 
 #[no_mangle]
+pub fn boxer_string_from_data(data: *mut c_char, length: usize) -> *mut BoxerString {
+    CBox::into_raw(BoxerString::from_data(data, length))
+}
+
+#[no_mangle]
 pub fn boxer_string_drop(_ptr: *mut BoxerString) {
     CBox::drop(_ptr)
 }
