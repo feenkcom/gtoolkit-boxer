@@ -50,6 +50,22 @@ GtBoxerExternalObject class >> new [
 ]
 
 { #category : #'instance creation' }
+GtBoxerExternalObject class >> new: anAmountOfObjects during: aBlock [
+	"I create anAmountOfObjects of new instances of me without auto-release to evaluate a given block
+	and then destroy all of them"
+	| anArrayOfObjects |
+
+	anArrayOfObjects := Array new: anAmountOfObjects.
+	^ [
+		anArrayOfObjects withIndexDo: [ :_ :anIndex |
+			anArrayOfObjects at: anIndex put: (self fromHandle: (self primCreate getHandle)) ].
+		aBlock value: anArrayOfObjects.
+	] ensure: [ anArrayOfObjects
+		select: [ :eachObject | eachObject isNotNil ]
+		thenDo: [ :eachObject | eachObject release ] ]
+]
+
+{ #category : #'instance creation' }
 GtBoxerExternalObject class >> newDuring: aBlock [
 	"I create a new instance of me without auto-release for to evaluate a given block
 	and then destroy me"

@@ -61,17 +61,16 @@ GtBoxerArrayU16 class >> primRelease: aHandle [
 { #category : #converting }
 GtBoxerArrayU16 >> asByteArray [
 	<return: #ByteArray>
-	| anExternalHandle |
+	| aByteArray |
 	
-	anExternalHandle := self primGetData getHandle.
-	anExternalHandle isNull
-		ifTrue: [ ^ #[] ].
+	aByteArray := ByteArray new: self size * 2.
+	self copyIntoByteArray: aByteArray.
+	^ aByteArray
+]
 
-	^ GtBoxer
-		externalArrayFromHandle: self primGetData
-		getHandle type: FFIUInt8
-		size: self size * 2
-		during: [ :anExternalArray | anExternalArray asByteArray ]
+{ #category : #converting }
+GtBoxerArrayU16 >> copyIntoByteArray: aByteArray [
+	self primCopyIntoData: aByteArray length: aByteArray size // 2
 ]
 
 { #category : #'private - ffi' }
@@ -82,6 +81,16 @@ GtBoxerArrayU16 >> externalType [
 { #category : #'private - ffi' }
 GtBoxerArrayU16 >> primAt: anIndex put: anItem [
 	^ self ffiCall: #(void boxer_array_u16_at_put(self, size_t anIndex, uint16 anItem))
+]
+
+{ #category : #'private - ffi' }
+GtBoxerArrayU16 >> primCopyInto: aGtBoxerArrayU16 [
+	^ self ffiCall: #(void boxer_array_u16_copy_into(self, GtBoxerArrayU16 aGtBoxerArrayU16))
+]
+
+{ #category : #'private - ffi' }
+GtBoxerArrayU16 >> primCopyIntoData: anExternalAddress length: aLength [
+	^ self ffiCall: #(void boxer_array_u16_copy_into_data(self, void* anExternalAddress, size_t aLength))
 ]
 
 { #category : #'private - ffi' }
