@@ -8,6 +8,7 @@ pub fn boxer_string_create() -> *mut BoxerString {
     CBox::into_raw(BoxerString::default())
 }
 
+#[no_mangle]
 pub fn boxer_string_from_data(data: *mut c_char, length: usize) -> *mut BoxerString {
     CBox::into_raw(BoxerString::from_data(data, length))
 }
