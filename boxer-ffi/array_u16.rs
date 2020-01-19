@@ -1,6 +1,12 @@
 use boxer::array::BoxerArrayU16;
 use boxer::boxes::ValueBox;
 
+
+#[no_mangle]
+pub fn boxer_array_u16_byte_size(count: usize) -> usize {
+    BoxerArrayU16::boxer_array_byte_size(count)
+}
+
 #[no_mangle]
 pub fn boxer_array_u16_create() -> *mut ValueBox<BoxerArrayU16> {
     BoxerArrayU16::boxer_array_create()

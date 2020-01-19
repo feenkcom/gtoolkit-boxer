@@ -140,6 +140,11 @@ impl<T> BoxerArray<T>
 where
     T: Default + Copy,
 {
+
+    pub fn boxer_array_byte_size(count: usize) -> usize {
+        std::mem::size_of::<T>() * count
+    }
+
     pub fn boxer_array_create() -> *mut ValueBox<BoxerArray<T>> {
         ValueBox::new(BoxerArray::<T>::default()).into_raw()
     }
