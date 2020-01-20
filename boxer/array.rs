@@ -71,9 +71,15 @@ impl<T> BoxerArray<T> {
     }
 
     pub fn copy_into(&self, another_array: &mut BoxerArray<T>) {
-        assert!(self.length <= another_array.length, "The source does not fit into destination");
+        assert!(
+            self.length <= another_array.length,
+            "The source does not fit into destination"
+        );
         assert!(!self.data.is_null(), "The source data must not be nil");
-        assert!(!another_array.data.is_null(), "The destination data must not be nil");
+        assert!(
+            !another_array.data.is_null(),
+            "The destination data must not be nil"
+        );
         unsafe { std::ptr::copy_nonoverlapping::<T>(self.data, another_array.data, self.length) }
     }
 
@@ -147,7 +153,6 @@ impl<T> BoxerArray<T>
 where
     T: Default + Copy,
 {
-
     pub fn boxer_array_byte_size(count: usize) -> usize {
         std::mem::size_of::<T>() * count
     }
@@ -171,7 +176,10 @@ where
         _ptr.drop();
     }
 
-    pub fn boxer_array_copy_into(_maybe_null_source_ptr: *mut ValueBox<BoxerArray<T>>, _maybe_null_destination_ptr: *mut ValueBox<BoxerArray<T>>) {
+    pub fn boxer_array_copy_into(
+        _maybe_null_source_ptr: *mut ValueBox<BoxerArray<T>>,
+        _maybe_null_destination_ptr: *mut ValueBox<BoxerArray<T>>,
+    ) {
         _maybe_null_source_ptr.with_not_null(|source| {
             _maybe_null_destination_ptr.with_not_null(|destination| {
                 source.copy_into(destination);
@@ -179,11 +187,21 @@ where
         })
     }
 
-    pub fn boxer_array_copy_into_data(_maybe_null_source_ptr: *mut ValueBox<BoxerArray<T>>, _destination_data: *mut T, length: usize) {
+    pub fn boxer_array_copy_into_data(
+        _maybe_null_source_ptr: *mut ValueBox<BoxerArray<T>>,
+        _destination_data: *mut T,
+        length: usize,
+    ) {
         _maybe_null_source_ptr.with_not_null(|source| {
-            assert!(source.length <= length, "The source does not fit into destination");
+            assert!(
+                source.length <= length,
+                "The source does not fit into destination"
+            );
             assert!(!source.data.is_null(), "The source data must not be nil");
-            assert!(!_destination_data.is_null(), "The destination data must not be nil");
+            assert!(
+                !_destination_data.is_null(),
+                "The destination data must not be nil"
+            );
             unsafe { std::ptr::copy_nonoverlapping::<T>(source.data, _destination_data, length) }
         })
     }

@@ -1,3 +1,4 @@
+use super::function;
 use crate::CBox;
 use std::ffi::CStr;
 use std::ffi::CString;
@@ -12,7 +13,7 @@ use std::os::raw::c_char;
 pub struct BoxerString {
     pub data: *mut c_char,
     pub length: usize,
-    pub owned: bool
+    pub owned: bool,
 }
 
 impl BoxerString {
@@ -21,16 +22,40 @@ impl BoxerString {
         BoxerString {
             data: Self::vec_to_chars(slice),
             length: slice.len(),
-            owned: true
+            owned: true,
         }
     }
 
-    // I create an instance of BoxerString without copying and not owning a given character buffer
+    /// I create an instance of BoxerString without copying and not owning a given character buffer
+    /// length must include the zero-byte
     pub fn from_data(data: *mut c_char, length: usize) -> Self {
-       BoxerString  {
-           data,
-           length,
-           owned: false
+        if cfg!(debug_assertions) {
+            if unsafe { *data.offset((length - 1) as isize) } != 0 {
+                eprintln!(
+                    "[{}] string buffer of length {} is not zero-terminated ({}):",
+                    function!(),
+                    length,
+                    unsafe { *data.offset((length - 1) as isize) }
+                );
+                eprintln!("[{}] {:?}", function!(), unsafe {
+                    std::slice::from_raw_parts(data, length)
+                });
+            }
+        }
+
+        let slice = unsafe { std::slice::from_raw_parts(data, length) };
+        slice.to_vec();
+
+        let mut copy_vec = slice.to_vec();
+
+        let ptr = copy_vec.as_mut_ptr();
+        let len = copy_vec.len();
+        std::mem::forget(copy_vec);
+
+        BoxerString {
+            data: ptr,
+            length: len - 1,
+            owned: true,
         }
     }
 
@@ -39,7 +64,7 @@ impl BoxerString {
         BoxerString {
             data: Self::vec_to_chars(string.as_str()),
             length: string.len(),
-            owned: true
+            owned: true,
         }
     }
 
@@ -132,7 +157,7 @@ impl Default for BoxerString {
         BoxerString {
             data: Self::vec_to_chars(""),
             length: 0,
-            owned: true
+            owned: true,
         }
     }
 }
@@ -163,6 +188,27 @@ fn default_string() {
 #[test]
 fn from_string() {
     let _boxer_string = BoxerString::from_string(&String::from("HelloWorld"));
+    let data = unsafe {
+        Vec::from_raw_parts(
+            _boxer_string.data,
+            _boxer_string.length + 1,
+            _boxer_string.length + 1,
+        )
+    };
+
+    assert_eq!(data, [72, 101, 108, 108, 111, 87, 111, 114, 108, 100, 0]);
+    assert_eq!(_boxer_string.length, 10);
+
+    // we don't want to take ownership over data
+    std::mem::forget(data);
+}
+
+#[test]
+fn from_data() {
+    let mut buffer = [72, 101, 108, 108, 111, 87, 111, 114, 108, 100, 0];
+    let _boxer_string = BoxerString::from_data(buffer.as_mut_ptr(), buffer.len());
+    buffer[0] = 0;
+
     let data = unsafe {
         Vec::from_raw_parts(
             _boxer_string.data,

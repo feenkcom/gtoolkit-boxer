@@ -8,6 +8,8 @@ pub fn boxer_string_create() -> *mut BoxerString {
     CBox::into_raw(BoxerString::default())
 }
 
+/// I copy the data.
+/// length must include the zero-byte
 #[no_mangle]
 pub fn boxer_string_from_data(data: *mut c_char, length: usize) -> *mut BoxerString {
     CBox::into_raw(BoxerString::from_data(data, length))
@@ -45,12 +47,12 @@ pub fn boxer_string_set_data(
     CBox::with_optional_raw(_string_ptr, |option| match option {
         None => {}
         Some(string) => {
-            if !_length == 0 {
+            if _length < 1 {
                 return;
             }
             let contents = BoxerString::chars_to_string(_data_utf8);
-            if contents.len() != _length {
-                eprintln!("[boxer_string_set] The actual size of the buffer ({:?}) differs from the given ({:?}) ", contents.len(), _length);
+            if contents.len() != (_length - 1) {
+                eprintln!("[boxer_string_set] The actual size of the buffer ({:?}) differs from the given ({:?}) ", contents.len(), (_length - 1));
             }
             string.set_string(contents);
         }
