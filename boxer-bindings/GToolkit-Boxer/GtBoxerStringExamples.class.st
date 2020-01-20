@@ -20,6 +20,70 @@ GtBoxerStringExamples >> default [
 	^ aString
 ]
 
+{ #category : #'instance creation' }
+GtBoxerStringExamples >> fromByteArray [
+	<gtExample>
+	| aBoxerString |
+	
+	aBoxerString := GtBoxerString fromByteArray: #[72 101 108 108 111 0].
+	self assert: aBoxerString string equals: 'Hello'.
+
+	^ aBoxerString
+]
+
+{ #category : #'instance creation' }
+GtBoxerStringExamples >> fromByteArrayDuring [
+	<gtExample>
+	
+	self assert: (GtBoxerString
+		fromByteArray: #[72 101 108 108 111 0]
+		during: [ :aGtBoxerString | aGtBoxerString string ])
+			equals: 'Hello'
+]
+
+{ #category : #'instance creation' }
+GtBoxerStringExamples >> fromEmptyByteArray [
+	<gtExample>
+	| aBoxerString |
+	
+	aBoxerString := GtBoxerString fromByteArray: #[0].
+	self assert: aBoxerString string equals: ''.
+
+	^ aBoxerString
+]
+
+{ #category : #'instance creation' }
+GtBoxerStringExamples >> fromEmptyString [
+	<gtExample>
+	| aBoxerString |
+	
+	aBoxerString := GtBoxerString fromString: ''.
+	self assert: aBoxerString string equals: ''.
+
+	^ aBoxerString
+]
+
+{ #category : #'instance creation' }
+GtBoxerStringExamples >> fromString [
+	<gtExample>
+	| aBoxerString |
+	
+	aBoxerString := GtBoxerString fromString: 'Hello'.
+	self assert: aBoxerString string equals: 'Hello'.
+
+	^ aBoxerString
+]
+
+{ #category : #'instance creation' }
+GtBoxerStringExamples >> fromStringDuring [
+	<gtExample>
+	
+	self assert: (GtBoxerString
+		fromString: 'Hello'
+		during: [ :aGtBoxerString | aGtBoxerString string ])
+			equals: 'Hello'
+]
+
 { #category : #'examples - null ptr' }
 GtBoxerStringExamples >> getLengthFromReleased [
 	<gtExample>
@@ -75,6 +139,21 @@ GtBoxerStringExamples >> releaseTwice [
 	aString release.
 	self assert: aString isNull.
 
+	^ aString
+]
+
+{ #category : #accessing }
+GtBoxerStringExamples >> withStringEmpty [
+	<gtExample>
+	| aString |
+	
+	aString := self default.
+	aString string: ''.
+	
+	self assert: aString size equals: 0.
+	self assert: aString length equals: 0.
+	self assert: aString string equals: ''.
+	
 	^ aString
 ]
 
