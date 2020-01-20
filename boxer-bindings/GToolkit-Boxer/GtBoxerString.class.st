@@ -5,13 +5,66 @@ Class {
 }
 
 { #category : #'instance creation' }
+GtBoxerString class >> fromByteArray: aByteArray [
+	"I create an auto-release string that copies a given data.
+	The last element of the aByteArray must be 0"
+
+	self
+		assert: [ aByteArray last isZero ]
+		description: [ 'A string must be created from a null-terminated byte array' ].
+
+	^ self
+		fromHandle: aByteArray
+		size: aByteArray size
+]
+
+{ #category : #'instance creation' }
+GtBoxerString class >> fromByteArray: aByteArray during: aBlock [
+	"I create a string that copies a given data for duration of a block.
+	The last element of the aByteArray must be 0"
+
+	self
+		assert: [ aByteArray last isZero ]
+		description: [ 'A string must be created from a null-terminated byte array' ].
+
+	^ self
+		fromHandle: aByteArray
+		size: aByteArray size
+		during: aBlock
+]
+
+{ #category : #'private - instance creation' }
+GtBoxerString class >> fromHandle: anExternalAddress size: aSize [
+	"anExternalAddress should not neccesseraly overlive the string, because it will be copied"
+
+	^ self fromNativeHandle: (self primCreateFromData: anExternalAddress size: aSize)
+]
+
+{ #category : #'private - instance creation' }
+GtBoxerString class >> fromHandle: anExternalAddress size: aSize during: aBlock [
+	"anExternalAddress should not neccesseraly overlive the string, because it will be copied"
+
+	^ self fromNativeHandle: (self primCreateFromData: anExternalAddress size: aSize) during: aBlock
+]
+
+{ #category : #'instance creation' }
 GtBoxerString class >> fromString: aString [
-	^ self new string: aString
+	self
+		assert: [ aString isNotNil ]
+		description: [ 'String must not be nil' ].
+
+	^ self fromByteArray: (self stringToByteArray: aString)
 ]
 
 { #category : #'instance creation' }
 GtBoxerString class >> fromString: aString during: aBlock [
-	^ self newDuring: [ :aBoxerString | aBlock value: (aBoxerString string: aString) ]
+	self
+		assert: [ aString isNotNil ]
+		description: [ 'String must not be nil' ].
+	
+	^ self
+		fromByteArray: (self stringToByteArray: aString)
+		during: aBlock
 ]
 
 { #category : #'instance creation' }
@@ -34,10 +87,26 @@ GtBoxerString class >> primCreate [
 ]
 
 { #category : #'private - ffi' }
+GtBoxerString class >> primCreateFromData: anExternalAddress size: aSize [
+	^ self ffiCall: #(void* boxer_string_from_data(void* anExternalAddress, size_t aSize))
+]
+
+{ #category : #'private - ffi' }
 GtBoxerString class >> primRelease: aHandle [
 	
 	"Plain pointers must be deleted using delete(), all users must implement a specific method"
 	self ffiCall: #(void boxer_string_drop(void* aHandle))
+]
+
+{ #category : #'instance creation' }
+GtBoxerString class >> stringToByteArray: aString [
+	^ ByteArray streamContents: [ :aStream |
+		ZnUTF8Encoder new 
+			next: aString size 
+			putAll: aString asString
+			startingAt: 1 
+			toStream: aStream.
+		aStream nextPut: 0 ]
 ]
 
 { #category : #converting }
@@ -120,19 +189,8 @@ GtBoxerString >> string: aString [
 		description: [ 'String must not be nil' ].
 
 	"null-terminated utf-8 encoded string"
-	anEncodedString := ByteArray streamContents: [ :aStream |
-		ZnUTF8Encoder new 
-			next: aString size 
-			putAll: aString asString
-			startingAt: 1 
-			toStream: aStream.
-		aStream nextPut: 0 ].
-	
-	GtBoxer
-		externalArrayNewType: FFIUInt8
-		size: anEncodedString size
-		during: [ :anExternalArray |
-			anExternalArray atAll: (1 to: anEncodedString size) putAll: anEncodedString.
-			"anEncodedString size - 1 because we should not include a null char in amount of characters"
-			self primSetData: anExternalArray getHandle length: (anEncodedString size - 1) ]
+	anEncodedString := self class stringToByteArray: aString.
+
+	"anEncodedString size - 1 because we should not include a null char in amount of characters"
+	self primSetData: anEncodedString length: anEncodedString size
 ]
