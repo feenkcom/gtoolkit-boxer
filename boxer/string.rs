@@ -12,6 +12,7 @@ use std::os::raw::c_char;
 pub struct BoxerString {
     pub data: *mut c_char,
     pub length: usize,
+    pub owned: bool
 }
 
 impl BoxerString {
@@ -20,6 +21,16 @@ impl BoxerString {
         BoxerString {
             data: Self::vec_to_chars(slice),
             length: slice.len(),
+            owned: true
+        }
+    }
+
+    // I create an instance of BoxerString without copying and not owning a given character buffer
+    pub fn from_data(data: *mut c_char, length: usize) -> Self {
+       BoxerString  {
+           data,
+           length,
+           owned: false
         }
     }
 
@@ -28,6 +39,7 @@ impl BoxerString {
         BoxerString {
             data: Self::vec_to_chars(string.as_str()),
             length: string.len(),
+            owned: true
         }
     }
 
@@ -44,9 +56,12 @@ impl BoxerString {
     /// Mutate me to hold a copy of a given string in C format
     pub fn set_string(&mut self, string: String) {
         // first free existing char buffer
-        Self::free_chars(self.data);
+        if self.owned {
+            Self::free_chars(self.data);
+        }
         self.data = Self::vec_to_chars(string.as_str());
-        self.length = string.len()
+        self.length = string.len();
+        self.owned = true;
     }
 
     /// Return a slice of character bytes
@@ -117,6 +132,7 @@ impl Default for BoxerString {
         BoxerString {
             data: Self::vec_to_chars(""),
             length: 0,
+            owned: true
         }
     }
 }
@@ -124,8 +140,11 @@ impl Default for BoxerString {
 impl Drop for BoxerString {
     fn drop(&mut self) {
         self.length = 0;
-        Self::free_chars(self.data);
+        if self.owned {
+            Self::free_chars(self.data);
+        }
         self.data = std::ptr::null_mut();
+        self.owned = false;
     }
 }
 
