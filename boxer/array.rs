@@ -83,12 +83,15 @@ impl<T> BoxerArray<T> {
         unsafe { std::ptr::copy_nonoverlapping::<T>(self.data, another_array.data, self.length) }
     }
 
-    pub fn to_vector(self) -> Vec<T>
+    pub fn to_vector(&mut self) -> Vec<T>
     where
         T: Clone,
     {
         let vector = unsafe { Vec::from_raw_parts(self.data, self.length, self.capacity) };
         if self.owned {
+            // I do not own data anymore
+            self.owned = false;
+            self.data = std::ptr::null_mut();
             vector
         } else {
             let clone = vector.clone();
