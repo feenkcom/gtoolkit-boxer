@@ -1,6 +1,6 @@
 use crate::boxes::{ValueBox, ValueBoxPointer};
 use crate::point::BoxerPointF32;
-use std::os::raw::c_uint;
+use std::os::raw::{c_uint, c_int};
 
 #[derive(Debug)]
 #[repr(C)]
@@ -252,6 +252,7 @@ where
 pub type BoxerArrayU8 = BoxerArray<u8>;
 pub type BoxerArrayU16 = BoxerArray<u16>;
 pub type BoxerArrayUInt = BoxerArray<c_uint>;
+pub type BoxerArrayInt = BoxerArray<c_int>;
 pub type BoxerArrayF32 = BoxerArray<f32>;
 pub type BoxerArrayPointF32 = BoxerArray<BoxerPointF32>;
 
