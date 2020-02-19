@@ -23,6 +23,11 @@ GtBoxerArray class >> new: aSize withAll: aValue [
 	^ self fromNativeHandle: (self primCreateNew: aSize withAll: aValue)
 ]
 
+{ #category : #'instance creation' }
+GtBoxerArray class >> new: aSize withAll: aValue during: aBlock [
+	^ self fromNativeHandle: (self primCreateNew: aSize withAll: aValue) during: aBlock
+]
+
 { #category : #'private - ffi' }
 GtBoxerArray class >> primCreateFromData: anExternalAddress size: aSize [
 	"
@@ -51,6 +56,14 @@ GtBoxerArray >> at: anIndex [
 { #category : #accessing }
 GtBoxerArray >> at: anIndex put: anItem [
 	self primAt: anIndex - 1 put: anItem
+]
+
+{ #category : #accessing }
+GtBoxerArray >> atAll: indexArray putAll: valueArray [
+	"Store the elements of valueArray into the slots
+	of this collection selected by indexArray."
+
+	indexArray with: valueArray do: [:index :value | self at: index put: value]
 ]
 
 { #category : #accessing }
