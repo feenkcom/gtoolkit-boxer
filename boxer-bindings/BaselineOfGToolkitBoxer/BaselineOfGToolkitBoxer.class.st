@@ -13,7 +13,7 @@ BaselineOfGToolkitBoxer >> baseline: spec [
 	spec for: #'common' do: [
 		spec postLoadDoIt: #'postLoadBoxer:'.
 		spec baseline: 'GToolkitInstaller' with: [
-				spec repository: 'github://feenkcom/gtoolkit-installer:v0.7.14/src' ].
+				spec repository: 'github://feenkcom/gtoolkit-installer:v0.7.15/src' ].
 		spec package: 'GToolkit-Boxer' with: [
 				spec requires: #(#GToolkitInstaller ). ]. ].
 
