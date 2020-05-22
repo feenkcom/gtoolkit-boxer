@@ -53,7 +53,13 @@ impl<T> ValueBox<T> {
     /// dangerously replaces a pointer with the one for the given object
     /// I do not drop an existing pointer
     pub unsafe fn mutate(&mut self, object: T) {
-        self.boxed = Box::into_raw(Box::new(object))
+        self.boxed = Box::into_raw(Box::new(object));
+    }
+
+    /// dangerously replaces a pointer with a new one
+    /// I do not drop an existing pointer
+    pub unsafe fn mutate_ptr(&mut self, ptr: *mut T) {
+        self.boxed = ptr;
     }
 
     pub fn into_raw(self) -> *mut Self {
@@ -79,6 +85,7 @@ pub trait ValueBoxPointer<T> {
     fn as_option(self) -> Option<*mut ValueBox<T>>;
     fn as_box(self) -> Option<Box<T>>;
     fn mutate(&self, object: T);
+    fn mutate_ptr(&self, ptr: *mut T);
     fn with<Block, Return>(&self, block: Block) -> Return
     where
         Block: FnOnce(&mut Box<T>) -> Return;
@@ -168,6 +175,27 @@ impl<T> ValueBoxPointer<T> for *mut ValueBox<T> {
 
         unsafe {
             value_box.mutate(object);
+        }
+
+        let new_pointer = into_raw(value_box);
+        assert_eq!(new_pointer, *self, "The pointer must not change");
+    }
+
+    fn mutate_ptr(&self, ptr: *mut T) {
+        assert_eq!(self.is_null(), false, "Pointer must not be null!");
+
+        let mut value_box = unsafe { from_raw(*self) };
+
+        // we should first get rid of the potentially boxed object
+        if !value_box.boxed.is_null() {
+            let boxed_object = unsafe { from_raw(value_box.boxed) };
+            let object = *boxed_object;
+            value_box.boxed = std::ptr::null_mut();
+            drop(object);
+        }
+
+        unsafe {
+            value_box.mutate_ptr(ptr);
         }
 
         let new_pointer = into_raw(value_box);
