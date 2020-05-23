@@ -98,6 +98,15 @@ pub trait ValueBoxPointer<T> {
     fn with_not_null_return<Block, Return>(&self, default: Return, block: Block) -> Return
     where
         Block: FnOnce(&mut Box<T>) -> Return;
+    fn with_not_null_value_return_block<DefaultBlock, Block, Return>(
+        &self,
+        default: DefaultBlock,
+        block: Block,
+    ) -> Return
+    where
+        DefaultBlock: FnOnce() -> Return,
+        Block: FnOnce(T) -> Return,
+        T: Clone;
     fn with_not_null_return_block<DefaultBlock, Block, Return>(
         &self,
         default: DefaultBlock,
@@ -274,6 +283,22 @@ impl<T> ValueBoxPointer<T> for *mut ValueBox<T> {
             return default();
         }
         self.with(block)
+    }
+
+    fn with_not_null_value_return_block<DefaultBlock, Block, Return>(
+        &self,
+        default: DefaultBlock,
+        block: Block,
+    ) -> Return
+    where
+        DefaultBlock: FnOnce() -> Return,
+        Block: FnOnce(T) -> Return,
+        T: Clone
+    {
+        if self.is_null() {
+            return default();
+        }
+        self.with_value(block)
     }
 
     fn with_reference<Block, Return>(&self, block: Block) -> Return
