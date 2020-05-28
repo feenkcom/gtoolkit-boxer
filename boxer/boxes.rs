@@ -122,6 +122,10 @@ pub trait ValueBoxPointer<T> {
     where
         Block: FnOnce(T) -> Return,
         T: Clone;
+    fn with_not_null_value<Block>(&self, block: Block)
+    where
+        Block: FnOnce(T),
+        T: Clone;
     fn with_value_consumed<Block, Return>(&mut self, block: Block) -> Return
     where
         Block: FnOnce(T) -> Return;
@@ -416,6 +420,15 @@ impl<T> ValueBoxPointer<T> for *mut ValueBox<T> {
             let value_box = unsafe { from_raw(self) };
             std::mem::drop(value_box)
         }
+    }
+
+    fn with_not_null_value<Block>(&self, block: Block) where
+        Block: FnOnce(T),
+        T: Clone {
+       if self.is_null() {
+            return;
+        }
+        self.with_value(block);
     }
 }
 
