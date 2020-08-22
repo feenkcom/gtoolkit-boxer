@@ -78,6 +78,12 @@ impl BoxerString {
         Self::chars_to_string(self.data)
     }
 
+    /// Make sure that I will live longer than the slice
+    pub fn to_str(&self) -> &str {
+        let slice = unsafe { CStr::from_ptr(self.data) };
+        unsafe { std::str::from_utf8_unchecked(slice.to_bytes()) }
+    }
+
     /// Mutate me to hold a copy of a given string in C format
     pub fn set_string(&mut self, string: String) {
         // first free existing char buffer
