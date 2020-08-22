@@ -127,7 +127,7 @@ GtBoxerExternalObject >> ffiLibraryName [
 ]
 
 { #category : #dependencies }
-GtBoxerExternalObject >> release [	
+GtBoxerExternalObject >> release [
 	"#release is sent manually, so we want to make sure that resource is no longer
 	added to weak registry - performance improvement"
 	
