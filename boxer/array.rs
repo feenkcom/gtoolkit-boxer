@@ -1,6 +1,6 @@
 use crate::boxes::{ValueBox, ValueBoxPointer};
 use crate::point::BoxerPointF32;
-use std::os::raw::{c_uint, c_int};
+use std::os::raw::{c_int, c_uint};
 
 #[derive(Debug)]
 #[repr(C)]

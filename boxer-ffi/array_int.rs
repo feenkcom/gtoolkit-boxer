@@ -8,10 +8,7 @@ pub fn boxer_array_int_create() -> *mut ValueBox<BoxerArrayInt> {
 }
 
 #[no_mangle]
-pub fn boxer_array_int_create_with(
-    element: c_int,
-    amount: usize,
-) -> *mut ValueBox<BoxerArrayInt> {
+pub fn boxer_array_int_create_with(element: c_int, amount: usize) -> *mut ValueBox<BoxerArrayInt> {
     BoxerArrayInt::boxer_array_create_with(element, amount)
 }
 

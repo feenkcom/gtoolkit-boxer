@@ -297,7 +297,7 @@ impl<T> ValueBoxPointer<T> for *mut ValueBox<T> {
     where
         DefaultBlock: FnOnce() -> Return,
         Block: FnOnce(T) -> Return,
-        T: Clone
+        T: Clone,
     {
         if self.is_null() {
             return default();
@@ -422,10 +422,12 @@ impl<T> ValueBoxPointer<T> for *mut ValueBox<T> {
         }
     }
 
-    fn with_not_null_value<Block>(&self, block: Block) where
+    fn with_not_null_value<Block>(&self, block: Block)
+    where
         Block: FnOnce(T),
-        T: Clone {
-       if self.is_null() {
+        T: Clone,
+    {
+        if self.is_null() {
             return;
         }
         self.with_value(block);

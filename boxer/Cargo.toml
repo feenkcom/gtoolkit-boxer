@@ -8,6 +8,9 @@ edition = "2018"
 name = "boxer"
 path = "lib.rs"
 
+[dependencies]
+widestring = "0.4.2"
+
 [profile.dev]
 opt-level = 0
 
