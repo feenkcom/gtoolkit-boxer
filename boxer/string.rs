@@ -126,6 +126,10 @@ impl BoxerString {
         self.string.as_str()
     }
 
+    pub fn as_bytes(&self) -> &[u8] {
+        self.string.as_bytes()
+    }
+
     pub fn as_ptr(&self) -> *const u8 {
         self.string.as_ptr()
     }
