@@ -1,6 +1,6 @@
 Class {
 	#name : #GtBoxerString,
-	#superclass : #GtBoxerExternalObject,
+	#superclass : #GtBoxerValueBox,
 	#category : #'GToolkit-Boxer-Core'
 }
 
@@ -15,7 +15,7 @@ GtBoxerString class >> fromByteArray: aByteArray [
 
 	^ self
 		fromHandle: aByteArray
-		size: aByteArray size
+		size: aByteArray size - 1
 ]
 
 { #category : #'instance creation' }
@@ -29,7 +29,7 @@ GtBoxerString class >> fromByteArray: aByteArray during: aBlock [
 
 	^ self
 		fromHandle: aByteArray
-		size: aByteArray size
+		size: aByteArray size - 1
 		during: aBlock
 ]
 
@@ -53,7 +53,9 @@ GtBoxerString class >> fromString: aString [
 		assert: [ aString isNotNil ]
 		description: [ 'String must not be nil' ].
 
-	^ self fromByteArray: (self stringToByteArray: aString)
+	^ self fromNativeHandle: (aString isByteString
+		ifTrue: [ self primCreateFromByteString: aString size: aString size ]
+		ifFalse: [ self primCreateFromWideString: aString size: aString size ])
 ]
 
 { #category : #'instance creation' }
@@ -61,10 +63,11 @@ GtBoxerString class >> fromString: aString during: aBlock [
 	self
 		assert: [ aString isNotNil ]
 		description: [ 'String must not be nil' ].
-	
-	^ self
-		fromByteArray: (self stringToByteArray: aString)
-		during: aBlock
+
+	^ self fromNativeHandle: (aString isByteString
+		ifTrue: [ self primCreateFromByteString: aString size: aString size ]
+		ifFalse: [ self primCreateFromWideString: aString size: aString size ])
+			during: aBlock
 ]
 
 { #category : #'instance creation' }
@@ -87,8 +90,18 @@ GtBoxerString class >> primCreate [
 ]
 
 { #category : #'private - ffi' }
+GtBoxerString class >> primCreateFromByteString: aByteString size: aSize [
+	^ self ffiCall: #(void* boxer_string_from_byte_string(void* aByteString, size_t aSize))
+]
+
+{ #category : #'private - ffi' }
 GtBoxerString class >> primCreateFromData: anExternalAddress size: aSize [
-	^ self ffiCall: #(void* boxer_string_from_data(void* anExternalAddress, size_t aSize))
+	^ self ffiCall: #(void* boxer_string_from_utf8_string(void* anExternalAddress, size_t aSize))
+]
+
+{ #category : #'private - ffi' }
+GtBoxerString class >> primCreateFromWideString: aWideString size: aSize [
+	^ self ffiCall: #(void* boxer_string_from_wide_string(void* aWideString, size_t aSize))
 ]
 
 { #category : #'private - ffi' }
@@ -126,7 +139,7 @@ GtBoxerString >> data [
 	^ GtBoxer
 		externalArrayFromHandle: self primGetData getHandle
 		type: FFIUInt8
-		size: self size
+		size: self length
 ]
 
 { #category : #accessing }
@@ -138,12 +151,12 @@ GtBoxerString >> length [
 
 { #category : #'private - ffi' }
 GtBoxerString >> primGetData [
-	^ self ffiCall: #(void* boxer_string_get_data(self))
+	^ self ffiCall: #(void* boxer_string_get_ptr(self))
 ]
 
 { #category : #'private - ffi' }
 GtBoxerString >> primLength [
-	^ self ffiCall: #(size_t boxer_string_get_length(self))
+	^ self ffiCall: #(size_t boxer_string_get_len(self))
 ]
 
 { #category : #'private - ffi' }
@@ -186,11 +199,5 @@ GtBoxerString >> string: aString [
 
 	self
 		assert: [ aString isNotNil ]
-		description: [ 'String must not be nil' ].
-
-	"null-terminated utf-8 encoded string"
-	anEncodedString := self class stringToByteArray: aString.
-
-	"anEncodedString size - 1 because we should not include a null char in amount of characters"
-	self primSetData: anEncodedString length: anEncodedString size
+		description: [ 'String must not be nil' ]
 ]
