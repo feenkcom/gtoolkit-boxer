@@ -1,4 +1,5 @@
 use std::ffi::CStr;
+use std::ops::Range;
 use std::slice;
 use widestring::U32String;
 
@@ -126,8 +127,65 @@ impl BoxerString {
         self.string.as_str()
     }
 
+    pub fn as_bytes(&self) -> &[u8] {
+        self.string.as_bytes()
+    }
+
     pub fn as_ptr(&self) -> *const u8 {
         self.string.as_ptr()
+    }
+
+    pub fn char_index_to_byte_range(&self, index: usize) -> Range<usize> {
+        let mut current_char_index = 0 as usize;
+        let mut previous_byte_offset = 0 as usize;
+
+        for (current_byte_offset, _) in self.string.char_indices() {
+            if current_char_index == (index + 1) {
+                return previous_byte_offset..current_byte_offset;
+            }
+            current_char_index = current_char_index + 1;
+            previous_byte_offset = current_byte_offset;
+        }
+        previous_byte_offset..self.len()
+    }
+
+    pub fn char_index_to_utf16_range(&self, index: usize) -> Range<usize> {
+        let mut current_char_index = 0 as usize;
+        let mut previous_byte_offset = 0 as usize;
+        let mut previous_utf16_offset = 0 as usize;
+
+        for (current_byte_offset, _) in self.string.char_indices() {
+            let delta = ((current_byte_offset - previous_byte_offset) + 1) / 2;
+            if current_char_index == (index + 1) {
+                return previous_utf16_offset .. (previous_utf16_offset + delta);
+            }
+            current_char_index = current_char_index + 1;
+            previous_byte_offset = current_byte_offset;
+            previous_utf16_offset = previous_utf16_offset + delta;
+        }
+        let delta = ((self.len() - previous_byte_offset) + 1) / 2;
+        previous_utf16_offset .. (previous_utf16_offset + delta)
+    }
+
+    pub fn utf16_position_to_char_index(&self, index: usize) -> usize {
+        let mut current_char_index = 0 as usize;
+        let mut previous_byte_offset = 0 as usize;
+        let mut previous_utf16_offset = 0 as usize;
+        let mut current_utf16_offset = 0 as usize;
+
+        for (current_byte_offset, _) in self.string.char_indices() {
+            let delta = ((current_byte_offset - previous_byte_offset) + 1) / 2;
+            let current_utf16_offset = previous_utf16_offset + delta;
+
+            if current_utf16_offset >= index {
+                return current_char_index;
+            }
+
+            current_char_index = current_char_index + 1;
+            previous_byte_offset = current_byte_offset;
+            previous_utf16_offset = current_utf16_offset;
+        }
+        current_char_index
     }
 }
 
@@ -153,4 +211,16 @@ pub fn test_from_utf8_string() {
     let string = BoxerString::from_utf8_string(utf8_string.as_slice());
 
     assert_eq!(string.to_string(), String::from("hello"));
+}
+
+#[test]
+pub fn sparkle() {
+    let mut sparkle = String::from("💖");
+
+    assert_eq!(sparkle.len(), 4);
+
+    for char in sparkle.char_indices() {
+        println!("{:?}", char);
+    }
+    println!("{:?}", sparkle.bytes());
 }
