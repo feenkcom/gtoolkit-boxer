@@ -1,60 +1,92 @@
+use boxer::boxes::{ValueBox, ValueBoxPointer};
 use boxer::string::BoxerString;
-use boxer::CBox;
-
-use std::os::raw::c_char;
+use std::ops::Range;
 
 #[no_mangle]
-pub fn boxer_string_create() -> *mut BoxerString {
-    CBox::into_raw(BoxerString::default())
+pub fn boxer_string_create() -> *mut ValueBox<BoxerString> {
+    ValueBox::new(BoxerString::new()).into_raw()
 }
 
-/// I copy the data.
-/// length must include the zero-byte
+/// I copy the data (must *not* contain zero-byte).
+/// length must not include the zero-byte
 #[no_mangle]
-pub fn boxer_string_from_data(data: *mut c_char, length: usize) -> *mut BoxerString {
-    CBox::into_raw(BoxerString::from_data(data, length))
+pub fn boxer_string_from_byte_string(data: *const u8, length: usize) -> *mut ValueBox<BoxerString> {
+    ValueBox::new(unsafe { BoxerString::from_byte_string_data(data, length) }).into_raw()
+}
+
+/// I copy the data (must *not* contain zero-byte).
+/// length must not include the zero-byte
+#[no_mangle]
+pub fn boxer_string_from_wide_string(
+    data: *const u32,
+    length: usize,
+) -> *mut ValueBox<BoxerString> {
+    ValueBox::new(unsafe { BoxerString::from_wide_string_data(data, length) }).into_raw()
+}
+
+/// I copy the data (must contain zero-byte).
+/// length must not include the zero-byte
+#[no_mangle]
+pub fn boxer_string_from_utf8_string(data: *const u8, length: usize) -> *mut ValueBox<BoxerString> {
+    ValueBox::new(unsafe { BoxerString::from_utf8_string_data(data, length) }).into_raw()
 }
 
 #[no_mangle]
-pub fn boxer_string_drop(_ptr: *mut BoxerString) {
-    CBox::drop(_ptr)
+pub fn boxer_string_drop(ptr: *mut ValueBox<BoxerString>) {
+    ptr.drop()
 }
 
 #[no_mangle]
-pub fn boxer_string_get_length(_string_ptr: *mut BoxerString) -> usize {
-    CBox::with_optional_raw(_string_ptr, |option| match option {
-        None => 0,
-        Some(string) => string.length,
-    })
+pub fn boxer_string_get_len(ptr: *mut ValueBox<BoxerString>) -> usize {
+    ptr.with_not_null_return(0, |string| string.len())
 }
 
 #[no_mangle]
-pub fn boxer_string_get_data(_size_ptr: *mut BoxerString) -> *mut c_char {
-    CBox::with_optional_raw(_size_ptr, |option| match option {
-        None => std::ptr::null_mut(),
-        Some(string) => string.data,
-    })
+pub fn boxer_string_get_char_count(ptr: *mut ValueBox<BoxerString>) -> usize {
+    ptr.with_not_null_return(0, |string| string.char_count())
 }
 
-/// I mutate the string to be backed by the copy of a given char buffer in utf-8
-/// _length should not include a null char
 #[no_mangle]
-pub fn boxer_string_set_data(
-    _string_ptr: *mut BoxerString,
-    _data_utf8: *mut c_char,
-    _length: usize,
+pub fn boxer_string_get_ptr(ptr: *mut ValueBox<BoxerString>) -> *const u8 {
+    ptr.with_not_null_return(std::ptr::null(), |string| string.as_ptr())
+}
+
+#[no_mangle]
+pub fn boxer_string_char_index_to_byte_range(
+    string_ptr: *mut ValueBox<BoxerString>,
+    index: usize,
+    range_ptr: *mut ValueBox<Range<usize>>,
 ) {
-    CBox::with_optional_raw(_string_ptr, |option| match option {
-        None => {}
-        Some(string) => {
-            if _length < 1 {
-                return;
-            }
-            let contents = BoxerString::chars_to_string(_data_utf8);
-            if contents.len() != (_length - 1) {
-                eprintln!("[boxer_string_set] The actual size of the buffer ({:?}) differs from the given ({:?}) ", contents.len(), (_length - 1));
-            }
-            string.set_string(contents);
-        }
+    string_ptr.with_not_null(|string| {
+        range_ptr.with_not_null(|range| {
+            let byte_range = string.char_index_to_byte_range(index);
+            range.start = byte_range.start;
+            range.end = byte_range.end;
+        })
+    })
+}
+
+#[no_mangle]
+pub fn boxer_string_char_index_to_utf16_range(
+    string_ptr: *mut ValueBox<BoxerString>,
+    index: usize,
+    range_ptr: *mut ValueBox<Range<usize>>,
+) {
+    string_ptr.with_not_null(|string| {
+        range_ptr.with_not_null(|range| {
+            let byte_range = string.char_index_to_utf16_range(index);
+            range.start = byte_range.start;
+            range.end = byte_range.end;
+        })
+    })
+}
+
+#[no_mangle]
+pub fn boxer_string_utf16_position_to_char_index(
+    string_ptr: *mut ValueBox<BoxerString>,
+    index: usize,
+) -> usize {
+    string_ptr.with_not_null_return(0, |string| {
+        string.utf16_position_to_char_index(index)
     })
 }
