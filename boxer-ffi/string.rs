@@ -1,5 +1,6 @@
 use boxer::boxes::{ValueBox, ValueBoxPointer};
 use boxer::string::BoxerString;
+use std::ops::Range;
 
 #[no_mangle]
 pub fn boxer_string_create() -> *mut ValueBox<BoxerString> {
@@ -48,4 +49,44 @@ pub fn boxer_string_get_char_count(ptr: *mut ValueBox<BoxerString>) -> usize {
 #[no_mangle]
 pub fn boxer_string_get_ptr(ptr: *mut ValueBox<BoxerString>) -> *const u8 {
     ptr.with_not_null_return(std::ptr::null(), |string| string.as_ptr())
+}
+
+#[no_mangle]
+pub fn boxer_string_char_index_to_byte_range(
+    string_ptr: *mut ValueBox<BoxerString>,
+    index: usize,
+    range_ptr: *mut ValueBox<Range<usize>>,
+) {
+    string_ptr.with_not_null(|string| {
+        range_ptr.with_not_null(|range| {
+            let byte_range = string.char_index_to_byte_range(index);
+            range.start = byte_range.start;
+            range.end = byte_range.end;
+        })
+    })
+}
+
+#[no_mangle]
+pub fn boxer_string_char_index_to_utf16_range(
+    string_ptr: *mut ValueBox<BoxerString>,
+    index: usize,
+    range_ptr: *mut ValueBox<Range<usize>>,
+) {
+    string_ptr.with_not_null(|string| {
+        range_ptr.with_not_null(|range| {
+            let byte_range = string.char_index_to_utf16_range(index);
+            range.start = byte_range.start;
+            range.end = byte_range.end;
+        })
+    })
+}
+
+#[no_mangle]
+pub fn boxer_string_utf16_position_to_char_index(
+    string_ptr: *mut ValueBox<BoxerString>,
+    index: usize,
+) -> usize {
+    string_ptr.with_not_null_return(0, |string| {
+        string.utf16_position_to_char_index(index)
+    })
 }
