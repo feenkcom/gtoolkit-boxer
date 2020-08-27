@@ -3,7 +3,7 @@ use std::ops::Range;
 
 #[no_mangle]
 pub fn boxer_range_usize_create() -> *mut ValueBox<Range<usize>> {
-    ValueBox::new(Range::default()).into_raw()
+    ValueBox::new(0..0).into_raw()
 }
 
 #[no_mangle]

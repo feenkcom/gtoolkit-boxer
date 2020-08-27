@@ -171,7 +171,6 @@ impl BoxerString {
         let mut current_char_index = 0 as usize;
         let mut previous_byte_offset = 0 as usize;
         let mut previous_utf16_offset = 0 as usize;
-        let mut current_utf16_offset = 0 as usize;
 
         for (current_byte_offset, _) in self.string.char_indices() {
             let delta = ((current_byte_offset - previous_byte_offset) + 1) / 2;
