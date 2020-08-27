@@ -147,8 +147,7 @@ GtBoxerStringExamples >> withStringEmpty [
 	<gtExample>
 	| aString |
 	
-	aString := self default.
-	aString string: ''.
+	aString := GtBoxerString fromString: ''.
 	
 	self assert: aString size equals: 0.
 	self assert: aString length equals: 0.
@@ -162,11 +161,10 @@ GtBoxerStringExamples >> withStringGerman [
 	<gtExample>
 	| aString |
 	
-	aString := self default.
-	aString string: 'Grüße'.
+	aString := GtBoxerString fromString: 'Grüße'.
 	
 	self assert: aString size equals: 5.
-	self assert: aString length equals: 5 + 2. "ü and ß occupy two chars"
+	self assert: aString length equals: 5 + 2. "ü and ß occupy two bytes"
 	self assert: aString string equals: 'Grüße'.
 	
 	^ aString
@@ -177,8 +175,7 @@ GtBoxerStringExamples >> withStringLatin [
 	<gtExample>
 	| aString |
 	
-	aString := self default.
-	aString string: 'Hello'.
+	aString := GtBoxerString fromString: 'Hello'.
 	
 	self assert: aString size equals: 5.
 	self assert: aString length equals: 5.
@@ -192,11 +189,10 @@ GtBoxerStringExamples >> withStringRussian [
 	<gtExample>
 	| aString |
 	
-	aString := self default.
-	aString string: 'Привет'.
+	aString := GtBoxerString fromString: 'Привет'.
 	
 	self assert: aString size equals: 6.
-	self assert: aString length equals: 6 * 2 "each russian letter is 2 chars".
+	self assert: aString length equals: 6 * 2 "each russian letter is 2 bytes".
 	self assert: aString string equals: 'Привет'.
 	
 	^ aString
