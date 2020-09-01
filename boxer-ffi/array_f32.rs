@@ -1,5 +1,5 @@
 use boxer::array::BoxerArrayF32;
-use boxer::boxes::ValueBox;
+use boxer::ValueBox;
 
 #[no_mangle]
 pub fn boxer_array_f32_create() -> *mut ValueBox<BoxerArrayF32> {

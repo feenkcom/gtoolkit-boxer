@@ -1,5 +1,5 @@
 use boxer::array::BoxerArrayUInt;
-use boxer::boxes::ValueBox;
+use boxer::ValueBox;
 use std::os::raw::c_uint;
 
 #[no_mangle]

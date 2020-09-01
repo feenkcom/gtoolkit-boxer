@@ -1,10 +1,14 @@
 #![allow(non_snake_case)]
 pub use widestring;
+#[macro_use]
+extern crate log;
 
-use crate::boxes::{from_raw, into_raw, ReferenceBox, ValueBox};
+use crate::boxes::{from_raw, into_raw, ReferenceBox};
+pub use crate::value_box::{ValueBox, ValueBoxPointer};
 
 pub mod array;
 pub mod boxes;
+mod value_box;
 pub mod number;
 pub mod point;
 pub mod point3;
@@ -35,10 +39,10 @@ pub fn assert_box<T>(_ptr: *mut ValueBox<T>, method_name: &str) {
             return;
         }
         let value_box = unsafe { from_raw(_ptr) };
-        let pointer = value_box.boxed();
+        let has_value = value_box.has_value();
         into_raw(value_box);
 
-        if pointer.is_null() {
+        if !has_value {
             eprintln!(
                 "[{}] {} pointer is null",
                 method_name,

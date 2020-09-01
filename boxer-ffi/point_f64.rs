@@ -1,4 +1,4 @@
-use boxer::boxes::ValueBox;
+use boxer::ValueBox;
 use boxer::point::BoxerPointF64;
 
 #[no_mangle]

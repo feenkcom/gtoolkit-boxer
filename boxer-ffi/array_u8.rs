@@ -1,5 +1,5 @@
 use boxer::array::BoxerArrayU8;
-use boxer::boxes::{ValueBox, ValueBoxPointer};
+use boxer::{ValueBox, ValueBoxPointer};
 
 #[no_mangle]
 pub fn boxer_array_u8_byte_size(count: usize) -> usize {

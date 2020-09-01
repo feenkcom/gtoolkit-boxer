@@ -1,4 +1,4 @@
-use crate::boxes::{ValueBox, ValueBoxPointer};
+use crate::value_box::{ValueBox, ValueBoxPointer};
 
 #[derive(Debug, Copy, Clone, Default)]
 #[repr(C)]
@@ -31,36 +31,24 @@ where
         ValueBox::new(BoxerPoint::<T>::new(x, y)).into_raw()
     }
 
-    pub fn boxer_point_drop(_ptr: *mut ValueBox<BoxerPoint<T>>) {
-        _ptr.drop();
+    pub fn boxer_point_drop(mut ptr: *mut ValueBox<BoxerPoint<T>>) {
+        ptr.drop();
     }
 
     pub fn boxer_point_get_x(_maybe_null_ptr: *mut ValueBox<BoxerPoint<T>>) -> T {
-        match _maybe_null_ptr.as_option() {
-            None => 0u8.into(),
-            Some(_ptr) => _ptr.with(|point| point.x),
-        }
+        _maybe_null_ptr.with_not_null_return(0u8.into(), |point| point.x)
     }
 
     pub fn boxer_point_set_x(_maybe_null_ptr: *mut ValueBox<BoxerPoint<T>>, x: T) {
-        match _maybe_null_ptr.as_option() {
-            None => {}
-            Some(_ptr) => _ptr.with(|point| point.x = x),
-        }
+        _maybe_null_ptr.with_not_null(|point| point.x = x)
     }
 
     pub fn boxer_point_get_y(_maybe_null_ptr: *mut ValueBox<BoxerPoint<T>>) -> T {
-        match _maybe_null_ptr.as_option() {
-            None => 0u8.into(),
-            Some(_ptr) => _ptr.with(|point| point.y),
-        }
+        _maybe_null_ptr.with_not_null_return(0u8.into(), |point| point.y)
     }
 
     pub fn boxer_point_set_y(_maybe_null_ptr: *mut ValueBox<BoxerPoint<T>>, y: T) {
-        match _maybe_null_ptr.as_option() {
-            None => {}
-            Some(_ptr) => _ptr.with(|point| point.y = y),
-        }
+        _maybe_null_ptr.with_not_null(|point| point.y = y)
     }
 }
 

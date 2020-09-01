@@ -1,5 +1,5 @@
 use boxer::array::BoxerArrayU16;
-use boxer::boxes::ValueBox;
+use boxer::ValueBox;
 
 #[no_mangle]
 pub fn boxer_array_u16_byte_size(count: usize) -> usize {
