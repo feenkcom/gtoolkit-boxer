@@ -11,21 +11,9 @@ GtBoxerValueBox class >> boxedPointerOf: anExternalObject [
 	^ (self primGetBoxedPointer: anExternalObject getHandle) getHandle
 ]
 
-{ #category : #accessing }
-GtBoxerValueBox class >> isValid: aValueBox [
-	<return: #Boolean>
-
-	^ self primIsValid: aValueBox getHandle
-]
-
 { #category : #'private - ffi' }
 GtBoxerValueBox class >> primGetBoxedPointer: aHandle [
 	^ self ffiCall: #(void* boxer_value_box_get_pointer(void* aHandle)) library: GtBoxerLibrary uniqueInstance
-]
-
-{ #category : #'private - ffi' }
-GtBoxerValueBox class >> primIsValid: aHandle [
-	^ self ffiCall: #(bool boxer_value_box_is_valid(void* aHandle)) library: GtBoxerLibrary uniqueInstance
 ]
 
 { #category : #accessing }
@@ -39,5 +27,5 @@ GtBoxerValueBox >> boxedPointer [
 GtBoxerValueBox >> isValid [
 	<return: #Boolean>
 
-	^ self class isValid: self
+	^ handle isNotNil and: [ handle isNull not ]
 ]
