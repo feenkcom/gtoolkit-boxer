@@ -1,5 +1,5 @@
-use boxer::{ValueBox, ValueBoxPointer};
 use boxer::number::BoxerUint128;
+use boxer::{ValueBox, ValueBoxPointer, ValueBoxPointerReference};
 
 #[no_mangle]
 pub fn boxer_number_uint128_create() -> *mut ValueBox<BoxerUint128> {
@@ -7,7 +7,7 @@ pub fn boxer_number_uint128_create() -> *mut ValueBox<BoxerUint128> {
 }
 
 #[no_mangle]
-pub fn boxer_number_uint128_drop(mut ptr: *mut ValueBox<BoxerUint128>) {
+pub fn boxer_number_uint128_drop(ptr: &mut *mut ValueBox<BoxerUint128>) {
     ptr.drop();
 }
 

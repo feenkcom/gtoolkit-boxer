@@ -1,5 +1,5 @@
-use boxer::ValueBox;
 use boxer::size::BoxerSizeF64;
+use boxer::ValueBox;
 
 #[no_mangle]
 pub fn boxer_size_f64_create() -> *mut ValueBox<BoxerSizeF64> {
@@ -7,7 +7,7 @@ pub fn boxer_size_f64_create() -> *mut ValueBox<BoxerSizeF64> {
 }
 
 #[no_mangle]
-pub fn boxer_size_f64_drop(_ptr: *mut ValueBox<BoxerSizeF64>) {
+pub fn boxer_size_f64_drop(_ptr: &mut *mut ValueBox<BoxerSizeF64>) {
     BoxerSizeF64::boxer_size_drop(_ptr);
 }
 

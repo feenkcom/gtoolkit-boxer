@@ -49,6 +49,6 @@ pub fn boxer_array_uint_at(_ptr: *mut ValueBox<BoxerArrayUInt>, index: usize) ->
 }
 
 #[no_mangle]
-pub fn boxer_array_uint_drop(_ptr: *mut ValueBox<BoxerArrayUInt>) {
+pub fn boxer_array_uint_drop(_ptr: &mut *mut ValueBox<BoxerArrayUInt>) {
     BoxerArrayUInt::boxer_array_drop(_ptr);
 }

@@ -144,7 +144,7 @@ pub fn boxer_array_u8_rgba_to_argb(_ptr: *mut ValueBox<BoxerArrayU8>) {
 }
 
 #[no_mangle]
-pub fn boxer_array_u8_drop(_ptr: *mut ValueBox<BoxerArrayU8>) {
+pub fn boxer_array_u8_drop(_ptr: &mut *mut ValueBox<BoxerArrayU8>) {
     BoxerArrayU8::boxer_array_drop(_ptr);
 }
 

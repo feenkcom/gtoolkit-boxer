@@ -1,4 +1,3 @@
-
 /// Tell Rust to take back the control over memory
 /// This is dangerous! Rust takes the control over the memory back
 pub unsafe fn from_raw<T>(pointer: *mut T) -> Box<T> {
