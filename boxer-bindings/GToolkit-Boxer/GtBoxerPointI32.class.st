@@ -23,7 +23,7 @@ GtBoxerPointI32 class >> primCreateX: aX y: aY [
 GtBoxerPointI32 class >> primRelease: aHandle [
 	
 	"Plain pointers must be deleted using delete(), all users must implement a specific method"
-	self ffiCall: #(void boxer_point_i32_drop(void* aHandle))
+	self ffiCall: #(void boxer_point_i32_drop(void** aHandle))
 ]
 
 { #category : #'private - ffi' }

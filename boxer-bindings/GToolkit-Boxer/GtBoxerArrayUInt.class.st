@@ -23,7 +23,7 @@ GtBoxerArrayUInt class >> primCreateNew: aSize withAll: aValue [
 GtBoxerArrayUInt class >> primRelease: aHandle [
 	
 	"Plain pointers must be deleted using delete(), all users must implement a specific method"
-	self ffiCall: #(void boxer_array_uint_drop(void* aHandle))
+	self ffiCall: #(void boxer_array_uint_drop(void** aHandle))
 ]
 
 { #category : #'instance creation' }

@@ -55,7 +55,7 @@ GtBoxerArrayU16 class >> primCreateNew: aSize withAll: aValue [
 GtBoxerArrayU16 class >> primRelease: aHandle [
 	
 	"Plain pointers must be deleted using delete(), all users must implement a specific method"
-	self ffiCall: #(void boxer_array_u16_drop(void* aHandle))
+	self ffiCall: #(void boxer_array_u16_drop(void** aHandle))
 ]
 
 { #category : #converting }
