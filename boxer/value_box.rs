@@ -59,7 +59,8 @@ impl<T> ValueBox<T> {
 
 impl<T> Drop for ValueBox<T> {
     fn drop(&mut self) {
-        debug!(
+        log!(
+            if self.value.is_some() { log::Level::Debug } else { log::Level::Warn },
             "Dropping {} of {}",
             self.value.as_ref().map_or("None", |_| { "Some" }),
             type_name::<T>()
