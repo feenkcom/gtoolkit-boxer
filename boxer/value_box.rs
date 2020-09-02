@@ -60,7 +60,11 @@ impl<T> ValueBox<T> {
 impl<T> Drop for ValueBox<T> {
     fn drop(&mut self) {
         log!(
-            if self.value.is_some() { log::Level::Debug } else { log::Level::Warn },
+            if self.value.is_some() {
+                log::Level::Debug
+            } else {
+                log::Level::Warn
+            },
             "Dropping {} of {}",
             self.value.as_ref().map_or("None", |_| { "Some" }),
             type_name::<T>()
@@ -69,6 +73,11 @@ impl<T> Drop for ValueBox<T> {
 }
 
 pub trait ValueBoxPointer<T> {
+    fn with_box<DefaultBlock, Block, Return>(&self, default: DefaultBlock, block: Block) -> Return
+    where
+        DefaultBlock: FnOnce() -> Return,
+        Block: FnOnce(&mut Box<ValueBox<T>>, DefaultBlock) -> Return;
+
     fn is_valid(&self) -> bool;
     fn mutate(&self, object: T);
     fn get_ptr(&self) -> *const T;
@@ -132,37 +141,34 @@ pub trait ValueBoxPointer<T> {
 }
 
 impl<T> ValueBoxPointer<T> for *mut ValueBox<T> {
-    fn is_valid(&self) -> bool {
+    fn with_box<DefaultBlock, Block, Return>(&self, default: DefaultBlock, block: Block) -> Return
+    where
+        DefaultBlock: FnOnce() -> Return,
+        Block: FnOnce(&mut Box<ValueBox<T>>, DefaultBlock) -> Return,
+    {
         if self.is_null() {
-            return false;
-        };
+            debug!("ValueBox pointer of {} is null", type_name::<T>());
+            return default();
+        }
 
-        let value_box = unsafe { from_raw(*self) };
-        value_box.has_value()
+        let mut value_box = unsafe { from_raw(*self) };
+        let result = block(&mut value_box, default);
+        let new_pointer = into_raw(value_box);
+        assert_eq!(new_pointer, *self, "The pointer must not change");
+        result
+    }
+
+    fn is_valid(&self) -> bool {
+        self.with_box(|| false, |value_box, _| value_box.has_value())
     }
 
     fn mutate(&self, object: T) {
         assert_eq!(self.is_null(), false, "Pointer must not be null!");
-
-        let mut value_box = unsafe { from_raw(*self) };
-        value_box.set_value(object);
-
-        let new_pointer = into_raw(value_box);
-        assert_eq!(new_pointer, *self, "The pointer must not change");
+        self.with_box(|| (), |value_box, _| value_box.set_value(object));
     }
 
     fn get_ptr(&self) -> *const T {
-        if self.is_null() {
-            return std::ptr::null();
-        };
-
-        let value_box = unsafe { from_raw(*self) };
-        let ptr = value_box.as_ptr();
-
-        let new_pointer = into_raw(value_box);
-        assert_eq!(new_pointer, *self, "The pointer must not change");
-
-        ptr
+        self.with_box(|| std::ptr::null(), |value_box, _| value_box.as_ptr())
     }
 
     fn with<DefaultBlock, Block, Return>(&self, default: DefaultBlock, block: Block) -> Return
@@ -170,24 +176,15 @@ impl<T> ValueBoxPointer<T> for *mut ValueBox<T> {
         DefaultBlock: FnOnce() -> Return,
         Block: FnOnce(&mut T) -> Return,
     {
-        if self.is_null() {
-            debug!("ValueBox pointer of {} is null", type_name::<T>());
-            return default();
-        }
-        let mut value_box = unsafe { from_raw(*self) };
-
-        let result = value_box
-            .as_ref_mut()
-            .map(|value| block(value))
-            .unwrap_or_else(||{
-                debug!("ValueBox value of {} is None", type_name::<T>());
-                default()
-            });
-
-        let new_pointer = into_raw(value_box);
-        assert_eq!(new_pointer, *self, "The pointer must not change");
-
-        result
+        self.with_box(default, |value_box, default| {
+            value_box
+                .as_ref_mut()
+                .map(|value| block(value))
+                .unwrap_or_else(|| {
+                    debug!("ValueBox value of {} is None", type_name::<T>());
+                    default()
+                })
+        })
     }
 
     fn with_not_null<Block>(&self, block: Block)
@@ -210,24 +207,15 @@ impl<T> ValueBoxPointer<T> for *mut ValueBox<T> {
         Block: FnOnce(T) -> Return,
         T: Clone,
     {
-        if self.is_null() {
-            debug!("ValueBox pointer of {} is null", type_name::<T>());
-            return default();
-        }
-        let value_box = unsafe { from_raw(*self) };
-
-        let result = value_box
-            .clone_value()
-            .map(|value| block(value))
-            .unwrap_or_else(||{
-                debug!("ValueBox value of {} is None", type_name::<T>());
-                default()
-            });
-
-        let new_pointer = into_raw(value_box);
-        assert_eq!(new_pointer, *self, "The pointer must not change");
-
-        result
+        self.with_box(default, |value_box, default| {
+            value_box
+                .clone_value()
+                .map(|value| block(value))
+                .unwrap_or_else(|| {
+                    debug!("ValueBox value of {} is None", type_name::<T>());
+                    default()
+                })
+        })
     }
 
     fn with_not_null_value<Block>(&self, block: Block)
@@ -250,19 +238,15 @@ impl<T> ValueBoxPointer<T> for *mut ValueBox<T> {
     where
         Block: FnOnce(T) -> T,
     {
-        if self.is_null() {
-            debug!("ValueBox pointer of {} is null", type_name::<T>());
-            return;
-        }
-
-        let mut value_box = unsafe { from_raw(*self) };
-        match value_box.take_value().map(block) {
-            None => { debug!("ValueBox value of {} is None", type_name::<T>()); }
-            Some(result) => value_box.set_value(result),
-        }
-
-        let new_pointer = into_raw(value_box);
-        assert_eq!(new_pointer, *self, "The pointer must not change");
+        self.with_box(
+            || (),
+            |value_box, _| match value_box.take_value().map(block) {
+                None => {
+                    debug!("ValueBox value of {} is None", type_name::<T>());
+                }
+                Some(result) => value_box.set_value(result),
+            },
+        )
     }
 
     /// I also drop the box
@@ -284,7 +268,7 @@ impl<T> ValueBoxPointer<T> for *mut ValueBox<T> {
         let result = value_box
             .take_value()
             .map(|value| block(value, &mut value_box))
-            .unwrap_or_else(||{
+            .unwrap_or_else(|| {
                 debug!("ValueBox value of {} is None", type_name::<T>());
                 default()
             });
@@ -320,8 +304,7 @@ impl<T> ValueBoxPointer<T> for *mut ValueBox<T> {
         if !self.is_null() {
             let value_box = unsafe { from_raw(*self) };
             std::mem::drop(value_box)
-        }
-        else {
+        } else {
             error!("Trying to double-free the memory of {}", type_name::<T>());
         }
         *self = std::ptr::null_mut()

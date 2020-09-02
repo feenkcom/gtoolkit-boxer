@@ -8,12 +8,12 @@ pub use crate::value_box::{ValueBox, ValueBoxPointer};
 
 pub mod array;
 pub mod boxes;
-mod value_box;
 pub mod number;
 pub mod point;
 pub mod point3;
 pub mod size;
 pub mod string;
+mod value_box;
 
 #[macro_export]
 macro_rules! function {

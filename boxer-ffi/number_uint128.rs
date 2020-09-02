@@ -1,5 +1,5 @@
-use boxer::{ValueBox, ValueBoxPointer};
 use boxer::number::BoxerUint128;
+use boxer::{ValueBox, ValueBoxPointer};
 
 #[no_mangle]
 pub fn boxer_number_uint128_create() -> *mut ValueBox<BoxerUint128> {

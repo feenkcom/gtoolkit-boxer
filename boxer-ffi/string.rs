@@ -1,5 +1,5 @@
-use boxer::{ValueBox, ValueBoxPointer};
 use boxer::string::BoxerString;
+use boxer::{ValueBox, ValueBoxPointer};
 use std::ops::Range;
 
 #[no_mangle]
@@ -86,7 +86,5 @@ pub fn boxer_string_utf16_position_to_char_index(
     string_ptr: *mut ValueBox<BoxerString>,
     index: usize,
 ) -> usize {
-    string_ptr.with_not_null_return(0, |string| {
-        string.utf16_position_to_char_index(index)
-    })
+    string_ptr.with_not_null_return(0, |string| string.utf16_position_to_char_index(index))
 }

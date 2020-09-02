@@ -1,5 +1,5 @@
-use boxer::ValueBox;
 use boxer::point::BoxerPointF64;
+use boxer::ValueBox;
 
 #[no_mangle]
 pub fn boxer_point_f64_default() -> *mut ValueBox<BoxerPointF64> {

@@ -157,14 +157,14 @@ impl BoxerString {
         for (current_byte_offset, _) in self.string.char_indices() {
             let delta = ((current_byte_offset - previous_byte_offset) + 1) / 2;
             if current_char_index == (index + 1) {
-                return previous_utf16_offset .. (previous_utf16_offset + delta);
+                return previous_utf16_offset..(previous_utf16_offset + delta);
             }
             current_char_index = current_char_index + 1;
             previous_byte_offset = current_byte_offset;
             previous_utf16_offset = previous_utf16_offset + delta;
         }
         let delta = ((self.len() - previous_byte_offset) + 1) / 2;
-        previous_utf16_offset .. (previous_utf16_offset + delta)
+        previous_utf16_offset..(previous_utf16_offset + delta)
     }
 
     pub fn utf16_position_to_char_index(&self, index: usize) -> usize {
