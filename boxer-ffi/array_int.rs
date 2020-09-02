@@ -1,5 +1,5 @@
 use boxer::array::BoxerArrayInt;
-use boxer::boxes::ValueBox;
+use boxer::ValueBox;
 use std::os::raw::c_int;
 
 #[no_mangle]
@@ -46,6 +46,6 @@ pub fn boxer_array_int_at(_ptr: *mut ValueBox<BoxerArrayInt>, index: usize) -> c
 }
 
 #[no_mangle]
-pub fn boxer_array_int_drop(_ptr: *mut ValueBox<BoxerArrayInt>) {
-    BoxerArrayInt::boxer_array_drop(_ptr);
+pub fn boxer_array_int_drop(ptr: &mut *mut ValueBox<BoxerArrayInt>) {
+    BoxerArrayInt::boxer_array_drop(ptr);
 }

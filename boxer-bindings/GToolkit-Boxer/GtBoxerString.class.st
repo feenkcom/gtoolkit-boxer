@@ -108,18 +108,7 @@ GtBoxerString class >> primCreateFromWideString: aWideString size: aSize [
 GtBoxerString class >> primRelease: aHandle [
 	
 	"Plain pointers must be deleted using delete(), all users must implement a specific method"
-	self ffiCall: #(void boxer_string_drop(void* aHandle))
-]
-
-{ #category : #'instance creation' }
-GtBoxerString class >> stringToByteArray: aString [
-	^ ByteArray streamContents: [ :aStream |
-		ZnUTF8Encoder new 
-			next: aString size 
-			putAll: aString asString
-			startingAt: 1 
-			toStream: aStream.
-		aStream nextPut: 0 ]
+	self ffiCall: #(void boxer_string_drop(void** aHandle))
 ]
 
 { #category : #converting }

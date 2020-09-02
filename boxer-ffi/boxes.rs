@@ -1,15 +1,20 @@
-use boxer::boxes::{ValueBox, ValueBoxPointer};
+use boxer::{ValueBox, ValueBoxPointer};
 use std::os::raw::c_void;
 
 #[no_mangle]
-pub fn boxer_value_box_get_pointer(_ptr: *mut ValueBox<c_void>) -> *mut c_void {
-    match _ptr.as_option() {
-        None => std::ptr::null_mut(),
-        Some(_value_box_ptr) => {
-            let value_box = unsafe { boxer::boxes::from_raw(_value_box_ptr) };
-            let pointer = value_box.boxed();
-            boxer::boxes::into_raw(value_box);
-            pointer
-        }
-    }
+pub fn boxer_value_box_get_pointer(ptr: *mut ValueBox<c_void>) -> *const c_void {
+    ptr.get_ptr()
+}
+
+#[no_mangle]
+pub fn boxer_value_box_is_valid(ptr: *mut ValueBox<c_void>) -> bool {
+    ptr.is_valid()
+}
+
+#[test]
+pub fn test_is_valid() {
+    let ptr = ValueBox::new(42).into_raw();
+
+    let void_ptr: *mut ValueBox<c_void> = unsafe { transmute(ptr) };
+    assert!(boxer_value_box_is_valid(void_ptr));
 }

@@ -1,5 +1,5 @@
-use boxer::boxes::ValueBox;
 use boxer::size::BoxerSizeU32;
+use boxer::ValueBox;
 
 #[no_mangle]
 pub fn boxer_size_u32_create() -> *mut ValueBox<BoxerSizeU32> {
@@ -7,7 +7,7 @@ pub fn boxer_size_u32_create() -> *mut ValueBox<BoxerSizeU32> {
 }
 
 #[no_mangle]
-pub fn boxer_size_u32_drop(_ptr: *mut ValueBox<BoxerSizeU32>) {
+pub fn boxer_size_u32_drop(_ptr: &mut *mut ValueBox<BoxerSizeU32>) {
     BoxerSizeU32::boxer_size_drop(_ptr);
 }
 

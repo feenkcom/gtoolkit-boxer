@@ -1,5 +1,6 @@
-use crate::boxes::{ValueBox, ValueBoxPointer};
 use crate::point::BoxerPointF32;
+use crate::value_box::{ValueBox, ValueBoxPointer};
+use crate::ValueBoxPointerReference;
 use std::os::raw::{c_int, c_uint};
 
 #[derive(Debug)]
@@ -175,8 +176,8 @@ where
         ValueBox::new(BoxerArray::<T>::from_data(_data, amount)).into_raw()
     }
 
-    pub fn boxer_array_drop(_ptr: *mut ValueBox<BoxerArray<T>>) {
-        _ptr.drop();
+    pub fn boxer_array_drop(ptr: &mut *mut ValueBox<BoxerArray<T>>) {
+        ptr.drop();
     }
 
     pub fn boxer_array_copy_into(
@@ -210,24 +211,15 @@ where
     }
 
     pub fn boxer_array_get_length(_maybe_null_ptr: *mut ValueBox<BoxerArray<T>>) -> usize {
-        match _maybe_null_ptr.as_option() {
-            None => 0,
-            Some(_ptr) => _ptr.with(|array| array.length),
-        }
+        _maybe_null_ptr.with_not_null_return(0, |array| array.length)
     }
 
     pub fn boxer_array_get_capacity(_maybe_null_ptr: *mut ValueBox<BoxerArray<T>>) -> usize {
-        match _maybe_null_ptr.as_option() {
-            None => 0,
-            Some(_ptr) => _ptr.with(|array| array.capacity),
-        }
+        _maybe_null_ptr.with_not_null_return(0, |array| array.capacity)
     }
 
     pub fn boxer_array_get_data(_maybe_null_ptr: *mut ValueBox<BoxerArray<T>>) -> *mut T {
-        match _maybe_null_ptr.as_option() {
-            None => std::ptr::null_mut(),
-            Some(_ptr) => _ptr.with(|array| array.data),
-        }
+        _maybe_null_ptr.with_not_null_return(std::ptr::null_mut(), |array| array.data)
     }
 
     pub fn boxer_array_at_put(_maybe_null_ptr: *mut ValueBox<BoxerArray<T>>, index: usize, item: T)

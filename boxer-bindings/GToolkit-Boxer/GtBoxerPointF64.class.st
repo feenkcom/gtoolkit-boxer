@@ -18,7 +18,7 @@ GtBoxerPointF64 class >> primCreateX: aX y: aY [
 GtBoxerPointF64 class >> primRelease: aHandle [
 	
 	"Plain pointers must be deleted using delete(), all users must implement a specific method"
-	self ffiCall: #(void boxer_point_f64_drop(void* aHandle))
+	self ffiCall: #(void boxer_point_f64_drop(void** aHandle))
 ]
 
 { #category : #'private - ffi' }

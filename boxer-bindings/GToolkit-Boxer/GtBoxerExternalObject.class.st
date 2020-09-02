@@ -88,7 +88,7 @@ GtBoxerExternalObject class >> primCreate [
 GtBoxerExternalObject class >> primRelease: aHandle [
 	
 	"Plain pointers must be deleted using delete(), all users must implement a specific method"
-	"self ffiCall: #(void lib_object_drop(void* aHandle))"
+	"self ffiCall: #(void lib_object_drop(void** aHandle))"
 	self subclassResponsibility
 ]
 
@@ -100,7 +100,9 @@ GtBoxerExternalObject class >> release: aHandle [
 
 	self warning: [ '(release) Ptr: ', aHandle value asString ].
 	self primRelease: aHandle.
-	aHandle getHandle beNull
+	self
+		assert: [ aHandle isNull ]
+		description: [ 'Pointer must be null after release' ]
 ]
 
 { #category : #debug }

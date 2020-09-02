@@ -1,5 +1,5 @@
 use boxer::array::BoxerArrayF32;
-use boxer::boxes::ValueBox;
+use boxer::ValueBox;
 
 #[no_mangle]
 pub fn boxer_array_f32_create() -> *mut ValueBox<BoxerArrayF32> {
@@ -40,6 +40,6 @@ pub fn boxer_array_f32_at_put(_ptr: *mut ValueBox<BoxerArrayF32>, index: usize, 
 }
 
 #[no_mangle]
-pub fn boxer_array_f32_drop(_ptr: *mut ValueBox<BoxerArrayF32>) {
-    BoxerArrayF32::boxer_array_drop(_ptr);
+pub fn boxer_array_f32_drop(ptr: &mut *mut ValueBox<BoxerArrayF32>) {
+    BoxerArrayF32::boxer_array_drop(ptr);
 }

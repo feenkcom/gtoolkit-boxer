@@ -37,7 +37,7 @@ GtBoxerSizeF32 class >> primCreate [
 GtBoxerSizeF32 class >> primRelease: aHandle [
 	
 	"Plain pointers must be deleted using delete(), all users must implement a specific method"
-	self ffiCall: #(void boxer_size_f32_drop(void* aHandle))
+	self ffiCall: #(void boxer_size_f32_drop(void** aHandle))
 ]
 
 { #category : #'private - ffi' }

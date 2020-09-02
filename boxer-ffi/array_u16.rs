@@ -1,5 +1,5 @@
 use boxer::array::BoxerArrayU16;
-use boxer::boxes::ValueBox;
+use boxer::ValueBox;
 
 #[no_mangle]
 pub fn boxer_array_u16_byte_size(count: usize) -> usize {
@@ -67,6 +67,6 @@ pub fn boxer_array_u16_at(_ptr: *mut ValueBox<BoxerArrayU16>, index: usize) -> u
 }
 
 #[no_mangle]
-pub fn boxer_array_u16_drop(_ptr: *mut ValueBox<BoxerArrayU16>) {
+pub fn boxer_array_u16_drop(_ptr: &mut *mut ValueBox<BoxerArrayU16>) {
     BoxerArrayU16::boxer_array_drop(_ptr);
 }
