@@ -79,6 +79,7 @@ pub trait ValueBoxPointer<T> {
         Block: FnOnce(&mut Box<ValueBox<T>>, DefaultBlock) -> Return;
 
     fn is_valid(&self) -> bool;
+    fn has_value(&self) -> bool;
     fn mutate(&self, object: T);
     fn get_ptr(&self) -> *const T;
 
@@ -159,6 +160,10 @@ impl<T> ValueBoxPointer<T> for *mut ValueBox<T> {
     }
 
     fn is_valid(&self) -> bool {
+        self.with_box(|| false, |value_box, _| value_box.has_value())
+    }
+
+    fn has_value(&self) -> bool {
         self.with_box(|| false, |value_box, _| value_box.has_value())
     }
 
@@ -249,7 +254,7 @@ impl<T> ValueBoxPointer<T> for *mut ValueBox<T> {
         )
     }
 
-    /// I also drop the box
+    /// I do not the box
     fn with_value_consumed<DefaultBlock, Block, Return>(
         &mut self,
         default: DefaultBlock,
@@ -259,27 +264,15 @@ impl<T> ValueBoxPointer<T> for *mut ValueBox<T> {
         DefaultBlock: FnOnce() -> Return,
         Block: FnOnce(T, &mut Box<ValueBox<T>>) -> Return,
     {
-        if self.is_null() {
-            debug!("ValueBox pointer of {} is null", type_name::<T>());
-            return default();
-        }
-
-        let mut value_box = unsafe { from_raw(*self) };
-        let result = value_box
-            .take_value()
-            .map(|value| block(value, &mut value_box))
-            .unwrap_or_else(|| {
-                debug!("ValueBox value of {} is None", type_name::<T>());
-                default()
-            });
-
-        let new_pointer = into_raw(value_box);
-        assert_eq!(new_pointer, *self, "The pointer must not change");
-
-        // dropping the original box
-        self.drop();
-
-        result
+        self.with_box(default, |value_box, default| {
+            value_box
+                .take_value()
+                .map(|value| block(value, value_box))
+                .unwrap_or_else(|| {
+                    debug!("ValueBox value of {} is None", type_name::<T>());
+                    default()
+                })
+        })
     }
 
     fn with_not_null_value_consumed<Block>(&mut self, block: Block)
@@ -321,11 +314,13 @@ mod test {
 
         let mut value_box_ptr = value_box.into_raw();
         assert_eq!(value_box_ptr.is_null(), false);
+        assert_eq!(value_box_ptr.has_value(), true);
 
         let result = value_box_ptr.with_not_null_value_consumed_return(0, |value| value * 2);
 
         assert_eq!(result, 10);
-        assert_eq!(value_box_ptr.is_null(), true);
+        assert_eq!(value_box_ptr.is_null(), false);
+        assert_eq!(value_box_ptr.has_value(), false);
     }
 
     #[test]
