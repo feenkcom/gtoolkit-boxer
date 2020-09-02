@@ -111,17 +111,6 @@ GtBoxerString class >> primRelease: aHandle [
 	self ffiCall: #(void boxer_string_drop(void* aHandle))
 ]
 
-{ #category : #'instance creation' }
-GtBoxerString class >> stringToByteArray: aString [
-	^ ByteArray streamContents: [ :aStream |
-		ZnUTF8Encoder new 
-			next: aString size 
-			putAll: aString asString
-			startingAt: 1 
-			toStream: aStream.
-		aStream nextPut: 0 ]
-]
-
 { #category : #converting }
 GtBoxerString >> asArray [
 	^ self data asArray
