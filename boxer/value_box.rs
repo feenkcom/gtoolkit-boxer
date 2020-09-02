@@ -1,5 +1,6 @@
 use crate::boxes::{from_raw, into_raw};
 use std::any::type_name;
+use std::intrinsics::transmute;
 
 #[repr(C)]
 pub struct ValueBox<T> {
@@ -18,6 +19,7 @@ impl<T> ValueBox<T> {
     }
 
     pub fn has_value(&self) -> bool {
+        trace!("[has_value] value pointer: {:?}", unsafe { transmute::<Option<&T>, *const T>(self.value.as_ref()) });
         self.value.is_some()
     }
 
