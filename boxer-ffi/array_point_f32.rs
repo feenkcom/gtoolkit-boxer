@@ -26,7 +26,7 @@ pub fn boxer_array_point_f32_create_from_data(
 }
 
 #[no_mangle]
-pub fn boxer_array_point_f32_drop(_ptr: *mut ValueBox<BoxerArrayPointF32>) {
+pub fn boxer_array_point_f32_drop(_ptr: &mut *mut ValueBox<BoxerArrayPointF32>) {
     BoxerArrayPointF32::boxer_array_drop(_ptr);
 }
 

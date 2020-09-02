@@ -2,7 +2,7 @@ use crate::boxes::{from_raw, into_raw};
 use std::any::type_name;
 use std::intrinsics::transmute;
 
-#[repr(C)]
+#[repr(transparent)]
 pub struct ValueBox<T> {
     value: Option<T>,
 }
@@ -19,7 +19,9 @@ impl<T> ValueBox<T> {
     }
 
     pub fn has_value(&self) -> bool {
-        trace!("[has_value] value pointer: {:?}", unsafe { transmute::<Option<&T>, *const T>(self.value.as_ref()) });
+        trace!("[has_value] value pointer: {:?}", unsafe {
+            transmute::<Option<&T>, *const T>(self.value.as_ref())
+        });
         self.value.is_some()
     }
 
@@ -139,8 +141,10 @@ pub trait ValueBoxPointer<T> {
     ) -> Return
     where
         Block: FnOnce(T) -> Return;
+}
 
-    fn drop(&mut self);
+pub trait ValueBoxPointerReference<T> {
+    fn drop(self);
 }
 
 impl<T> ValueBoxPointer<T> for *mut ValueBox<T> {
@@ -256,7 +260,7 @@ impl<T> ValueBoxPointer<T> for *mut ValueBox<T> {
         )
     }
 
-    /// I do not the box
+    /// I do not drop the box
     fn with_value_consumed<DefaultBlock, Block, Return>(
         &mut self,
         default: DefaultBlock,
@@ -294,10 +298,14 @@ impl<T> ValueBoxPointer<T> for *mut ValueBox<T> {
     {
         self.with_value_consumed(|| default, |value, _| block(value))
     }
+}
 
-    fn drop(&mut self) {
-        if !self.is_null() {
-            let value_box = unsafe { from_raw(*self) };
+impl<T> ValueBoxPointerReference<T> for &mut *mut ValueBox<T> {
+    fn drop(self) {
+        let ptr = *self;
+
+        if !ptr.is_null() {
+            let value_box = unsafe { from_raw(ptr) };
             std::mem::drop(value_box)
         } else {
             error!("Trying to double-free the memory of {}", type_name::<T>());
@@ -309,6 +317,7 @@ impl<T> ValueBoxPointer<T> for *mut ValueBox<T> {
 #[cfg(test)]
 mod test {
     use crate::value_box::{ValueBox, ValueBoxPointer};
+    use crate::ValueBoxPointerReference;
 
     #[test]
     fn value_box_with_consumed() {
@@ -323,6 +332,7 @@ mod test {
         assert_eq!(result, 10);
         assert_eq!(value_box_ptr.is_null(), false);
         assert_eq!(value_box_ptr.has_value(), false);
+        assert_eq!(value_box_ptr.is_valid(), false);
     }
 
     #[test]
@@ -336,14 +346,15 @@ mod test {
         assert_eq!(value_box_ptr.is_null(), false);
         assert_eq!(result, 10);
 
-        value_box_ptr.drop();
+        (&mut value_box_ptr).drop();
     }
 
     #[test]
     fn value_box_drop() {
         let mut ptr = ValueBox::new(42).into_raw();
-        ptr.drop();
-        assert_eq!(ptr, std::ptr::null_mut())
+        let ptr_ref = &mut ptr.clone();
+        ptr_ref.drop();
+        assert_eq!(ptr_ref.is_null(), true);
     }
 
     struct Child<'counter> {
@@ -425,7 +436,7 @@ mod test {
         let parent = create_parent(&mut parents_drop, &mut children_drop);
 
         let mut parent_ptr = put_parent_in_value_box_with_return(parent);
-        parent_ptr.drop();
+        (&mut parent_ptr).drop();
 
         assert_eq!(parents_drop, 1);
         assert_eq!(children_drop, 1);

@@ -7,7 +7,7 @@ pub fn boxer_size_u64_create() -> *mut ValueBox<BoxerSizeU64> {
 }
 
 #[no_mangle]
-pub fn boxer_size_u64_drop(_ptr: *mut ValueBox<BoxerSizeU64>) {
+pub fn boxer_size_u64_drop(_ptr: &mut *mut ValueBox<BoxerSizeU64>) {
     BoxerSizeU64::boxer_size_drop(_ptr);
 }
 

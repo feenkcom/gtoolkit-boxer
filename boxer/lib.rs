@@ -4,7 +4,7 @@ pub use widestring;
 extern crate log;
 
 use crate::boxes::{from_raw, into_raw, ReferenceBox};
-pub use crate::value_box::{ValueBox, ValueBoxPointer};
+pub use crate::value_box::{ValueBox, ValueBoxPointer, ValueBoxPointerReference};
 
 pub mod array;
 pub mod boxes;

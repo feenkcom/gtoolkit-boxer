@@ -7,7 +7,7 @@ pub fn boxer_size_i32_create() -> *mut ValueBox<BoxerSizeI32> {
 }
 
 #[no_mangle]
-pub fn boxer_size_i32_drop(_ptr: *mut ValueBox<BoxerSizeI32>) {
+pub fn boxer_size_i32_drop(_ptr: &mut *mut ValueBox<BoxerSizeI32>) {
     BoxerSizeI32::boxer_size_drop(_ptr);
 }
 
