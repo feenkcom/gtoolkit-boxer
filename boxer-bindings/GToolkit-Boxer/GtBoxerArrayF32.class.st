@@ -36,6 +36,17 @@ GtBoxerArrayF32 class >> withAll: aCollectionOfFloats [
 	^ theBoxedFloats
 ]
 
+{ #category : #'instance creation' }
+GtBoxerArrayF32 class >> withAll: aCollectionOfFloats during: aBlock [
+	
+	^ self
+		new: aCollectionOfFloats size
+		withAll: 0.0
+		during: [ :theBoxedFloats |
+			aCollectionOfFloats withIndexDo: [ :eachPosition :eachIndex | theBoxedFloats at: eachIndex put: eachPosition ].
+			aBlock value: theBoxedFloats ]
+]
+
 { #category : #'private - ffi' }
 GtBoxerArrayF32 >> externalType [
 	^ FFIFloat32
