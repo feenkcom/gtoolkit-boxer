@@ -8,7 +8,7 @@ EpMonitor current disable.
 [ 
   Metacello new
     baseline: 'GToolkitBoxer';
-    repository: 'github://feenkcom/gtoolkit-boxer/src';
+    repository: 'github://feenkcom/gtoolkit-boxer/boxer-bindings';
     load
 ] ensure: [ EpMonitor current enable ].  
 ```
