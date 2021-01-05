@@ -7,17 +7,15 @@ Class {
 	#category : #BaselineOfGToolkitBoxer
 }
 
-{ #category : #baseline }
+{ #category : #baselines }
 BaselineOfGToolkitBoxer >> baseline: spec [
 	<baseline>
-	spec for: #'common' do: [
+	spec for: #common do: [
 		spec postLoadDoIt: #'postLoadBoxer:'.
-		spec 
-			baseline: 'GToolkitBoxerBindings' with: [
-				spec repository: 'github://feenkcom/gtoolkit-boxer:v0.8.8/src' ];
-			baseline: 'GToolkitInstaller' with: [
-				spec repository: 'github://feenkcom/gtoolkit-installer:v0.8.1/src' ]. ].
 
+		spec
+			baseline: 'GToolkitBoxerBindings' with: [ spec repository: 'github://feenkcom/gtoolkit-boxer/boxer-bindings' ];
+			baseline: 'GToolkitInstaller' with: [ spec repository: 'github://feenkcom/gtoolkit-installer/src' ] ]
 ]
 
 { #category : #baselines }
