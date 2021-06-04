@@ -1,5 +1,7 @@
 "
 Just bindings to the boxer library
+
+
 "
 Class {
 	#name : #BaselineOfGToolkitBoxerBindings,
