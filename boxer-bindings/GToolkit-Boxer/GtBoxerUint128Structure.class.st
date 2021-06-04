@@ -1,5 +1,5 @@
 "
-I am a structure variant of ${GtBoxerUint128}$
+I am a structure variant of ${class:name=GtBoxerUint128}$
 "
 Class {
 	#name : #GtBoxerUint128Structure,
