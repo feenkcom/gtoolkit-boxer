@@ -101,7 +101,15 @@ GtBoxerString class >> primCreateFromData: anExternalAddress size: aSize [
 
 { #category : #'private - ffi' }
 GtBoxerString class >> primCreateFromWideString: aWideString size: aSize [
-	^ self ffiCall: #(void* boxer_string_from_wide_string(void* aWideString, size_t aSize))
+	aWideString pinInMemory.
+	^ self
+		primCreateFromWideStringOop: (PointerUtils oopForObject: aWideString)
+		size: aSize
+]
+
+{ #category : #'private - ffi' }
+GtBoxerString class >> primCreateFromWideStringOop: aWideStringPointer size: aSize [
+	^ self ffiCall: #(void* boxer_string_from_wide_string(void* aWideStringPointer, size_t aSize))
 ]
 
 { #category : #'private - ffi' }
