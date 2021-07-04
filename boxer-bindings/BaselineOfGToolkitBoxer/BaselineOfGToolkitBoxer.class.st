@@ -14,9 +14,9 @@ BaselineOfGToolkitBoxer >> baseline: spec [
 		spec postLoadDoIt: #'postLoadBoxer:'.
 		spec 
 			baseline: 'GToolkitBoxerBindings' with: [
-				spec repository: 'github://feenkcom/gtoolkit-boxer:v0.8.13/boxer-bindings' ];
+				spec repository: 'github://feenkcom/gtoolkit-boxer:v0.8.14/boxer-bindings' ];
 			baseline: 'GToolkitInstaller' with: [
-				spec repository: 'github://feenkcom/gtoolkit-installer:v0.8.4/src' ]. ].
+				spec repository: 'github://feenkcom/gtoolkit-installer:v0.8.5/src' ]. ].
 
 ]
 
