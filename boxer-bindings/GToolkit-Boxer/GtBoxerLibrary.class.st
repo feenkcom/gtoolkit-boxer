@@ -44,9 +44,12 @@ GtBoxerLibrary >> hasModule [
 	^ aResult ifNil: [ false ]
 ]
 
-{ #category : #'accessing platform' }
-GtBoxerLibrary >> macModuleName [
-	^ self detectLibrary: 'libBoxer.dylib'
+{ #category : #accessing }
+GtBoxerLibrary >> macLibraryName [
+	^ self class environment
+		at: #FFIMacLibraryFinder
+		ifPresent: [ :aLibraryFinder | aLibraryFinder findLibrary: 'libBoxer.dylib' ]
+		ifAbsent: [ self detectLibrary: 'libBoxer.dylib' ]
 ]
 
 { #category : #'accessing platform' }
@@ -54,12 +57,26 @@ GtBoxerLibrary >> primTest [
 	^ self ffiCall: #(bool boxer_test())
 ]
 
-{ #category : #'accessing platform' }
-GtBoxerLibrary >> unixModuleName [
-	^ self detectLibrary: 'libBoxer.so'
+{ #category : #accessing }
+GtBoxerLibrary >> unix32LibraryName [
+	^ self class environment
+		at: #FFIUnix32LibraryFinder
+		ifPresent: [ :aLibraryFinder | aLibraryFinder findLibrary: 'libBoxer.so' ]
+		ifAbsent: [ self detectLibrary: 'libBoxer.so' ]
 ]
 
 { #category : #'accessing platform' }
-GtBoxerLibrary >> win32ModuleName [
-	^ self detectLibrary: 'libBoxer.dll'
+GtBoxerLibrary >> unix64LibraryName [
+	^ self class environment
+		at: #FFIUnix64LibraryFinder
+		ifPresent: [ :aLibraryFinder | aLibraryFinder findLibrary: 'libBoxer.so' ]
+		ifAbsent: [ self detectLibrary: 'libBoxer.so' ]
+]
+
+{ #category : #'accessing platform' }
+GtBoxerLibrary >> win32LibraryName [
+	^ self class environment
+		at: #FFIWindowsLibraryFinder
+		ifPresent: [ :aLibraryFinder | aLibraryFinder findAnyLibrary: #('Boxer.dll' 'libBoxer.dll') ]
+		ifAbsent: [ self detectLibrary: 'libBoxer.dll' ]
 ]
