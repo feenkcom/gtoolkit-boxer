@@ -1,27 +1,27 @@
 Class {
-	#name : 'BaselineOfGToolkitBoxer',
-	#superclass : 'BaselineOf',
+	#name : #BaselineOfGToolkitBoxer,
+	#superclass : #BaselineOf,
 	#classVars : [
 		'PostLoaded'
 	],
-	#category : 'BaselineOfGToolkitBoxer'
+	#category : #BaselineOfGToolkitBoxer
 }
 
-{ #category : 'baseline' }
+{ #category : #baseline }
 BaselineOfGToolkitBoxer >> baseline: spec [
 	<baseline>
 	spec for: #'common' do: [
 		spec postLoadDoIt: #'postLoadBoxer:'.
 		spec
 			baseline: 'GToolkitBoxerBindings' with: [
-				spec repository: 'github://feenkcom/gtoolkit-boxer:v0.8.18/boxer-bindings' ].
+				spec repository: 'github://feenkcom/gtoolkit-boxer:v0.8.19/boxer-bindings' ].
 		spec
 			baseline: 'GToolkitInstaller' with: [
-				spec repository: 'github://feenkcom/gtoolkit-installer:v0.8.8/src' ].
+				spec repository: 'github://feenkcom/gtoolkit-installer:v0.8.9/src' ].
 	]
 ]
 
-{ #category : 'baselines' }
+{ #category : #baselines }
 BaselineOfGToolkitBoxer >> postLoadBoxer: spec [
 	(PostLoaded isNotNil and: [ PostLoaded ])
 		ifTrue: [ ^ self ].
@@ -30,7 +30,7 @@ BaselineOfGToolkitBoxer >> postLoadBoxer: spec [
 	self postLoadInstallBoxerBinary: spec
 ]
 
-{ #category : 'baselines' }
+{ #category : #baselines }
 BaselineOfGToolkitBoxer >> postLoadInstallBoxerBinary: aSpec [
 	(self class environment at: #GtBoxerLibrary) install
 ]
