@@ -8,7 +8,7 @@ Class {
 }
 
 { #category : #'library path' }
-GtBoxerExternalObject class >> ffiLibraryName [
+GtBoxerExternalObject class >> ffiLibrary [
 	^ GtBoxerLibrary
 ]
 
@@ -137,8 +137,8 @@ GtBoxerExternalObject >> autoRelease [
 ]
 
 { #category : #'library path' }
-GtBoxerExternalObject >> ffiLibraryName [
-	^ self class ffiLibraryName
+GtBoxerExternalObject >> ffiLibrary [
+	^ self class ffiLibrary
 ]
 
 { #category : #dependencies }
