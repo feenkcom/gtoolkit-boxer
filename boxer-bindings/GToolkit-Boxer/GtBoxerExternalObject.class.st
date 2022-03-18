@@ -21,8 +21,9 @@ GtBoxerExternalObject class >> finalizeResourceData: aHandle [
 { #category : #'instance creation' }
 GtBoxerExternalObject class >> fromHandle: aHandle [
 	^ self basicNew
+		setHandle: aHandle;
 		initialize;
-		setHandle: aHandle
+		yourself
 ]
 
 { #category : #'instance creation' }
@@ -139,6 +140,11 @@ GtBoxerExternalObject >> autoRelease [
 { #category : #'library path' }
 GtBoxerExternalObject >> ffiLibrary [
 	^ self class ffiLibrary
+]
+
+{ #category : #initialization }
+GtBoxerExternalObject >> initialize [
+	"!! We intentionally do not call `super initialize` to not waste resources on allocation of the null handle"
 ]
 
 { #category : #dependencies }
