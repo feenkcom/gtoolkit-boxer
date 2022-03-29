@@ -44,6 +44,14 @@ impl<T> ReferenceBox<T> {
     pub fn boxed(&self) -> *mut T {
         self.referenced
     }
+
+    pub fn as_ref(&self) -> &T {
+        unsafe { std::mem::transmute(self.referenced) }
+    }
+
+    pub fn as_mut(&self) -> &mut T {
+        unsafe { std::mem::transmute(self.referenced) }
+    }
 }
 
 pub trait ReferenceBoxPointer<T> {

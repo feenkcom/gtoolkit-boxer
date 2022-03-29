@@ -1,3 +1,4 @@
+use std::mem::transmute;
 use boxer::{ValueBox, ValueBoxPointer};
 use std::os::raw::c_void;
 
