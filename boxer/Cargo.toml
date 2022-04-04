@@ -1,6 +1,6 @@
 [package]
 name = "boxer"
-version = "0.2.1"
+version = "0.2.2"
 authors = ["Aliaksei Syrel <alex.syrel@gmail.com>"]
 edition = "2021"
 
@@ -11,3 +11,6 @@ path = "lib.rs"
 [dependencies]
 widestring = "0.4.2"
 log = "0.4"
+thiserror = "1.0.30"
+anyhow = "1.0.56"
+user-error = "1.2.8"

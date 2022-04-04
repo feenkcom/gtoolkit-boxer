@@ -1,5 +1,5 @@
-use std::mem::transmute;
 use boxer::{ValueBox, ValueBoxPointer};
+use std::mem::transmute;
 use std::os::raw::c_void;
 
 #[no_mangle]

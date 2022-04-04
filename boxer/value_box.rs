@@ -1,10 +1,48 @@
 use crate::boxes::{from_raw, into_raw};
+use crate::{BoxerError, Result};
 use std::any::type_name;
+use std::fmt::{Debug, Formatter};
 use std::intrinsics::transmute;
+use std::mem::ManuallyDrop;
+use std::ops::{Deref, DerefMut};
 
 #[repr(transparent)]
 pub struct ValueBox<T> {
     value: Option<T>,
+}
+
+#[repr(transparent)]
+pub struct BoxRef<T> {
+    value_box: ManuallyDrop<Box<ValueBox<T>>>,
+}
+
+impl<T> Deref for BoxRef<T> {
+    type Target = T;
+
+    fn deref(&self) -> &Self::Target {
+        self.value_box.deref().value.as_ref().unwrap()
+    }
+}
+
+impl<T> DerefMut for BoxRef<T> {
+    fn deref_mut(&mut self) -> &mut Self::Target {
+        self.value_box.deref_mut().value.as_mut().unwrap()
+    }
+}
+
+impl<T> Debug for BoxRef<T> {
+    fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
+        f.debug_struct("BoxRef")
+            .field(
+                "value",
+                self.value_box
+                    .deref()
+                    .value
+                    .as_ref()
+                    .map_or(&"None", |_| &"Some"),
+            )
+            .finish()
+    }
 }
 
 impl<T> ValueBox<T> {
@@ -63,12 +101,7 @@ impl<T> ValueBox<T> {
 
 impl<T> Drop for ValueBox<T> {
     fn drop(&mut self) {
-        log!(
-            if self.value.is_some() {
-                log::Level::Debug
-            } else {
-                log::Level::Warn
-            },
+        debug!(
             "Dropping {} of {}",
             self.value.as_ref().map_or("None", |_| { "Some" }),
             type_name::<T>()
@@ -77,6 +110,9 @@ impl<T> Drop for ValueBox<T> {
 }
 
 pub trait ValueBoxPointer<T> {
+    fn to_ref(&self) -> Result<BoxRef<T>>;
+    fn to_value(&self) -> Result<T>;
+
     fn with_box<DefaultBlock, Block, Return>(&self, default: DefaultBlock, block: Block) -> Return
     where
         DefaultBlock: FnOnce() -> Return,
@@ -91,6 +127,7 @@ pub trait ValueBoxPointer<T> {
     where
         DefaultBlock: FnOnce() -> Return,
         Block: FnOnce(&mut T) -> Return;
+
     fn with_not_null<Block>(&self, block: Block)
     where
         Block: FnOnce(&mut T);
@@ -148,6 +185,29 @@ pub trait ValueBoxPointerReference<T> {
 }
 
 impl<T> ValueBoxPointer<T> for *mut ValueBox<T> {
+    fn to_ref(&self) -> Result<BoxRef<T>> {
+        if self.is_null() {
+            return BoxerError::NullPointer(std::any::type_name::<T>().to_string()).into();
+        }
+        let value_box = ManuallyDrop::new(unsafe { from_raw(*self) });
+
+        if value_box.has_value() {
+            Ok(BoxRef { value_box })
+        } else {
+            BoxerError::NoValue(std::any::type_name::<T>().to_string()).into()
+        }
+    }
+
+    fn to_value(&self) -> Result<T> {
+        if self.is_null() {
+            return BoxerError::NullPointer(std::any::type_name::<T>().to_string()).into();
+        }
+        let mut value_box = ManuallyDrop::new(unsafe { from_raw(*self) });
+        value_box
+            .take_value()
+            .ok_or(BoxerError::NoValue(std::any::type_name::<T>().to_string()))
+    }
+
     fn with_box<DefaultBlock, Block, Return>(&self, default: DefaultBlock, block: Block) -> Return
     where
         DefaultBlock: FnOnce() -> Return,
@@ -308,7 +368,7 @@ impl<T> ValueBoxPointerReference<T> for &mut *mut ValueBox<T> {
             let value_box = unsafe { from_raw(ptr) };
             std::mem::drop(value_box)
         } else {
-            error!("Trying to double-free the memory of {}", type_name::<T>());
+            debug!("Trying to double-free the memory of {}", type_name::<T>());
         }
         *self = std::ptr::null_mut()
     }
@@ -316,8 +376,60 @@ impl<T> ValueBoxPointerReference<T> for &mut *mut ValueBox<T> {
 
 #[cfg(test)]
 mod test {
+    use crate::error::ReturnBoxerResult;
     use crate::value_box::{ValueBox, ValueBoxPointer};
     use crate::ValueBoxPointerReference;
+    use anyhow::anyhow;
+    use std::error::Error;
+    use std::fmt::{Display, Write};
+
+    use super::*;
+
+    #[derive(Debug)]
+    pub struct CustomError {}
+
+    impl Display for CustomError {
+        fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
+            f.write_str("CustomError")
+        }
+    }
+
+    impl std::error::Error for CustomError {}
+
+    #[test]
+    pub fn value_box_as_ref() -> Result<()> {
+        let value_box = ValueBox::new(5);
+        let value_box_ptr = value_box.into_raw();
+
+        let reference = value_box_ptr.to_ref()?;
+        assert_eq!(reference.deref(), &5);
+        drop(reference);
+
+        let value = value_box_ptr
+            .to_ref()
+            .and_then(|value| Err(anyhow!("New error").into()))
+            .or_print(0);
+        assert_eq!(value, 0);
+
+        let value = value_box_ptr
+            .to_ref()
+            .and_then(|value| Err((Box::new(CustomError {}) as Box<dyn Error>).into()))
+            .or_print(0);
+        assert_eq!(value, 0);
+
+        Ok(())
+    }
+
+    #[test]
+    pub fn value_box_as_ref_mut() -> Result<()> {
+        let value_box = ValueBox::new(5);
+        let mut value_box_ptr = value_box.into_raw();
+
+        let mut reference = value_box_ptr.to_ref()?.deref_mut().clone();
+        assert_eq!(reference, 5);
+
+        Ok(())
+    }
 
     #[test]
     fn value_box_with_consumed() {
