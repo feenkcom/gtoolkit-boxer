@@ -2,18 +2,22 @@
 pub use widestring;
 #[macro_use]
 extern crate log;
+extern crate anyhow;
 
 use crate::boxes::{from_raw, into_raw, ReferenceBox};
 pub use crate::value_box::{ValueBox, ValueBoxPointer, ValueBoxPointerReference};
 
 pub mod array;
 pub mod boxes;
+mod error;
 pub mod number;
 pub mod point;
 pub mod point3;
 pub mod size;
 pub mod string;
 mod value_box;
+
+pub use error::{BoxerError, Result, ReturnBoxerResult};
 
 #[macro_export]
 macro_rules! function {
