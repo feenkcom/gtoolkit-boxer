@@ -14,6 +14,8 @@ pub enum BoxerError {
     NoValue(String),
     #[error("There was an error")]
     AnyhowError(#[from] anyhow::Error),
+    #[error("There was an IO error")]
+    IOError(#[from] std::io::Error),
     #[error("There was an error")]
     AnyError(#[from] Box<dyn std::error::Error>),
 }
