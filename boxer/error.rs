@@ -42,32 +42,14 @@ impl<Return> ReturnBoxerResult<Return> for Result<Return> {
     }
 
     fn log(self) {
-        self.map_err(|error| {
-            let error: Box<dyn std::error::Error> = Box::new(error);
-            let user_facing_error: UserFacingError = error.into();
-            user_facing_error
-        })
-        .map(|_| ())
-        .unwrap_or_else(|error| {
-            warn!("{}", pretty_summary(error.summary().as_str()));
-            if let Some(reasons) = pretty_reasons(error.reasons()) {
-                warn!("{}", reasons);
-            }
-            ()
-        });
+        if let Err(error) = self {
+            log_boxer_error(error);
+        }
     }
 
     fn or_log(self, value: Return) -> Return {
-        self.map_err(|error| {
-            let error: Box<dyn std::error::Error> = Box::new(error);
-            let user_facing_error: UserFacingError = error.into();
-            user_facing_error
-        })
-        .unwrap_or_else(|error| {
-            warn!("{}", pretty_summary(error.summary().as_str()));
-            if let Some(reasons) = pretty_reasons(error.reasons()) {
-                warn!("{}", reasons);
-            }
+        self.unwrap_or_else(|error| {
+            log_boxer_error(error);
             value
         })
     }
@@ -86,6 +68,34 @@ impl<Return> ReturnBoxerResult<Return> for Result<Return> {
             value
         })
     }
+}
+
+fn log_boxer_error(error: BoxerError) {
+    match &error {
+        BoxerError::NullPointer(_) => warn_user_facing_error(to_user_facing_error(error)),
+        BoxerError::NoValue(_) => warn_user_facing_error(to_user_facing_error(error)),
+        _ => error_user_facing_error(to_user_facing_error(error)),
+    };
+}
+
+fn warn_user_facing_error(error: UserFacingError) {
+    warn!("{}", pretty_summary(error.summary().as_str()));
+    if let Some(reasons) = pretty_reasons(error.reasons()) {
+        warn!("{}", reasons);
+    }
+}
+
+fn error_user_facing_error(error: UserFacingError) {
+    error!("{}", pretty_summary(error.summary().as_str()));
+    if let Some(reasons) = pretty_reasons(error.reasons()) {
+        error!("{}", reasons);
+    }
+}
+
+fn to_user_facing_error(error: BoxerError) -> UserFacingError {
+    let error: Box<dyn std::error::Error> = Box::new(error);
+    let user_facing_error: UserFacingError = error.into();
+    user_facing_error
 }
 
 fn pretty_summary(summary: &str) -> String {
