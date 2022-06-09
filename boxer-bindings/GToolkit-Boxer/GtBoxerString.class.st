@@ -60,10 +60,6 @@ GtBoxerString class >> fromString: aString [
 
 { #category : #'instance creation' }
 GtBoxerString class >> fromString: aString during: aBlock [
-	self
-		assert: [ aString isNotNil ]
-		description: [ 'String must not be nil' ].
-
 	^ self fromNativeHandle: (aString isByteString
 		ifTrue: [ self primCreateFromByteString: aString size: aString size ]
 		ifFalse: [ self primCreateFromWideString: aString size: aString size ])
