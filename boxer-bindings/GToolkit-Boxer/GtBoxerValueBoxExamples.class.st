@@ -10,7 +10,7 @@ GtBoxerValueBoxExamples >> drop_not_null [
 	| aNew |
 	
 	aNew := GtBoxerSizeU32 new.
-	GtBoxerSizeU32 primRelease: aNew getHandle.
+	aNew release.
 	self assert: aNew isNull. 
 
 	^ aNew
