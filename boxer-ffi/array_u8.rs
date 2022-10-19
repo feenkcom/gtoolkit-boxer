@@ -42,28 +42,28 @@ pub fn boxer_array_u8_copy_into_data(
 }
 
 #[no_mangle]
-pub fn boxer_array_u8_get_length(_ptr: *mut ValueBox<BoxerArrayU8>) -> usize {
-    BoxerArrayU8::boxer_array_get_length(_ptr)
+pub fn boxer_array_u8_get_length(ptr: *mut ValueBox<BoxerArrayU8>) -> usize {
+    BoxerArrayU8::boxer_array_get_length(ptr)
 }
 
 #[no_mangle]
-pub fn boxer_array_u8_get_capacity(_ptr: *mut ValueBox<BoxerArrayU8>) -> usize {
-    BoxerArrayU8::boxer_array_get_capacity(_ptr)
+pub fn boxer_array_u8_get_capacity(ptr: *mut ValueBox<BoxerArrayU8>) -> usize {
+    BoxerArrayU8::boxer_array_get_capacity(ptr)
 }
 
 #[no_mangle]
-pub fn boxer_array_u8_get_data(_ptr: *mut ValueBox<BoxerArrayU8>) -> *mut u8 {
-    BoxerArrayU8::boxer_array_get_data(_ptr)
+pub fn boxer_array_u8_get_data(ptr: *mut ValueBox<BoxerArrayU8>) -> *mut u8 {
+    BoxerArrayU8::boxer_array_get_data(ptr)
 }
 
 #[no_mangle]
-pub fn boxer_array_u8_at_put(_ptr: *mut ValueBox<BoxerArrayU8>, index: usize, item: u8) {
-    BoxerArrayU8::boxer_array_at_put(_ptr, index, item);
+pub fn boxer_array_u8_at_put(ptr: *mut ValueBox<BoxerArrayU8>, index: usize, item: u8) {
+    BoxerArrayU8::boxer_array_at_put(ptr, index, item);
 }
 
 #[no_mangle]
-pub fn boxer_array_u8_at(_ptr: *mut ValueBox<BoxerArrayU8>, index: usize) -> u8 {
-    BoxerArrayU8::boxer_array_at(_ptr, index, 0)
+pub fn boxer_array_u8_at(ptr: *mut ValueBox<BoxerArrayU8>, index: usize) -> u8 {
+    BoxerArrayU8::boxer_array_at(ptr, index, 0)
 }
 
 /// In-place convert between color formats
@@ -121,31 +121,31 @@ fn rgba_to_argb(rgba: u32) -> u32 {
 
 /// In-place convert argb to rgba
 #[no_mangle]
-pub fn boxer_array_u8_argb_to_rgba(_ptr: *mut ValueBox<BoxerArrayU8>) {
-    _ptr.with_not_null(|array| {
+pub fn boxer_array_u8_argb_to_rgba(ptr: *mut ValueBox<BoxerArrayU8>) {
+    ptr.with_not_null(|array| {
         boxer_array_u8_convert_color_format(array.to_slice(), argb_to_rgba);
     })
 }
 
 /// In-place convert bgra to argb
 #[no_mangle]
-pub fn boxer_array_u8_bgra_to_argb(_ptr: *mut ValueBox<BoxerArrayU8>) {
-    _ptr.with_not_null(|array| {
+pub fn boxer_array_u8_bgra_to_argb(ptr: *mut ValueBox<BoxerArrayU8>) {
+    ptr.with_not_null(|array| {
         boxer_array_u8_convert_color_format(array.to_slice(), bgra_to_argb);
     })
 }
 
 /// In-place convert rgba to argb
 #[no_mangle]
-pub fn boxer_array_u8_rgba_to_argb(_ptr: *mut ValueBox<BoxerArrayU8>) {
-    _ptr.with_not_null(|array| {
+pub fn boxer_array_u8_rgba_to_argb(ptr: *mut ValueBox<BoxerArrayU8>) {
+    ptr.with_not_null(|array| {
         boxer_array_u8_convert_color_format(array.to_slice(), rgba_to_argb);
     })
 }
 
 #[no_mangle]
-pub fn boxer_array_u8_drop(_ptr: &mut *mut ValueBox<BoxerArrayU8>) {
-    BoxerArrayU8::boxer_array_drop(_ptr);
+pub fn boxer_array_u8_drop(ptr: *mut ValueBox<BoxerArrayU8>) {
+    BoxerArrayU8::boxer_array_drop(ptr);
 }
 
 #[test]

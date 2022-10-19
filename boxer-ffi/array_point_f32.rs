@@ -26,25 +26,25 @@ pub fn boxer_array_point_f32_create_from_data(
 }
 
 #[no_mangle]
-pub fn boxer_array_point_f32_drop(_ptr: &mut *mut ValueBox<BoxerArrayPointF32>) {
-    BoxerArrayPointF32::boxer_array_drop(_ptr);
+pub fn boxer_array_point_f32_drop(ptr: *mut ValueBox<BoxerArrayPointF32>) {
+    BoxerArrayPointF32::boxer_array_drop(ptr);
 }
 
 #[no_mangle]
-pub fn boxer_array_point_f32_get_length(_ptr: *mut ValueBox<BoxerArrayPointF32>) -> usize {
-    BoxerArrayPointF32::boxer_array_get_length(_ptr)
+pub fn boxer_array_point_f32_get_length(ptr: *mut ValueBox<BoxerArrayPointF32>) -> usize {
+    BoxerArrayPointF32::boxer_array_get_length(ptr)
 }
 
 #[no_mangle]
-pub fn boxer_array_point_f32_get_capacity(_ptr: *mut ValueBox<BoxerArrayPointF32>) -> usize {
-    BoxerArrayPointF32::boxer_array_get_capacity(_ptr)
+pub fn boxer_array_point_f32_get_capacity(ptr: *mut ValueBox<BoxerArrayPointF32>) -> usize {
+    BoxerArrayPointF32::boxer_array_get_capacity(ptr)
 }
 
 #[no_mangle]
 pub fn boxer_array_point_f32_get_data(
-    _ptr: *mut ValueBox<BoxerArrayPointF32>,
+    ptr: *mut ValueBox<BoxerArrayPointF32>,
 ) -> *mut BoxerPointF32 {
-    BoxerArrayPointF32::boxer_array_get_data(_ptr)
+    BoxerArrayPointF32::boxer_array_get_data(ptr)
 }
 
 #[cfg(test)]

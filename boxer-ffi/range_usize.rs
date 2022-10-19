@@ -1,4 +1,4 @@
-use boxer::{ValueBox, ValueBoxPointer, ValueBoxPointerReference};
+use boxer::{ValueBox, ValueBoxPointer};
 use std::ops::Range;
 
 #[no_mangle]
@@ -7,8 +7,8 @@ pub fn boxer_range_usize_create() -> *mut ValueBox<Range<usize>> {
 }
 
 #[no_mangle]
-pub fn boxer_range_usize_drop(ptr: &mut *mut ValueBox<Range<usize>>) {
-    ptr.drop();
+pub fn boxer_range_usize_drop(ptr: *mut ValueBox<Range<usize>>) {
+    ptr.release();
 }
 
 #[no_mangle]

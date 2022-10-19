@@ -112,7 +112,7 @@ GtBoxerString class >> primCreateFromWideStringOop: aWideStringPointer size: aSi
 GtBoxerString class >> primRelease: aHandle [
 	
 	"Plain pointers must be deleted using delete(), all users must implement a specific method"
-	self ffiCall: #(void boxer_string_drop(void** aHandle))
+	self ffiCall: #(void boxer_string_drop(void* aHandle))
 ]
 
 { #category : #converting }

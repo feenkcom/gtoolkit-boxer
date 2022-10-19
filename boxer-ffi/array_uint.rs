@@ -24,31 +24,31 @@ pub fn boxer_array_uint_create_from_data(
 }
 
 #[no_mangle]
-pub fn boxer_array_uint_get_length(_ptr: *mut ValueBox<BoxerArrayUInt>) -> usize {
-    BoxerArrayUInt::boxer_array_get_length(_ptr)
+pub fn boxer_array_uint_get_length(ptr: *mut ValueBox<BoxerArrayUInt>) -> usize {
+    BoxerArrayUInt::boxer_array_get_length(ptr)
 }
 
 #[no_mangle]
-pub fn boxer_array_uint_get_capacity(_ptr: *mut ValueBox<BoxerArrayUInt>) -> usize {
-    BoxerArrayUInt::boxer_array_get_capacity(_ptr)
+pub fn boxer_array_uint_get_capacity(ptr: *mut ValueBox<BoxerArrayUInt>) -> usize {
+    BoxerArrayUInt::boxer_array_get_capacity(ptr)
 }
 
 #[no_mangle]
-pub fn boxer_array_uint_get_data(_ptr: *mut ValueBox<BoxerArrayUInt>) -> *mut c_uint {
-    BoxerArrayUInt::boxer_array_get_data(_ptr)
+pub fn boxer_array_uint_get_data(ptr: *mut ValueBox<BoxerArrayUInt>) -> *mut c_uint {
+    BoxerArrayUInt::boxer_array_get_data(ptr)
 }
 
 #[no_mangle]
-pub fn boxer_array_uint_at_put(_ptr: *mut ValueBox<BoxerArrayUInt>, index: usize, item: c_uint) {
-    BoxerArrayUInt::boxer_array_at_put(_ptr, index, item);
+pub fn boxer_array_uint_at_put(ptr: *mut ValueBox<BoxerArrayUInt>, index: usize, item: c_uint) {
+    BoxerArrayUInt::boxer_array_at_put(ptr, index, item);
 }
 
 #[no_mangle]
-pub fn boxer_array_uint_at(_ptr: *mut ValueBox<BoxerArrayUInt>, index: usize) -> c_uint {
-    BoxerArrayUInt::boxer_array_at(_ptr, index, 0)
+pub fn boxer_array_uint_at(ptr: *mut ValueBox<BoxerArrayUInt>, index: usize) -> c_uint {
+    BoxerArrayUInt::boxer_array_at(ptr, index, 0)
 }
 
 #[no_mangle]
-pub fn boxer_array_uint_drop(_ptr: &mut *mut ValueBox<BoxerArrayUInt>) {
-    BoxerArrayUInt::boxer_array_drop(_ptr);
+pub fn boxer_array_uint_drop(ptr: *mut ValueBox<BoxerArrayUInt>) {
+    BoxerArrayUInt::boxer_array_drop(ptr);
 }

@@ -12,8 +12,8 @@ pub fn boxer_point_f32_create(x: f32, y: f32) -> *mut ValueBox<BoxerPointF32> {
 }
 
 #[no_mangle]
-pub fn boxer_point_f32_drop(_ptr: &mut *mut ValueBox<BoxerPointF32>) {
-    BoxerPointF32::boxer_point_drop(_ptr);
+pub fn boxer_point_f32_drop(ptr: *mut ValueBox<BoxerPointF32>) {
+    BoxerPointF32::boxer_point_drop(ptr);
 }
 
 #[no_mangle]

@@ -5,7 +5,7 @@ extern crate log;
 extern crate anyhow;
 
 use crate::boxes::{from_raw, into_raw, ReferenceBox};
-pub use crate::value_box::{ValueBox, ValueBoxPointer, ValueBoxPointerReference};
+pub use crate::value_box::{ValueBox, ValueBoxPointer};
 
 pub mod array;
 pub mod boxes;

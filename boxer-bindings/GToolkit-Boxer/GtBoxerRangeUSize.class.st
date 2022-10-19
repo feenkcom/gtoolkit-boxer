@@ -13,7 +13,7 @@ GtBoxerRangeUSize class >> primCreate [
 GtBoxerRangeUSize class >> primRelease: aHandle [
 	
 	"Plain pointers must be deleted using delete(), all users must implement a specific method"
-	self ffiCall: #(void boxer_range_usize_drop(void** aHandle))
+	self ffiCall: #(void boxer_range_usize_drop(void* aHandle))
 ]
 
 { #category : #'private - ffi' }
