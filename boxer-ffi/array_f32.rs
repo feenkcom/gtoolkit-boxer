@@ -40,6 +40,6 @@ pub fn boxer_array_f32_at_put(_ptr: *mut ValueBox<BoxerArrayF32>, index: usize, 
 }
 
 #[no_mangle]
-pub fn boxer_array_f32_drop(ptr: &mut *mut ValueBox<BoxerArrayF32>) {
+pub fn boxer_array_f32_drop(ptr: *mut ValueBox<BoxerArrayF32>) {
     BoxerArrayF32::boxer_array_drop(ptr);
 }

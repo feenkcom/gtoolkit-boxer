@@ -214,7 +214,7 @@ pub fn test_from_utf8_string() {
 
 #[test]
 pub fn sparkle() {
-    let mut sparkle = String::from("💖");
+    let sparkle = String::from("💖");
 
     assert_eq!(sparkle.len(), 4);
 

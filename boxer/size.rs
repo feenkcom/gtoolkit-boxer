@@ -1,5 +1,4 @@
 use crate::value_box::{ValueBox, ValueBoxPointer};
-use crate::ValueBoxPointerReference;
 
 #[derive(Debug, Copy, Clone, Default)]
 #[repr(C)]
@@ -28,8 +27,8 @@ where
         ValueBox::new(BoxerSize::<T>::default()).into_raw()
     }
 
-    pub fn boxer_size_drop(ptr: &mut *mut ValueBox<BoxerSize<T>>) {
-        ptr.drop();
+    pub fn boxer_size_drop(ptr: *mut ValueBox<BoxerSize<T>>) {
+        ptr.release();
     }
 
     pub fn boxer_size_get_width(_ptr: *mut ValueBox<BoxerSize<T>>) -> T {

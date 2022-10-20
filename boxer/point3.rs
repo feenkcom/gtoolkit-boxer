@@ -1,5 +1,4 @@
 use crate::value_box::{ValueBox, ValueBoxPointer};
-use crate::ValueBoxPointerReference;
 
 #[derive(Debug, Copy, Clone, Default)]
 #[repr(C)]
@@ -34,8 +33,8 @@ where
         ValueBox::new(BoxerPoint3::<T>::new(x, y, z)).into_raw()
     }
 
-    pub fn boxer_point_drop(ptr: &mut *mut ValueBox<BoxerPoint3<T>>) {
-        ptr.drop();
+    pub fn boxer_point_drop(ptr: *mut ValueBox<BoxerPoint3<T>>) {
+        ptr.release();
     }
 
     pub fn boxer_point_get_x(_maybe_null_ptr: *mut ValueBox<BoxerPoint3<T>>) -> T {

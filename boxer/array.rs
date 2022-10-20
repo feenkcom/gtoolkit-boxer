@@ -1,6 +1,5 @@
 use crate::point::BoxerPointF32;
 use crate::value_box::{ValueBox, ValueBoxPointer};
-use crate::ValueBoxPointerReference;
 use std::os::raw::{c_int, c_uint};
 
 #[derive(Debug)]
@@ -176,8 +175,8 @@ where
         ValueBox::new(BoxerArray::<T>::from_data(_data, amount)).into_raw()
     }
 
-    pub fn boxer_array_drop(ptr: &mut *mut ValueBox<BoxerArray<T>>) {
-        ptr.drop();
+    pub fn boxer_array_drop(ptr: *mut ValueBox<BoxerArray<T>>) {
+        ptr.release();
     }
 
     pub fn boxer_array_copy_into(

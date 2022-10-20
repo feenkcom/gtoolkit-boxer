@@ -1,10 +1,11 @@
-use crate::boxes::{from_raw, into_raw};
-use crate::{BoxerError, Result};
 use std::any::type_name;
 use std::fmt::{Debug, Formatter};
 use std::intrinsics::transmute;
 use std::mem::ManuallyDrop;
 use std::ops::{Deref, DerefMut};
+
+use crate::{BoxerError, Result, ReturnBoxerResult};
+use crate::boxes::{from_raw, into_raw};
 
 #[repr(transparent)]
 pub struct ValueBox<T> {
@@ -112,6 +113,8 @@ impl<T> Drop for ValueBox<T> {
 pub trait ValueBoxPointer<T> {
     fn to_ref(&self) -> Result<BoxRef<T>>;
     fn to_value(&self) -> Result<T>;
+    fn to_value_box(&self) -> Result<ValueBox<T>>;
+    fn release(self);
 
     fn with_box<DefaultBlock, Block, Return>(&self, default: DefaultBlock, block: Block) -> Return
     where
@@ -180,32 +183,40 @@ pub trait ValueBoxPointer<T> {
         Block: FnOnce(T) -> Return;
 }
 
-pub trait ValueBoxPointerReference<T> {
-    fn drop(self);
-}
-
 impl<T> ValueBoxPointer<T> for *mut ValueBox<T> {
     fn to_ref(&self) -> Result<BoxRef<T>> {
         if self.is_null() {
-            return BoxerError::NullPointer(std::any::type_name::<T>().to_string()).into();
+            return BoxerError::NullPointer(type_name::<T>().to_string()).into();
         }
         let value_box = ManuallyDrop::new(unsafe { from_raw(*self) });
 
         if value_box.has_value() {
             Ok(BoxRef { value_box })
         } else {
-            BoxerError::NoValue(std::any::type_name::<T>().to_string()).into()
+            BoxerError::NoValue(type_name::<T>().to_string()).into()
         }
     }
 
     fn to_value(&self) -> Result<T> {
         if self.is_null() {
-            return BoxerError::NullPointer(std::any::type_name::<T>().to_string()).into();
+            return BoxerError::NullPointer(type_name::<T>().to_string()).into();
         }
         let mut value_box = ManuallyDrop::new(unsafe { from_raw(*self) });
         value_box
             .take_value()
-            .ok_or(BoxerError::NoValue(std::any::type_name::<T>().to_string()))
+            .ok_or(BoxerError::NoValue(type_name::<T>().to_string()))
+    }
+
+    fn to_value_box(&self) -> Result<ValueBox<T>> {
+        if self.is_null() {
+            return BoxerError::NullPointer(type_name::<T>().to_string()).into();
+        }
+        let value_box =unsafe { from_raw(*self) };
+        Ok(*value_box)
+    }
+
+    fn release(self) {
+        self.to_value_box().log();
     }
 
     fn with_box<DefaultBlock, Block, Return>(&self, default: DefaultBlock, block: Block) -> Return
@@ -360,28 +371,15 @@ impl<T> ValueBoxPointer<T> for *mut ValueBox<T> {
     }
 }
 
-impl<T> ValueBoxPointerReference<T> for &mut *mut ValueBox<T> {
-    fn drop(self) {
-        let ptr = *self;
-
-        if !ptr.is_null() {
-            let value_box = unsafe { from_raw(ptr) };
-            std::mem::drop(value_box)
-        } else {
-            debug!("Trying to double-free the memory of {}", type_name::<T>());
-        }
-        *self = std::ptr::null_mut()
-    }
-}
-
 #[cfg(test)]
 mod test {
-    use crate::error::ReturnBoxerResult;
-    use crate::value_box::{ValueBox, ValueBoxPointer};
-    use crate::ValueBoxPointerReference;
-    use anyhow::anyhow;
     use std::error::Error;
-    use std::fmt::{Display, Write};
+    use std::fmt::Display;
+    use std::rc::Rc;
+
+    use anyhow::anyhow;
+
+    use crate::value_box::{ValueBox, ValueBoxPointer};
 
     use super::*;
 
@@ -394,7 +392,7 @@ mod test {
         }
     }
 
-    impl std::error::Error for CustomError {}
+    impl Error for CustomError {}
 
     #[test]
     pub fn value_box_as_ref() -> Result<()> {
@@ -407,14 +405,14 @@ mod test {
 
         let value = value_box_ptr
             .to_ref()
-            .and_then(|value| Err(anyhow!("New error").into()))
-            .or_print(0);
+            .and_then(|_value| Err(anyhow!("New error").into()))
+            .unwrap_or(0);
         assert_eq!(value, 0);
 
         let value = value_box_ptr
             .to_ref()
-            .and_then(|value| Err((Box::new(CustomError {}) as Box<dyn Error>).into()))
-            .or_print(0);
+            .and_then(|_value| Err((Box::new(CustomError {}) as Box<dyn Error>).into()))
+            .unwrap_or(0);
         assert_eq!(value, 0);
 
         Ok(())
@@ -423,9 +421,8 @@ mod test {
     #[test]
     pub fn value_box_as_ref_mut() -> Result<()> {
         let value_box = ValueBox::new(5);
-        let mut value_box_ptr = value_box.into_raw();
-
-        let mut reference = value_box_ptr.to_ref()?.deref_mut().clone();
+        let value_box_ptr = value_box.into_raw();
+        let reference = value_box_ptr.to_ref()?.deref_mut().clone();
         assert_eq!(reference, 5);
 
         Ok(())
@@ -451,22 +448,25 @@ mod test {
     fn value_box_with_value() {
         let value_box = ValueBox::new(5);
 
-        let mut value_box_ptr = value_box.into_raw();
+        let value_box_ptr = value_box.into_raw();
         assert_eq!(value_box_ptr.is_null(), false);
 
         let result = value_box_ptr.with_not_null_value_return(0, |value| value * 2);
         assert_eq!(value_box_ptr.is_null(), false);
         assert_eq!(result, 10);
 
-        (&mut value_box_ptr).drop();
+        value_box_ptr.release();
     }
 
     #[test]
     fn value_box_drop() {
-        let mut ptr = ValueBox::new(42).into_raw();
-        let ptr_ref = &mut ptr.clone();
-        ptr_ref.drop();
-        assert_eq!(ptr_ref.is_null(), true);
+        let value = Rc::new(42);
+
+        let ptr = ValueBox::new(value.clone()).into_raw();
+        assert_eq!(Rc::strong_count(&value), 2);
+        ptr.release();
+
+        assert_eq!(Rc::strong_count(&value), 1);
     }
 
     struct Child<'counter> {
@@ -513,7 +513,7 @@ mod test {
 
         let parent = create_parent(&mut parents_drop, &mut children_drop);
 
-        std::mem::drop(parent);
+        drop(parent);
 
         assert_eq!(parents_drop, 1);
         assert_eq!(children_drop, 1);
@@ -547,8 +547,8 @@ mod test {
 
         let parent = create_parent(&mut parents_drop, &mut children_drop);
 
-        let mut parent_ptr = put_parent_in_value_box_with_return(parent);
-        (&mut parent_ptr).drop();
+        let parent_ptr = put_parent_in_value_box_with_return(parent);
+        parent_ptr.release();
 
         assert_eq!(parents_drop, 1);
         assert_eq!(children_drop, 1);

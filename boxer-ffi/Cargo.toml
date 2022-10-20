@@ -1,12 +1,12 @@
 [package]
 name = "libboxer"
-version = "0.1.0"
+version = "0.3.0"
 authors = ["Aliaksei Syrel <alex.syrel@gmail.com>"]
-edition = "2018"
+edition = "2021"
 
 [dependencies]
 boxer = { path = "../boxer" }
-crossbeam = "0.7.3"
+crossbeam = "0.8"
 
 [lib]
 name = "Boxer"

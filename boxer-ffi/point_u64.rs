@@ -12,8 +12,8 @@ pub fn boxer_point_u64_create(x: u64, y: u64) -> *mut ValueBox<BoxerPointU64> {
 }
 
 #[no_mangle]
-pub fn boxer_point_u64_drop(_ptr: &mut *mut ValueBox<BoxerPointU64>) {
-    BoxerPointU64::boxer_point_drop(_ptr);
+pub fn boxer_point_u64_drop(ptr: *mut ValueBox<BoxerPointU64>) {
+    BoxerPointU64::boxer_point_drop(ptr);
 }
 
 #[no_mangle]

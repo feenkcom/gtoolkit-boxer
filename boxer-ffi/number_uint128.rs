@@ -1,5 +1,5 @@
 use boxer::number::BoxerUint128;
-use boxer::{ValueBox, ValueBoxPointer, ValueBoxPointerReference};
+use boxer::{ValueBox, ValueBoxPointer};
 
 #[no_mangle]
 pub fn boxer_number_uint128_create() -> *mut ValueBox<BoxerUint128> {
@@ -7,8 +7,8 @@ pub fn boxer_number_uint128_create() -> *mut ValueBox<BoxerUint128> {
 }
 
 #[no_mangle]
-pub fn boxer_number_uint128_drop(ptr: &mut *mut ValueBox<BoxerUint128>) {
-    ptr.drop();
+pub fn boxer_number_uint128_drop(ptr: *mut ValueBox<BoxerUint128>) {
+    ptr.release();
 }
 
 #[no_mangle]
@@ -33,10 +33,10 @@ pub fn boxer_number_uint128_set_high(_number_ptr: *mut ValueBox<BoxerUint128>, h
 
 #[no_mangle]
 pub fn boxer_number_uint128_set_max(_number_ptr: *mut ValueBox<BoxerUint128>) {
-    _number_ptr.with_not_null(|number| number.set(std::u128::MAX));
+    _number_ptr.with_not_null(|number| number.set(u128::MAX));
 }
 
 #[no_mangle]
 pub fn boxer_number_uint128_set_min(_number_ptr: *mut ValueBox<BoxerUint128>) {
-    _number_ptr.with_not_null(|number| number.set(std::u128::MIN));
+    _number_ptr.with_not_null(|number| number.set(u128::MIN));
 }

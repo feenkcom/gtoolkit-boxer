@@ -43,7 +43,7 @@ GtBoxerUint128 class >> primCreate [
 GtBoxerUint128 class >> primRelease: aHandle [
 	
 	"Plain pointers must be deleted using delete(), all users must implement a specific method"
-	self ffiCall: #(void boxer_number_uint128_drop(void** aHandle))
+	self ffiCall: #(void boxer_number_uint128_drop(void* aHandle))
 ]
 
 { #category : #converting }
