@@ -22,10 +22,3 @@ GtBoxerValueBox >> boxedPointer [
 
 	^ self class boxedPointerOf: self
 ]
-
-{ #category : #accessing }
-GtBoxerValueBox >> isValid [
-	<return: #Boolean>
-
-	^ handle isNotNil and: [ handle isNull not ]
-]

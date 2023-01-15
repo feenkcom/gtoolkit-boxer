@@ -18,11 +18,6 @@ GtBoxerReferenceBox class >> primCreate [
 	self shouldNotImplement
 ]
 
-{ #category : #'private - ffi' }
-GtBoxerReferenceBox class >> primRelease: aHandle [
-	"no need to release"
-]
-
 { #category : #dependencies }
 GtBoxerReferenceBox >> release [
 	"release is not really needed"

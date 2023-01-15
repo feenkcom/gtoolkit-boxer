@@ -147,6 +147,13 @@ GtBoxerExternalObject >> initialize [
 	"!! We intentionally do not call `super initialize` to not waste resources on allocation of the null handle"
 ]
 
+{ #category : #testing }
+GtBoxerExternalObject >> isValid [
+	<return: #Boolean>
+
+	^ handle isNotNil and: [ handle isNull not ]
+]
+
 { #category : #dependencies }
 GtBoxerExternalObject >> release [
 	"#release is sent manually, so we want to make sure that resource is no longer
