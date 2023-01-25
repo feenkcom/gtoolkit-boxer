@@ -4,6 +4,15 @@ Trait {
 }
 
 { #category : #'api - u128' }
+TGtWithU128Box >> getU128From: aBlock [
+	<return: #Number>
+	
+	^ self newU128During: [ :anU128 |
+		aBlock value: anU128.
+		anU128 asInteger ]
+]
+
+{ #category : #'api - u128' }
 TGtWithU128Box >> newMaxU128 [
 	^ self newU128 initializeMax
 ]

@@ -4,6 +4,15 @@ Trait {
 }
 
 { #category : #'api - point i32' }
+TGtWithPointBoxI32 >> getPointI32From: aBlock [
+	<return: #Point>
+	
+	^ self newPointI32During: [ :aPointI32 |
+		aBlock value: aPointI32.
+		aPointI32 asPoint ]
+]
+
+{ #category : #'api - point i32' }
 TGtWithPointBoxI32 >> newPointI32 [
 	^ GtPointBoxI32
 		fromNativeHandle: (self primPointI32Create)

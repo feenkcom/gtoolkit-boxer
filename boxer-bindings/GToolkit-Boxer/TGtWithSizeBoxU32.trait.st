@@ -4,6 +4,15 @@ Trait {
 }
 
 { #category : #'api - size u32' }
+TGtWithSizeBoxU32 >> getSizeU32From: aBlock [
+	<return: #Point>
+
+	^ self newSizeU32During: [ :aPointU32 |
+		aBlock value: aPointU32.
+		aPointU32 asPoint ]
+]
+
+{ #category : #'api - size u32' }
 TGtWithSizeBoxU32 >> newSizeU32 [
 	^ GtSizeBoxU32
 		fromNativeHandle: (self primSizeU32Create)
