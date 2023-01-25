@@ -83,8 +83,9 @@ GtExternalLibraryBox class >> null [
 
 { #category : #'private - ffi' }
 GtExternalLibraryBox class >> primRelease: aHandle library: anFFILibrary [
-	"Plain pointers must be deleted using delete(), all users must implement a specific method in the ffi library:"
+	"External objects must be released using a specific method from the ffi library similar to:"
 	"self ffiCall: #(void lib_object_drop(void* aHandle))"
+
 	self subclassResponsibility
 ]
 

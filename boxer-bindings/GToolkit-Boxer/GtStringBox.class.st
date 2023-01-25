@@ -1,6 +1,6 @@
 "
 Library-independent bindings to the [StringBox](https://docs.rs/string-box/latest/string_box/struct.StringBox.html) from the [string-box](https://crates.io/crates/string-box) crate.
-Allows developers to pass and receive strings from Rust libraries. 
+Allows developers to pass and receive strings from Rust libraries.
 "
 Class {
 	#name : #GtStringBox,

@@ -121,6 +121,5 @@ TGtWithStringBox >> primStringGetLength: aGtBoxerString [
 
 { #category : #'private - string box' }
 TGtWithStringBox >> primStringRelease: aHandle [
-	"Plain pointers must be deleted using delete(), all users must implement a specific method"
 	self ffiCall: #(void boxer_string_drop(void* aHandle))
 ]
