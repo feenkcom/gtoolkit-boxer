@@ -19,7 +19,7 @@ TGtWithStringBox >> getStringFrom: aBlock [
 
 { #category : #'api - string box' }
 TGtWithStringBox >> newString [
-	^ GtStringBox fromNativeHandle: (self primStringCreate) library: self
+	^ GtStringBox fromOwnedHandle: (self primStringCreate) library: self
 ]
 
 { #category : #'api - string box' }
@@ -29,7 +29,7 @@ TGtWithStringBox >> newString: aString [
 		description: [ 'String must not be nil' ].
 
 	^ GtStringBox
-		fromNativeHandle: (aString isByteString
+		fromOwnedHandle: (aString isByteString
 			ifTrue: [ self primStringCreateFromByteString: aString size: aString size ]
 			ifFalse: [ self primStringCreateFromWideString: aString size: aString size ])
 		library: self
@@ -38,7 +38,7 @@ TGtWithStringBox >> newString: aString [
 { #category : #'api - string box' }
 TGtWithStringBox >> newString: aString during: aBlock [
 	^ GtStringBox
-		fromNativeHandle: (aString isByteString
+		fromOwnedHandle: (aString isByteString
 			ifTrue: [ self primStringCreateFromByteString: aString size: aString size ]
 			ifFalse: [ self primStringCreateFromWideString: aString size: aString size ])
 		library: self
@@ -48,7 +48,7 @@ TGtWithStringBox >> newString: aString during: aBlock [
 { #category : #'api - string box' }
 TGtWithStringBox >> newStringDuring: aBlock [
 	^ GtStringBox
-		fromNativeHandle: self primStringCreate
+		fromOwnedHandle: self primStringCreate
 		library: self
 		during: aBlock
 ]
@@ -58,7 +58,7 @@ TGtWithStringBox >> newStringFromByteArray: aByteArray [
 	"aByteArray should not neccesseraly overlive the string, because it will be copied"
 
 	^ GtStringBox
-		fromNativeHandle: (self
+		fromOwnedHandle: (self
 			primStringCreateFromData: aByteArray
 			size: aByteArray size - 1)
 		library: self
@@ -69,9 +69,17 @@ TGtWithStringBox >> newStringFromByteArray: aByteArray during: aBlock [
 	"aByteArray should not neccesseraly overlive the string, because it will be copied"
 
 	^ GtStringBox
-		fromNativeHandle: (self
+		fromOwnedHandle: (self
 			primStringCreateFromData: aByteArray
 			size: aByteArray size - 1)
+		library: self
+		during: aBlock
+]
+
+{ #category : #'api - string box' }
+TGtWithStringBox >> newStringFromHandle: anExternalAddress during: aBlock [
+	^ GtStringBox
+		fromOwnedHandle: anExternalAddress
 		library: self
 		during: aBlock
 ]

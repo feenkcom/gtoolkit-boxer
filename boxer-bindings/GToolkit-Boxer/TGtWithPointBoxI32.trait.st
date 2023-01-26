@@ -15,21 +15,21 @@ TGtWithPointBoxI32 >> getPointI32From: aBlock [
 { #category : #'api - point i32' }
 TGtWithPointBoxI32 >> newPointI32 [
 	^ GtPointBoxI32
-		fromNativeHandle: (self primPointI32Create)
+		fromOwnedHandle: (self primPointI32Create)
 		library: self
 ]
 
 { #category : #'api - point i32' }
 TGtWithPointBoxI32 >> newPointI32: aPoint [
 	^ GtPointBoxI32
-		fromNativeHandle: (self primPointI32CreateX: aPoint x y: aPoint y)
+		fromOwnedHandle: (self primPointI32CreateX: aPoint x y: aPoint y)
 		library: self
 ]
 
 { #category : #'api - point i32' }
 TGtWithPointBoxI32 >> newPointI32: aPoint during: aBlock [
 	^ GtPointBoxI32
-		fromNativeHandle: (self primPointI32CreateX: aPoint x y: aPoint y)
+		fromOwnedHandle: (self primPointI32CreateX: aPoint x y: aPoint y)
 		library: self
 		during: aBlock
 ]
@@ -37,7 +37,7 @@ TGtWithPointBoxI32 >> newPointI32: aPoint during: aBlock [
 { #category : #'api - point i32' }
 TGtWithPointBoxI32 >> newPointI32During: aBlock [
 	^ GtPointBoxI32
-		fromNativeHandle: (self primPointI32Create)
+		fromOwnedHandle: (self primPointI32Create)
 		library: self
 		during: aBlock
 ]

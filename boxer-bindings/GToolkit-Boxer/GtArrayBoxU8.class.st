@@ -101,7 +101,10 @@ GtArrayBoxU8 >> bgraToArgb [
 
 { #category : #copying }
 GtArrayBoxU8 >> copyIntoByteArray: aByteArray [
-	self primCopyIntoData: aByteArray length: aByteArray size
+	self ffiLibrary
+		primArrayU8: self
+		copyIntoData: aByteArray
+		length: aByteArray size
 ]
 
 { #category : #'private - ffi' }
@@ -127,11 +130,6 @@ GtArrayBoxU8 >> primBgraToArgb [
 { #category : #'private - ffi' }
 GtArrayBoxU8 >> primCopyInto: aGtBoxerArrayU8 [
 	^ self ffiCall: #(void boxer_array_u8_copy_into(self, GtBoxerArrayU8 aGtBoxerArrayU8))
-]
-
-{ #category : #'private - ffi' }
-GtArrayBoxU8 >> primCopyIntoData: anExternalAddress length: aLength [
-	^ self ffiCall: #(void boxer_array_u8_copy_into_data(self, void* anExternalAddress, size_t aLength))
 ]
 
 { #category : #'private - ffi' }

@@ -25,14 +25,14 @@ TGtWithU128Box >> newMinU128 [
 { #category : #'api - u128' }
 TGtWithU128Box >> newU128 [
 	^ GtU128Box
-		fromNativeHandle: self primU128Create
+		fromOwnedHandle: self primU128Create
 		library: self
 ]
 
 { #category : #'api - u128' }
 TGtWithU128Box >> newU128During: aBlock [
 	^ GtU128Box
-		fromNativeHandle: self primU128Create
+		fromOwnedHandle: self primU128Create
 		library: self
 		during: aBlock
 ]

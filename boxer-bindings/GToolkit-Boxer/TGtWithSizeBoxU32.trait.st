@@ -15,14 +15,14 @@ TGtWithSizeBoxU32 >> getSizeU32From: aBlock [
 { #category : #'api - size u32' }
 TGtWithSizeBoxU32 >> newSizeU32 [
 	^ GtSizeBoxU32
-		fromNativeHandle: (self primSizeU32Create)
+		fromOwnedHandle: (self primSizeU32Create)
 		library: self
 ]
 
 { #category : #'api - size u32' }
 TGtWithSizeBoxU32 >> newSizeU32During: aBlock [
 	^ GtSizeBoxU32
-		fromNativeHandle: (self primSizeU32Create)
+		fromOwnedHandle: (self primSizeU32Create)
 		library: self
 		during: aBlock
 ]

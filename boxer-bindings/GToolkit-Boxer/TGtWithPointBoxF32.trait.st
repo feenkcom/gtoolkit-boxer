@@ -6,21 +6,21 @@ Trait {
 { #category : #'api - point f32' }
 TGtWithPointBoxF32 >> newPointF32 [
 	^ GtPointBoxF32
-		fromNativeHandle: (self primPointF32Create)
+		fromOwnedHandle: (self primPointF32Create)
 		library: self
 ]
 
 { #category : #'api - point f32' }
 TGtWithPointBoxF32 >> newPointF32: aPoint [
 	^ GtPointBoxF32
-		fromNativeHandle: (self primPointF32CreateX: aPoint x y: aPoint y)
+		fromOwnedHandle: (self primPointF32CreateX: aPoint x y: aPoint y)
 		library: self
 ]
 
 { #category : #'api - point f32' }
 TGtWithPointBoxF32 >> newPointF32: aPoint during: aBlock [
 	^ GtPointBoxF32
-		fromNativeHandle: (self primPointF32CreateX: aPoint x y: aPoint y)
+		fromOwnedHandle: (self primPointF32CreateX: aPoint x y: aPoint y)
 		library: self
 		during: aBlock
 ]
@@ -28,7 +28,7 @@ TGtWithPointBoxF32 >> newPointF32: aPoint during: aBlock [
 { #category : #'api - point f32' }
 TGtWithPointBoxF32 >> newPointF32During: aBlock [
 	^ GtPointBoxF32
-		fromNativeHandle: (self primPointF32Create)
+		fromOwnedHandle: (self primPointF32Create)
 		library: self
 		during: aBlock
 ]
