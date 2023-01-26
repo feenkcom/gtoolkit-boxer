@@ -20,17 +20,3 @@ BaselineOfGToolkitBoxer >> baseline: spec [
 				spec repository: 'github://feenkcom/gtoolkit-installer:v0.8.23/src' ].
 	]
 ]
-
-{ #category : #baselines }
-BaselineOfGToolkitBoxer >> postLoadBoxer: spec [
-	(PostLoaded isNotNil and: [ PostLoaded ])
-		ifTrue: [ ^ self ].
-
-	PostLoaded := true.
-	self postLoadInstallBoxerBinary: spec
-]
-
-{ #category : #baselines }
-BaselineOfGToolkitBoxer >> postLoadInstallBoxerBinary: aSpec [
-	(self class environment at: #GtBoxerLibrary) install
-]
