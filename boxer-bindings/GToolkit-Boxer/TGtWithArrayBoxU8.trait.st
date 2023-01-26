@@ -3,6 +3,22 @@ Trait {
 	#category : #'GToolkit-Boxer-New'
 }
 
+{ #category : #'api - array u8' }
+TGtWithArrayBoxU8 >> newArrayU8FromHandle: anExternalAddress during: aBlock [
+	^ GtArrayBoxU8
+		fromOwnedHandle: anExternalAddress
+		library: self
+		during: aBlock
+]
+
+{ #category : #'private - array u8' }
+TGtWithArrayBoxU8 >> primArrayU8: anArrayBoxU8 copyIntoData: anExternalAddress length: aLength [
+	^ self ffiCall: #(void boxer_array_u8_copy_into_data(
+		GtArrayBoxU8 anArrayBoxU8,
+		void* anExternalAddress,
+		size_t aLength))
+]
+
 { #category : #'private - array u8' }
 TGtWithArrayBoxU8 >> primArrayU8GetCapacity: anArrayBoxU8 [
 	^ self ffiCall: #(size_t boxer_array_u8_get_capacity(GtArrayBoxU8 anArrayBoxU8))

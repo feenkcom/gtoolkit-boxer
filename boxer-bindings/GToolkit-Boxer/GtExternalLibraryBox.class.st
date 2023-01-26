@@ -22,15 +22,7 @@ GtExternalLibraryBox class >> finalizeResourceData: aGtValueBoxExternalAddress [
 ]
 
 { #category : #'instance creation' }
-GtExternalLibraryBox class >> fromHandle: aHandle [
-	"ValueBox objects live in a context of a specific library.
-	The can not be created from an arbitrary handle, please use #fromHandle:library:"
-
-	self shouldNotImplement
-]
-
-{ #category : #'instance creation' }
-GtExternalLibraryBox class >> fromHandle: aHandle library: anFFILibrary [
+GtExternalLibraryBox class >> fromBorrowedHandle: aHandle library: anFFILibrary [
 	^ self basicNew
 		setHandle: aHandle;
 		ffiLibrary: anFFILibrary;
@@ -39,13 +31,25 @@ GtExternalLibraryBox class >> fromHandle: aHandle library: anFFILibrary [
 ]
 
 { #category : #'instance creation' }
-GtExternalLibraryBox class >> fromNativeHandle: anExternalData library: anFFILibrary [
-	^ (self fromHandle: anExternalData getHandle library: anFFILibrary)
-		autoRelease
+GtExternalLibraryBox class >> fromBorrowedHandle: aHandle library: anFFILibrary during: aBlock [
+	^ aBlock value: (self fromBorrowedHandle: aHandle library: anFFILibrary)
 ]
 
 { #category : #'instance creation' }
-GtExternalLibraryBox class >> fromNativeHandle: anExternalData library: anFFILibrary during: aBlock [
+GtExternalLibraryBox class >> fromHandle: aHandle [
+	"ValueBox objects live in a context of a specific library.
+	The can not be created from an arbitrary handle, please use #fromHandle:library:"
+
+	self shouldNotImplement
+]
+
+{ #category : #'instance creation' }
+GtExternalLibraryBox class >> fromOwnedHandle: anExternalData library: anFFILibrary [
+	^ (self fromBorrowedHandle: anExternalData getHandle library: anFFILibrary) autoRelease
+]
+
+{ #category : #'instance creation' }
+GtExternalLibraryBox class >> fromOwnedHandle: anExternalData library: anFFILibrary during: aBlock [
 	"I create a new instance of me without auto-release to evaluate a given block
 	and then destroy me"
 	| anExternalInstance |
@@ -54,7 +58,7 @@ GtExternalLibraryBox class >> fromNativeHandle: anExternalData library: anFFILib
 	anExternalInstance := Object new.
 	^ [
 		anExternalInstance := self
-			fromHandle: anExternalData getHandle
+			fromBorrowedHandle: anExternalData getHandle
 			library: anFFILibrary.
 		aBlock value: anExternalInstance ]
 	ensure: [ anExternalInstance release ]
