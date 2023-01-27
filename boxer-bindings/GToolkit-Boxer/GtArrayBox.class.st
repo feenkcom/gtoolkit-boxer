@@ -50,7 +50,7 @@ GtArrayBox >> asArray [
 
 { #category : #accessing }
 GtArrayBox >> at: anIndex [
-	^ self data at: anIndex
+	^ self primAt: anIndex - 1
 ]
 
 { #category : #accessing }
@@ -63,7 +63,7 @@ GtArrayBox >> atAll: indexArray putAll: valueArray [
 	"Store the elements of valueArray into the slots
 	of this collection selected by indexArray."
 
-	indexArray with: valueArray do: [:index :value | self at: index put: value]
+	indexArray with: valueArray do: [ :index :value | self at: index put: value ]
 ]
 
 { #category : #accessing }
@@ -116,7 +116,7 @@ GtArrayBox >> dataDuring: aBlock [
 		during: aBlock
 ]
 
-{ #category : #'private - ffi' }
+{ #category : #'private - array' }
 GtArrayBox >> externalType [
 	<return: #'FFIExternalType class'>
 
@@ -145,27 +145,32 @@ GtArrayBox >> gtItemsFor: aView [
 		items: [ self asArray ]
 ]
 
-{ #category : #'private - ffi' }
+{ #category : #'private - array' }
+GtArrayBox >> primAt: anIndex [
+	^ self subclassResponsibility
+]
+
+{ #category : #'private - array' }
 GtArrayBox >> primAt: anIndex put: anItem [
 	^ self subclassResponsibility
 ]
 
-{ #category : #'private - ffi' }
+{ #category : #'private - array' }
 GtArrayBox >> primCopyInto: aGtBoxerArray [
 	^ self subclassResponsibility
 ]
 
-{ #category : #'private - ffi' }
+{ #category : #'private - array' }
 GtArrayBox >> primGetCapacity [
 	^ self subclassResponsibility
 ]
 
-{ #category : #'private - ffi' }
+{ #category : #'private - array' }
 GtArrayBox >> primGetData [
 	^ self subclassResponsibility
 ]
 
-{ #category : #'private - ffi' }
+{ #category : #'private - array' }
 GtArrayBox >> primGetLength [
 	^ self subclassResponsibility
 ]

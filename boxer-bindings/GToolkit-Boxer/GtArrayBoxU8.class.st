@@ -4,11 +4,6 @@ Class {
 	#category : #'GToolkit-Boxer-New'
 }
 
-{ #category : #accessing }
-GtArrayBoxU8 class >> byteSize: anAmountOfBytes [
-	^ self primByteSize: anAmountOfBytes
-]
-
 { #category : #'instance creation' }
 GtArrayBoxU8 class >> fromBitmap: aBitmap during: aBlock [
 	"I create a boxer array that does not own a given data for duration of a block"
@@ -30,38 +25,13 @@ GtArrayBoxU8 class >> fromByteArray: aByteArray during: aBlock [
 ]
 
 { #category : #'private - ffi' }
-GtArrayBoxU8 class >> primByteSize: aCount [
-	^ self ffiCall: #(size_t boxer_array_u8_byte_size(size_t aCount))
-]
-
-{ #category : #'private - ffi' }
-GtArrayBoxU8 class >> primCreate [
-	^ self ffiCall: #(void* boxer_array_u8_create())
-]
-
-{ #category : #'private - ffi' }
 GtArrayBoxU8 class >> primCreateFromData: anExternalAddress size: aSize [
 	^ self ffiCall: #(void* boxer_array_u8_create_from_data(void* anExternalAddress, size_t aSize))
 ]
 
 { #category : #'private - ffi' }
-GtArrayBoxU8 class >> primCreateNew: aSize withAll: aValue [
-	^ self ffiCall: #(void* boxer_array_u8_create_with(uint8 aValue, size_t aSize))
-]
-
-{ #category : #'private - ffi' }
 GtArrayBoxU8 class >> primRelease: aHandle library: anFFILibrary [
 	anFFILibrary primArrayU8Release: aHandle
-]
-
-{ #category : #'instance creation' }
-GtArrayBoxU8 class >> withAll: aCollectionOfBytes [
-	| theBoxedBytes |
-	
-	theBoxedBytes := self new: aCollectionOfBytes size withAll: 0.0.
-	aCollectionOfBytes withIndexDo: [ :eachByte :eachIndex | theBoxedBytes at: eachIndex put: eachByte ].
-
-	^ theBoxedBytes
 ]
 
 { #category : #converting }
@@ -118,8 +88,18 @@ GtArrayBoxU8 >> primArgbToRgba [
 ]
 
 { #category : #'private - ffi' }
+GtArrayBoxU8 >> primAt: anIndex [
+	^ self ffiLibrary 
+		primArrayU8: self
+		at: anIndex
+]
+
+{ #category : #'private - ffi' }
 GtArrayBoxU8 >> primAt: anIndex put: anItem [
-	^ self ffiCall: #(void boxer_array_u8_at_put(self, size_t anIndex, uint8 anItem))
+	self ffiLibrary
+		primArrayU8: self
+		at: anIndex
+		put: anItem
 ]
 
 { #category : #'private - ffi' }
@@ -128,8 +108,10 @@ GtArrayBoxU8 >> primBgraToArgb [
 ]
 
 { #category : #'private - ffi' }
-GtArrayBoxU8 >> primCopyInto: aGtBoxerArrayU8 [
-	^ self ffiCall: #(void boxer_array_u8_copy_into(self, GtBoxerArrayU8 aGtBoxerArrayU8))
+GtArrayBoxU8 >> primCopyInto: anArrayBoxU8 [
+	self ffiLibrary
+		primArrayU8: self
+		copyInto: anArrayBoxU8
 ]
 
 { #category : #'private - ffi' }
