@@ -50,7 +50,7 @@ GtArrayBox >> asArray [
 
 { #category : #accessing }
 GtArrayBox >> at: anIndex [
-	^ self data at: anIndex
+	^ self primAt: anIndex - 1
 ]
 
 { #category : #accessing }
@@ -63,7 +63,7 @@ GtArrayBox >> atAll: indexArray putAll: valueArray [
 	"Store the elements of valueArray into the slots
 	of this collection selected by indexArray."
 
-	indexArray with: valueArray do: [:index :value | self at: index put: value]
+	indexArray with: valueArray do: [ :index :value | self at: index put: value ]
 ]
 
 { #category : #accessing }
@@ -143,6 +143,11 @@ GtArrayBox >> gtItemsFor: aView [
 		title: 'Items';
 		priority: 2;
 		items: [ self asArray ]
+]
+
+{ #category : #'private - ffi' }
+GtArrayBox >> primAt: anIndex [
+	^ self subclassResponsibility
 ]
 
 { #category : #'private - ffi' }
