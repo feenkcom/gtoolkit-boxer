@@ -116,7 +116,7 @@ GtArrayBox >> dataDuring: aBlock [
 		during: aBlock
 ]
 
-{ #category : #'private - ffi' }
+{ #category : #'private - array' }
 GtArrayBox >> externalType [
 	<return: #'FFIExternalType class'>
 
@@ -145,32 +145,32 @@ GtArrayBox >> gtItemsFor: aView [
 		items: [ self asArray ]
 ]
 
-{ #category : #'private - ffi' }
+{ #category : #'private - array' }
 GtArrayBox >> primAt: anIndex [
 	^ self subclassResponsibility
 ]
 
-{ #category : #'private - ffi' }
+{ #category : #'private - array' }
 GtArrayBox >> primAt: anIndex put: anItem [
 	^ self subclassResponsibility
 ]
 
-{ #category : #'private - ffi' }
+{ #category : #'private - array' }
 GtArrayBox >> primCopyInto: aGtBoxerArray [
 	^ self subclassResponsibility
 ]
 
-{ #category : #'private - ffi' }
+{ #category : #'private - array' }
 GtArrayBox >> primGetCapacity [
 	^ self subclassResponsibility
 ]
 
-{ #category : #'private - ffi' }
+{ #category : #'private - array' }
 GtArrayBox >> primGetData [
 	^ self subclassResponsibility
 ]
 
-{ #category : #'private - ffi' }
+{ #category : #'private - array' }
 GtArrayBox >> primGetLength [
 	^ self subclassResponsibility
 ]

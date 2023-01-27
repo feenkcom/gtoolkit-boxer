@@ -13,7 +13,7 @@ GtRobocoderTraitGenerator new
 "
 Trait {
 	#name : #TGtWithArrayBoxTemplate,
-	#category : #'GToolkit-Boxer-New'
+	#category : #'GToolkit-Boxer-Templates'
 }
 
 { #category : #templates }
