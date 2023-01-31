@@ -133,14 +133,14 @@ TGtWithStringBox >> primStringRelease: aHandle [
 ]
 
 { #category : #'api - string box' }
-TGtWithStringBox >> unsafeStringFromHandle: anExternalAddress during: aBlock [
+TGtWithStringBox >> unsafeStringFromHandle: aStringBoxHandle during: aBlock [
 	"Reify a given borrowed StringBox handle for the duration of aBlock
 	without releasing the memory. This is marked as unsafe because of memory leak
 	when used with owned handles. The main usecase is inside of the callbacks
 	when a StringBox is still owned by the library and we only get a reference."
 
 	^ GtStringBox
-		fromBorrowedHandle: anExternalAddress
+		fromBorrowedHandle: aStringBoxHandle
 		library: self
 		during: aBlock
 ]

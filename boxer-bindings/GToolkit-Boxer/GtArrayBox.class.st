@@ -4,43 +4,6 @@ Class {
 	#category : #'GToolkit-Boxer-New'
 }
 
-{ #category : #'instance creation' }
-GtArrayBox class >> fromHandle: anExternalAddress size: aSize [
-	"This is unsafe, you must make sure that the data will overlive boxer array"
-	
-	^ self fromNativeHandle: (self primCreateFromData: anExternalAddress size: aSize)
-]
-
-{ #category : #'instance creation' }
-GtArrayBox class >> fromHandle: anExternalAddress size: aSize during: aBlock [
-	"This is unsafe, you must make sure that the data will live during evaluation of a block"
-
-	^ self fromNativeHandle: (self primCreateFromData: anExternalAddress size: aSize) during: aBlock
-]
-
-{ #category : #'instance creation' }
-GtArrayBox class >> new: aSize withAll: aValue [
-	^ self fromNativeHandle: (self primCreateNew: aSize withAll: aValue)
-]
-
-{ #category : #'instance creation' }
-GtArrayBox class >> new: aSize withAll: aValue during: aBlock [
-	^ self fromNativeHandle: (self primCreateNew: aSize withAll: aValue) during: aBlock
-]
-
-{ #category : #'private - ffi' }
-GtArrayBox class >> primCreateFromData: anExternalAddress size: aSize [
-	"
-	^ self ffiCall: #(void* boxer_array_point_f32_create_from_data(void* anExternalAddress, size_t aSize))
-	"
-	^ self subclassResponsibility
-]
-
-{ #category : #'private - ffi' }
-GtArrayBox class >> primCreateNew: aSize withAll: aValue [
-	^ self subclassResponsibility
-]
-
 { #category : #converting }
 GtArrayBox >> asArray [
 	<return: #Array>
@@ -145,6 +108,16 @@ GtArrayBox >> gtItemsFor: aView [
 		items: [ self asArray ]
 ]
 
+{ #category : #enumerating }
+GtArrayBox >> pairsDo: aBlock [
+	"Evaluate aBlock with my elements taken two at a time.  If there's an odd number of items, ignore the last one.  Allows use of a flattened array for things that naturally group into pairs.  See also pairsCollect:"
+
+	1 to: self size // 2 do: [ :index |
+		aBlock
+			value: (self at: 2 * index - 1)
+			value: (self at: 2 * index) ]
+]
+
 { #category : #'private - array' }
 GtArrayBox >> primAt: anIndex [
 	^ self subclassResponsibility
@@ -173,6 +146,18 @@ GtArrayBox >> primGetData [
 { #category : #'private - array' }
 GtArrayBox >> primGetLength [
 	^ self subclassResponsibility
+]
+
+{ #category : #enumerating }
+GtArrayBox >> quartetsDo: aBlock [
+	"Evaluate aBlock with my elements taken four at a time. Allows use of a flattened array for things that naturally group into quartets"
+
+	1 to: self size // 4 do: [ :index |
+		aBlock
+			value: (self at: 4 * index - 3)
+			value: (self at: 4 * index - 2)
+			value: (self at: 4 * index - 1)
+			value: (self at: 4 * index) ]
 ]
 
 { #category : #accessing }
