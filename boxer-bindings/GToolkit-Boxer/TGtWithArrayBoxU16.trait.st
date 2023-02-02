@@ -146,7 +146,7 @@ TGtWithArrayBoxU16 >> primArrayU16: anArrayBoxU16 at: anIndex [
 
 { #category : #'private - array u16' }
 TGtWithArrayBoxU16 >> primArrayU16: anArrayBoxU16 at: anIndex put: anItem [
-	^ self ffiCall: #(void boxer_array_u16_at(
+	^ self ffiCall: #(void boxer_array_u16_at_put(
 		GtArrayBoxU16 anArrayBoxU16,
 		size_t anIndex,
 		uint16 anItem))
