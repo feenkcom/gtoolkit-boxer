@@ -5,11 +5,6 @@ Class {
 }
 
 { #category : #'private - ffi' }
-GtArrayBoxInt class >> primCreateFromData: anExternalAddress size: aSize [
-	^ self ffiCall: #(void* boxer_array_int_create_from_data(void* anExternalAddress, size_t aSize))
-]
-
-{ #category : #'private - ffi' }
 GtArrayBoxInt class >> primRelease: aHandle library: anFFILibrary [
 	anFFILibrary primArrayIntRelease: aHandle
 ]

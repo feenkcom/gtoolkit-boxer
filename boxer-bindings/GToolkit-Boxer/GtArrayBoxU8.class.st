@@ -14,21 +14,6 @@ GtArrayBoxU8 class >> fromBitmap: aBitmap during: aBlock [
 		ensure: [ aBitmap setPinnedInMemory: wasPinned ]
 ]
 
-{ #category : #'instance creation' }
-GtArrayBoxU8 class >> fromByteArray: aByteArray during: aBlock [
-	"I create a boxer array that does not own a given data for duration of a block"
-	| wasPinned |
-	
-	wasPinned := aByteArray pinInMemory.
-	^ [ self fromHandle: aByteArray size: aByteArray size during: aBlock ]
-		ensure: [ aByteArray setPinnedInMemory: wasPinned ]
-]
-
-{ #category : #'private - ffi' }
-GtArrayBoxU8 class >> primCreateFromData: anExternalAddress size: aSize [
-	^ self ffiCall: #(void* boxer_array_u8_create_from_data(void* anExternalAddress, size_t aSize))
-]
-
 { #category : #'private - ffi' }
 GtArrayBoxU8 class >> primRelease: aHandle library: anFFILibrary [
 	anFFILibrary primArrayU8Release: aHandle
