@@ -1,6 +1,8 @@
 Class {
 	#name : #GtExternalLibraryBox,
 	#superclass : #FFIExternalObject,
+	#traits : 'TGtValueBox',
+	#classTraits : 'TGtValueBox classTrait',
 	#instVars : [
 		'library',
 		'isAutoRelease'
