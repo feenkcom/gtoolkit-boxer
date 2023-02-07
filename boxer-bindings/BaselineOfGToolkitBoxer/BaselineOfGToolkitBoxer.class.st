@@ -7,6 +7,12 @@ Class {
 	#category : #BaselineOfGToolkitBoxer
 }
 
+{ #category : #accessing }
+BaselineOfGToolkitBoxer class >> gtDependencyAnalysisPreloadedBaselines [
+	^ super gtDependencyAnalysisPreloadedBaselines
+		copyWith: BaselineOfThreadedFFI
+]
+
 { #category : #baseline }
 BaselineOfGToolkitBoxer >> baseline: spec [
 	<baseline>

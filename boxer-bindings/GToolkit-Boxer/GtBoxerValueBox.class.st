@@ -1,6 +1,8 @@
 Class {
 	#name : #GtBoxerValueBox,
 	#superclass : #GtBoxerExternalObject,
+	#traits : 'TGtValueBox',
+	#classTraits : 'TGtValueBox classTrait',
 	#category : #'GToolkit-Boxer-Core'
 }
 
