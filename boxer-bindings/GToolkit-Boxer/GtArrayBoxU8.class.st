@@ -39,6 +39,7 @@ GtArrayBoxU8 >> asBitmap [
 
 { #category : #converting }
 GtArrayBoxU8 >> asByteArray [
+	"Return an in-image allocated byte array that contains a copy of the bytes"
 	<return: #ByteArray>
 	| aByteArray |
 	
@@ -56,10 +57,15 @@ GtArrayBoxU8 >> bgraToArgb [
 
 { #category : #copying }
 GtArrayBoxU8 >> copyIntoByteArray: aByteArray [
-	self ffiLibrary
+	| wasPinned |
+	
+	wasPinned := aByteArray isPinnedInMemory.
+	
+	[ self ffiLibrary
 		primArrayU8: self
 		copyIntoData: aByteArray
-		length: aByteArray size
+		length: aByteArray size ]
+	ensure: [ aByteArray setPinnedInMemory: wasPinned ]
 ]
 
 { #category : #'private - ffi' }

@@ -11,6 +11,7 @@ GtArrayBoxU16 class >> primRelease: aHandle library: anFFILibrary [
 
 { #category : #converting }
 GtArrayBoxU16 >> asByteArray [
+	"Return an in-image allocated byte array that contains a copy of the bytes"
 	<return: #ByteArray>
 	| aByteArray |
 	
@@ -21,10 +22,15 @@ GtArrayBoxU16 >> asByteArray [
 
 { #category : #copying }
 GtArrayBoxU16 >> copyIntoByteArray: aByteArray [
-	self ffiLibrary
+	| wasPinned |
+	
+	wasPinned := aByteArray isPinnedInMemory.
+	
+	[ self ffiLibrary
 		primArrayU16: self
 		copyIntoData: aByteArray
-		length: aByteArray size // 2
+		length: aByteArray size // 2 ]
+	ensure: [ aByteArray setPinnedInMemory: wasPinned ]
 ]
 
 { #category : #accessing }

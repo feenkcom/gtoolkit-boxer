@@ -103,7 +103,10 @@ GtBoxerArrayU8 >> bgraToArgb [
 
 { #category : #copying }
 GtBoxerArrayU8 >> copyIntoByteArray: aByteArray [
-	self primCopyIntoData: aByteArray length: aByteArray size
+	| wasPinned |
+	wasPinned := aByteArray isPinnedInMemory.
+	[ self primCopyIntoData: aByteArray length: aByteArray size ]
+		ensure: [ aByteArray setPinnedInMemory: wasPinned ]
 ]
 
 { #category : #'private - ffi' }
