@@ -4,6 +4,24 @@ Trait {
 }
 
 { #category : #'examples - array u8' }
+TGtWithArrayBoxU8 classSide >> exampleArrayU8AsByteArray [
+	<gtExample>
+	| aDefaultValue anArray aByteArray|
+	
+	aDefaultValue := self exampleArrayU8DefaultValue.
+	anArray := self uniqueInstance
+		newArrayU8: 10
+		withAll: aDefaultValue.
+		
+	aByteArray := anArray asByteArray.
+	self assert: aByteArray equals: (ByteArray new: 10 withAll: aDefaultValue).
+	"the returned byte array must not be pinned in memory, since it is an in-image copy"
+	self assert: aByteArray isPinnedInMemory not.
+
+	^ aByteArray
+]
+
+{ #category : #'examples - array u8' }
 TGtWithArrayBoxU8 classSide >> exampleArrayU8At [
 	<gtExample>
 	| anArray |
