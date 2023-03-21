@@ -3,6 +3,24 @@ Trait {
 	#category : #'GToolkit-Boxer-New'
 }
 
+{ #category : #'examples - string' }
+TGtWithStringBox classSide >> exampleStringNewByteString [
+	<gtExample>
+	| byteString stringBox boxedString |
+	
+	byteString := String withAll: 'Hello'.
+
+	self assert: byteString isPinnedInMemory not.
+	stringBox := self uniqueInstance newString: byteString.
+	self assert: byteString isPinnedInMemory not.
+	
+	boxedString := stringBox string.
+	self assert: boxedString equals: byteString.
+	self assert: boxedString isPinnedInMemory not.
+	
+	^ stringBox
+]
+
 { #category : #'api - string box' }
 TGtWithStringBox >> getStringFrom: aBlock [
 	<return: #String>
@@ -19,28 +37,30 @@ TGtWithStringBox >> getStringFrom: aBlock [
 
 { #category : #'api - string box' }
 TGtWithStringBox >> newString [
-	^ GtStringBox fromOwnedHandle: (self primStringCreate) library: self
+	^ GtStringBox
+		fromOwnedHandle: self primStringCreate
+		library: self
 ]
 
 { #category : #'api - string box' }
 TGtWithStringBox >> newString: aString [
+	"Create a StringBox from a copy of the given string.
+	Please note, that the returned StringBox is registered as #autoRelease.
+	Consider using #newString:during: which only instantiates a StringBox for a duration of a BlockClosure"
+	<return: #GtStringBox>
 	self
 		assert: [ aString isNotNil ]
 		description: [ 'String must not be nil' ].
 
 	^ GtStringBox
-		fromOwnedHandle: (aString isByteString
-			ifTrue: [ self primStringCreateFromByteString: aString size: aString size ]
-			ifFalse: [ self primStringCreateFromWideString: aString size: aString size ])
+		fromOwnedHandle: (self primStringHandleFromString: aString)
 		library: self
 ]
 
 { #category : #'api - string box' }
 TGtWithStringBox >> newString: aString during: aBlock [
 	^ GtStringBox
-		fromOwnedHandle: (aString isByteString
-			ifTrue: [ self primStringCreateFromByteString: aString size: aString size ]
-			ifFalse: [ self primStringCreateFromWideString: aString size: aString size ])
+		fromOwnedHandle: (self primStringHandleFromString: aString)
 		library: self
 		during: aBlock
 ]
@@ -55,12 +75,10 @@ TGtWithStringBox >> newStringDuring: aBlock [
 
 { #category : #'api - string box' }
 TGtWithStringBox >> newStringFromByteArray: aByteArray [
-	"aByteArray should not neccesseraly overlive the string, because it will be copied"
+	"aByteArray should not neccesseraly outlive the string, because it will be copied"
 
 	^ GtStringBox
-		fromOwnedHandle: (self
-			primStringCreateFromData: aByteArray
-			size: aByteArray size - 1)
+		fromOwnedHandle: (self primStringHandleFromByteArray: aByteArray)
 		library: self
 ]
 
@@ -69,9 +87,7 @@ TGtWithStringBox >> newStringFromByteArray: aByteArray during: aBlock [
 	"aByteArray should not neccesseraly overlive the string, because it will be copied"
 
 	^ GtStringBox
-		fromOwnedHandle: (self
-			primStringCreateFromData: aByteArray
-			size: aByteArray size - 1)
+		fromOwnedHandle: (self primStringHandleFromByteArray: aByteArray)
 		library: self
 		during: aBlock
 ]
@@ -125,6 +141,32 @@ TGtWithStringBox >> primStringGetData: aGtBoxerString [
 { #category : #'private - string box' }
 TGtWithStringBox >> primStringGetLength: aGtBoxerString [
 	^ self ffiCall: #(size_t boxer_string_get_len(GtStringBox aGtBoxerString))
+]
+
+{ #category : #'private - string box' }
+TGtWithStringBox >> primStringHandleFromByteArray: aByteArray [
+	"Create a StringBox from a given ByteArray and return an ExternalData handle"
+	| wasPinned |
+
+	wasPinned := aByteArray isPinnedInMemory.
+	^ [
+		self
+			primStringCreateFromData: aByteArray
+			size: aByteArray size - 1 ]
+		ensure: [ aByteArray setPinnedInMemory: wasPinned ]
+]
+
+{ #category : #'private - string box' }
+TGtWithStringBox >> primStringHandleFromString: aString [
+	"Create a StringBox from a given String and return an ExternalData handle"
+	| wasPinned |
+
+	wasPinned := aString isPinnedInMemory.
+	^ [
+		aString isByteString
+			ifTrue: [ self primStringCreateFromByteString: aString size: aString size ]
+			ifFalse: [ self primStringCreateFromWideString: aString size: aString size ] ]
+		ensure: [ aString setPinnedInMemory: wasPinned ]
 ]
 
 { #category : #'private - string box' }
