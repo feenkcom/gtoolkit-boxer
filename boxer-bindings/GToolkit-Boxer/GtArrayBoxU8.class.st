@@ -4,16 +4,6 @@ Class {
 	#category : #'GToolkit-Boxer-New'
 }
 
-{ #category : #'instance creation' }
-GtArrayBoxU8 class >> fromBitmap: aBitmap during: aBlock [
-	"I create a boxer array that does not own a given data for duration of a block"
-	| wasPinned |
-	
-	wasPinned := aBitmap pinInMemory.
-	^ [ self fromHandle: aBitmap size: aBitmap size * 4 during: aBlock ]
-		ensure: [ aBitmap setPinnedInMemory: wasPinned ]
-]
-
 { #category : #'private - ffi' }
 GtArrayBoxU8 class >> primRelease: aHandle library: anFFILibrary [
 	anFFILibrary primArrayU8Release: aHandle
