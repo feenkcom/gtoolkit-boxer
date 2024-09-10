@@ -73,10 +73,10 @@ GtStringBox >> string [
 	aLength := self length.
 	aLength isZero
 		ifTrue: [ ^ '' ].
-
-	^ ZnCharacterEncoder utf8 decodeBytes: (GtBoxer
+	
+	^ (GtBoxer
 		externalArrayFromHandle: self privateGetData getHandle
 		type: FFIUInt8
 		size: aLength "a zero byte is at aLength + 1, we ignore it"
-		during: [ :anExternalArray | anExternalArray asArray ])
+		during: [ :anExternalArray | ZnCharacterEncoder utf8 decodeBytes: anExternalArray ])
 ]
