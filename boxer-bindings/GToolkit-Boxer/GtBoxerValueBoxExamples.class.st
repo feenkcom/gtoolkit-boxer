@@ -6,21 +6,21 @@ Class {
 
 { #category : #examples }
 GtBoxerValueBoxExamples >> drop_not_null [
-	<gtExample>	
+	<gtExample>
+	<return: #GtBoxerSizeU32>
 	| aNew |
-	
 	aNew := GtBoxerSizeU32 new.
 	aNew release.
-	self assert: aNew isNull. 
+	self assert: aNew isNull.
 
 	^ aNew
 ]
 
 { #category : #examples }
 GtBoxerValueBoxExamples >> isValid_not_null [
-	<gtExample>	
+	<gtExample>
+	<return: #GtBoxerSizeU32>
 	| aNull |
-	
 	aNull := GtBoxerSizeU32 new.
 	self assert: aNull isNull not.
 	self assert: aNull isValid.
@@ -32,12 +32,12 @@ GtBoxerValueBoxExamples >> isValid_not_null [
 
 { #category : #examples }
 GtBoxerValueBoxExamples >> isValid_null [
-	<gtExample>	
+	<gtExample>
+	<return: #GtBoxerSizeU32>
 	| aNull |
-	
 	aNull := GtBoxerSizeU32 null.
 	self assert: aNull isNull.
 	self assert: aNull isValid not.
-	
+
 	^ aNull
 ]
