@@ -1,9 +1,6 @@
 Class {
 	#name : #GtBoxerExternalObject,
 	#superclass : #FFIExternalObject,
-	#instVars : [
-		'isAutoRelease'
-	],
 	#category : #'GToolkit-Boxer-Core'
 }
 
@@ -128,15 +125,6 @@ GtBoxerExternalObject class >> warning: aMessageBlock [
 	Transcript show: message; cr"
 ]
 
-{ #category : #'external resource management' }
-GtBoxerExternalObject >> autoRelease [
-	"Note, subclasses should implement #resourceData
-	and #finalizeResourceData: on class side"
-
-	isAutoRelease := true.
-	super autoRelease
-]
-
 { #category : #'library path' }
 GtBoxerExternalObject >> ffiLibrary [
 	^ self class ffiLibrary
@@ -158,12 +146,6 @@ GtBoxerExternalObject >> isValid [
 GtBoxerExternalObject >> release [
 	"#release is sent manually, so we want to make sure that resource is no longer
 	added to weak registry - performance improvement"
-	
-	"we compare with true because isAutoRelease is nil be default"
-	isAutoRelease == true
-		ifTrue: [
-			(FFIExternalResourceManager uniqueInstance instVarNamed: #registry) remove: self ifAbsent: [ ].
-			isAutoRelease := false ].
 
 	self class release: self resourceData
 ]
