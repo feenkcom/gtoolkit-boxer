@@ -4,8 +4,7 @@ Class {
 	#traits : 'TGtValueBox',
 	#classTraits : 'TGtValueBox classTrait',
 	#instVars : [
-		'library',
-		'isAutoRelease'
+		'library'
 	],
 	#category : #'GToolkit-Boxer-New'
 }
@@ -128,15 +127,6 @@ GtExternalLibraryBox class >> release: anExternalValueBoxAddress [
 		description: [ 'Pointer must be null after release' ]
 ]
 
-{ #category : #'external resource management' }
-GtExternalLibraryBox >> autoRelease [
-	"Note, subclasses should implement #resourceData
-	and #finalizeResourceData: on class side"
-
-	isAutoRelease := true.
-	super autoRelease
-]
-
 { #category : #'library path' }
 GtExternalLibraryBox >> ffiLibrary [
 	^ library
@@ -165,15 +155,6 @@ GtExternalLibraryBox >> isValid [
 
 { #category : #dependencies }
 GtExternalLibraryBox >> release [
-	"#release is sent manually, so we want to make sure that resource is no longer
-	added to weak registry - performance improvement"
-	
-	"we compare with true because isAutoRelease is nil be default"
-	isAutoRelease == true
-		ifTrue: [
-			(FFIExternalResourceManager uniqueInstance instVarNamed: #registry) remove: self ifAbsent: [ ].
-			isAutoRelease := false ].
-
 	self class release: self resourceData
 ]
 
