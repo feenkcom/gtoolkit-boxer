@@ -50,7 +50,8 @@ GtExternalEnumeration class >> parseDeclaration: aLiteralArray [
 	| previousValue |
 	
 	previousValue := -1.
-	^ (aLiteralArray splitOn: #(,)) flatCollect: [ :eachArray |
+	
+	^ ((aLiteralArray splitOn: #(,)) select: [ :each | each isNotEmpty ]) flatCollect: [ :eachArray |
 		| assoc |
 		
 		 assoc := self parseVariant: eachArray previousValue: previousValue.
