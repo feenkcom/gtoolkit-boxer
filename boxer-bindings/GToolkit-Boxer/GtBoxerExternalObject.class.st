@@ -142,10 +142,20 @@ GtBoxerExternalObject >> isValid [
 	^ handle isNotNil and: [ handle isNull not ]
 ]
 
-{ #category : #dependencies }
+{ #category : #initialization }
 GtBoxerExternalObject >> release [
 	"#release is sent manually, so we want to make sure that resource is no longer
 	added to weak registry - performance improvement"
 
 	self class release: self resourceData
+]
+
+{ #category : #initialization }
+GtBoxerExternalObject >> transferOwnership [
+	| newCopy |
+	
+	newCopy := self class
+		fromHandle: self getHandle copy.
+	self getHandle beNull.
+	^ newCopy
 ]
