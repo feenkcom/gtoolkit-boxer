@@ -153,7 +153,7 @@ GtExternalLibraryBox >> isValid [
 	^ handle isNotNil and: [ handle isNull not ]
 ]
 
-{ #category : #dependencies }
+{ #category : #initialization }
 GtExternalLibraryBox >> release [
 	self class release: self resourceData
 ]
@@ -163,4 +163,17 @@ GtExternalLibraryBox >> resourceData [
 	^ GtExternalLibraryBoxAddress new
 		externalAddress: handle;
 		library: library
+]
+
+{ #category : #initialization }
+GtExternalLibraryBox >> transferOwnership [
+	| newCopy |
+	
+	newCopy := self class
+		fromBorrowedHandle: self getHandle copy
+		library: self ffiLibrary.
+	
+	self getHandle beNull.
+	
+	^ newCopy
 ]
